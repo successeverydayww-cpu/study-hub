@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Statistics Study Pack</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:radial-gradient(ellipse at 50% -20%,#0a2618 0%,#060d12 55%,#04080c 100%);min-height:100vh;color:#e8e2d0;padding-bottom:40px}
+.stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+background-image:radial-gradient(1px 1px at 12% 22%,rgba(255,224,138,.5) 50%,transparent 51%),radial-gradient(1px 1px at 78% 12%,rgba(255,255,255,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 45% 60%,rgba(255,224,138,.3) 50%,transparent 51%),radial-gradient(1px 1px at 88% 48%,rgba(255,255,255,.25) 50%,transparent 51%),radial-gradient(1px 1px at 25% 82%,rgba(255,224,138,.4) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 65% 88%,rgba(255,255,255,.2) 50%,transparent 51%),radial-gradient(1px 1px at 8% 55%,rgba(255,255,255,.3) 50%,transparent 51%)}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px;position:relative;z-index:1}
+.hd{text-align:center;padding:26px 10px 18px}
+.hd .sub{font-size:12px;letter-spacing:3px;color:#7fe0b0;text-transform:uppercase;margin-bottom:8px}
+.hd h1{font-size:30px;font-weight:800;background:linear-gradient(135deg,#FFE08A,#f6c86a 55%,#e8a04c);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.5px}
+.hd .tag{margin-top:8px;font-size:13px;color:#9db3a8}
+.tabs{display:flex;gap:10px;margin:18px 0 6px}
+.tab{flex:1;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,224,138,.22);background:rgba(255,255,255,.035);color:#cfe0d6;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;text-align:center}
+.tab.on{background:linear-gradient(135deg,rgba(52,211,153,.22),rgba(255,224,138,.14));border-color:rgba(255,224,138,.55);color:#FFE08A;box-shadow:0 0 24px rgba(255,224,138,.12)}
+.card{background:rgba(10,22,18,.72);border:1px solid rgba(255,224,138,.14);border-radius:18px;padding:20px 18px;margin:14px 0;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.card h2{font-size:18px;color:#FFE08A;margin-bottom:12px;letter-spacing:.3px}
+.card h3{font-size:15px;color:#7fe0b0;margin:14px 0 6px}
+p,li{font-size:14.5px;line-height:1.65;color:#d8dfd6}
+ul{padding-left:20px;margin:6px 0}
+.formula{background:rgba(0,0,0,.35);border:1px solid rgba(127,224,176,.25);border-radius:12px;padding:12px 14px;margin:10px 0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#ffe9b8;text-align:center;line-height:1.7}
+.ex{background:rgba(52,211,153,.06);border-left:3px solid #34d399;border-radius:0 12px 12px 0;padding:12px 14px;margin:10px 0}
+.ex b{color:#7fe0b0}
+.note{background:rgba(255,224,138,.07);border-left:3px solid #FFE08A;border-radius:0 12px 12px 0;padding:12px 14px;margin:10px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:rgba(255,224,138,.12);color:#FFE08A;padding:7px 8px;text-align:center;border:1px solid rgba(255,224,138,.2)}
+td{padding:7px 8px;text-align:center;border:1px solid rgba(255,255,255,.1);color:#d8dfd6}
+.qwrap{background:rgba(10,22,18,.78);border:1px solid rgba(255,224,138,.16);border-radius:18px;padding:22px 18px;backdrop-filter:blur(12px)}
+.qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.qnum{font-size:12px;letter-spacing:2px;color:#7fe0b0;text-transform:uppercase}
+.qscore{font-size:13px;color:#FFE08A;font-weight:700}
+.qtext{font-size:16.5px;font-weight:600;line-height:1.5;color:#f0ead9;margin-bottom:16px}
+.opts{display:grid;gap:10px}
+.opt{padding:13px 14px;border-radius:13px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.045);color:#e8e2d0;font-size:15px;cursor:pointer;transition:all .15s;line-height:1.45}
+.opt:active{transform:scale(.98)}
+.opt.right{background:rgba(52,211,153,.18);border-color:#34d399;color:#c9f7e2;font-weight:700}
+.opt.wrong{background:rgba(239,68,68,.16);border-color:#ef4444;color:#ffd9d9}
+.opt.off{pointer-events:none;opacity:.55}
+.explain{display:none;margin-top:14px;background:rgba(255,224,138,.07);border-left:3px solid #FFE08A;border-radius:0 12px 12px 0;padding:12px 14px;font-size:13.5px;line-height:1.6;color:#e5decb}
+.explain.show{display:block}
+.explain b{color:#FFE08A}
+.btn{display:block;width:100%;margin-top:16px;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#34d399,#FFE08A);color:#06281a;font-weight:800;font-size:15px;letter-spacing:.5px;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:rgba(255,255,255,.07);color:#cfe0d6;border:1px solid rgba(255,255,255,.18)}
+.pbar{height:6px;border-radius:3px;background:rgba(255,255,255,.09);margin:6px 0 16px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,#34d399,#FFE08A);border-radius:3px;transition:width .3s}
+.menu-tile{display:block;padding:22px 18px;border-radius:18px;border:1px solid rgba(255,224,138,.2);background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(255,224,138,.08));margin:14px 0;cursor:pointer}
+.menu-tile .mt1{font-size:17px;font-weight:800;color:#FFE08A;margin-bottom:6px}
+.menu-tile .mt2{font-size:13.5px;color:#b9c8bd;line-height:1.5}
+.bigscore{text-align:center;padding:30px 0 10px}
+.bigscore .num{font-size:56px;font-weight:800;background:linear-gradient(135deg,#34d399,#FFE08A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bigscore .lbl{font-size:14px;color:#9db3a8;margin-top:4px}
+.verdict{margin-top:16px;padding:14px;border-radius:14px;background:rgba(255,224,138,.08);border:1px solid rgba(255,224,138,.25);font-size:14px;line-height:1.6;color:#e8e2d0}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+
+<div class="hd">
+<div class="sub">Premium Study Suite</div>
+<h1>Statistics Study Pack</h1>
+<div class="tag">Regression · Correlation · Hypothesis Testing · Probability Distributions</div>
+</div>
+
+<div class="tabs">
+<div class="tab on" id="tabNotes" onclick="showTab('notes')">📘 Notes</div>
+<div class="tab" id="tabQuiz" onclick="showTab('quiz')">🎯 Practice</div>
+</div>
+
+<!-- ===================== NOTES ===================== -->
+<div id="notesView">
+
+<div class="card">
+<h2>MODULE 1 — Regression Analysis</h2>
+<p>Regression finds the line (or curve) that best fits a set of data points, so you can predict one variable from another.</p>
+
+<h3>1.1 The Least-Squares Line (y = a + bx)</h3>
+<p>The best-fit line minimises the sum of <i>squared</i> vertical deviations between the points and the line. The constants a (intercept) and b (slope) come from the <b>normal equations</b>:</p>
+<div class="formula">Σy = na + bΣx<br>Σxy = aΣx + bΣx²</div>
+<p>Or directly with means:</p>
+<div class="formula">b = (Σxy − n·x̄·ȳ) ⁄ (Σx² − n·x̄²)<br>a = ȳ − b·x̄</div>
+<p>The slope b tells you how much y changes for every 1-unit rise in x.</p>
+
+<h3>1.2 The Least-Squares Parabola (y = a + bx + cx²)</h3>
+<p>When data curves, fit a second-degree curve. Three unknowns → <b>three normal equations</b>:</p>
+<div class="formula">Σy = na + bΣx + cΣx²<br>Σxy = aΣx + bΣx² + cΣx³<br>Σx²y = aΣx² + bΣx³ + cΣx⁴</div>
+
+<h3>1.3 Multiple Regression (y = a + b₁x₁ + b₂x₂)</h3>
+<p>Predicting y from two independent variables needs <b>three normal equations</b>:</p>
+<div class="formula">Σy = na + b₁Σx₁ + b₂Σx₂<br>Σx₁y = aΣx₁ + b₁Σx₁² + b₂Σx₁x₂<br>Σx₂y = aΣx₂ + b₁Σx₁x₂ + b₂Σx₂²</div>
+
+<h3>1.4 Standard Error of Estimate (S<sub>y·x</sub>)</h3>
+<p>Measures the average scatter of points about the regression line. Smaller = tighter fit.</p>
+<div class="formula">S<sub>y·x</sub> = √[ (Σy² − aΣy − bΣxy) ⁄ (n − 2) ]</div>
+<div class="note">A perfect fit gives S<sub>y·x</sub> = 0. If S<sub>y·x</sub> is small relative to the y-values, predictions from the line are reliable.</div>
+
+<h3>1.5 Worked Example — Fitting the Line</h3>
+<div class="ex">
+<b>Example.</b> Fit y = a + bx to: x = 1,2,3,4,5 and y = 2,3,5,4,6.<br><br>
+Σx = 15, Σy = 20, Σxy = 1(2)+2(3)+3(5)+4(4)+5(6) = 67, Σx² = 55, n = 5, x̄ = 3, ȳ = 4.<br><br>
+b = (67 − 5·3·4) ⁄ (55 − 5·9) = (67 − 60) ⁄ (55 − 45) = 7 ⁄ 10 = 0.7<br>
+a = 4 − 0.7(3) = 1.9<br><br>
+<b>Regression line: y = 1.9 + 0.7x</b><br><br>
+Predict at x = 6: y = 1.9 + 0.7(6) = 6.1
+</div>
+<div class="note">Using the line inside the observed x-range is <b>interpolation</b> (safe); predicting far outside the range is <b>extrapolation</b> (risky).</div>
+</div>
+
+<div class="card">
+<h2>MODULE 2 — Correlation</h2>
+<p>Correlation measures the strength and direction of the relationship between two variables.</p>
+
+<h3>2.1 Pearson's Linear Correlation Coefficient (r)</h3>
+<div class="formula">r = (n·Σxy − Σx·Σy) ⁄ √[(nΣx² − (Σx)²)(nΣy² − (Σy)²)]</div>
+<ul>
+<li>r always lies between <b>−1 and +1</b></li>
+<li>r = +1 → perfect positive correlation (points rise exactly)</li>
+<li>r = −1 → perfect negative correlation (points fall exactly)</li>
+<li>r = 0 → no linear relationship</li>
+</ul>
+<table>
+<tr><th>|r| value</th><th>Interpretation</th></tr>
+<tr><td>0.90 – 1.00</td><td>Very high correlation</td></tr>
+<tr><td>0.70 – 0.90</td><td>High correlation</td></tr>
+<tr><td>0.40 – 0.70</td><td>Moderate correlation</td></tr>
+<tr><td>0.00 – 0.40</td><td>Low correlation</td></tr>
+</table>
+
+<h3>2.2 Spearman's Rank Correlation (ρ or R)</h3>
+<p>Used when data are <b>ranks</b> (or ranked), or for data not strictly linear. Rank both variables (1 = highest or 1 = lowest, consistently), find d = difference in ranks for each item:</p>
+<div class="formula">ρ = 1 − [ 6·Σd² ⁄ n(n² − 1) ]</div>
+<div class="note"><b>Tied ranks:</b> give tied items the average of the ranks they share, then apply a tie correction. For small numbers of ties, the simple formula is still commonly used.</div>
+
+<h3>2.3 Worked Example — Spearman</h3>
+<div class="ex">
+<b>Example.</b> Two judges rank 5 contestants. Judge A: 1,2,3,4,5. Judge B: 2,1,4,3,5.<br><br>
+d = (1−2, 2−1, 3−4, 4−3, 5−5) = (−1, 1, −1, 1, 0); d² = 1+1+1+1+0 = 4<br><br>
+ρ = 1 − 6(4) ⁄ [5(25−1)] = 1 − 24⁄120 = 1 − 0.2 = <b>0.8</b><br>
+Strong agreement between the judges.
+</div>
+<div class="note"><b>Correlation ≠ causation.</b> Two variables moving together does not prove one causes the other.</div>
+</div>
+
+<div class="card">
+<h2>MODULE 3 — Hypothesis Testing</h2>
+
+<h3>3.1 The Two Hypotheses</h3>
+<ul>
+<li><b>Null hypothesis (H₀):</b> the "nothing is happening" claim — no difference, no effect, the parameter equals some value. Assumed true until evidence says otherwise.</li>
+<li><b>Alternative hypothesis (H₁):</b> what you accept if H₀ is rejected — there IS a difference/effect.</li>
+</ul>
+
+<h3>3.2 Errors</h3>
+<table>
+<tr><th></th><th>H₀ true</th><th>H₀ false</th></tr>
+<tr><td><b>Reject H₀</b></td><td>Type I error (α)</td><td>Correct ✓</td></tr>
+<tr><td><b>Accept H₀</b></td><td>Correct ✓</td><td>Type II error (β)</td></tr>
+</table>
+<ul>
+<li><b>Type I error:</b> rejecting H₀ when it is actually true (false alarm). Probability = α = the significance level.</li>
+<li><b>Type II error:</b> accepting H₀ when it is actually false (missed detection). Probability = β.</li>
+<li><b>Power of a test</b> = 1 − β = probability of correctly rejecting a false H₀.</li>
+</ul>
+
+<h3>3.3 Levels of Significance (α)</h3>
+<p>Common significance levels:</p>
+<table>
+<tr><th>Level</th><th>Meaning</th></tr>
+<tr><td>α = 0.05 (5%)</td><td>5% risk of Type I error — standard choice</td></tr>
+<tr><td>α = 0.01 (1%)</td><td>Stricter — harder to reject H₀</td></tr>
+</table>
+<p>The level chosen fixes the <b>critical value</b> that the test statistic must beat.</p>
+
+<h3>3.4 Critical Values of Z (standard normal)</h3>
+<table>
+<tr><th>Test</th><th>α</th><th>Critical |Z|</th></tr>
+<tr><td>Two-tailed</td><td>5% (0.025 each side)</td><td>1.96</td></tr>
+<tr><td>Two-tailed</td><td>1% (0.005 each side)</td><td>2.575</td></tr>
+<tr><td>One-tailed (right)</td><td>5%</td><td>1.645</td></tr>
+<tr><td>One-tailed (right)</td><td>1%</td><td>2.33</td></tr>
+<tr><td>One-tailed (left)</td><td>5%</td><td>−1.645</td></tr>
+</table>
+
+<h3>3.5 One-Tailed vs Two-Tailed</h3>
+<ul>
+<li><b>Two-tailed:</b> H₁ says "different from" (≠). Rejection region split between both tails.</li>
+<li><b>One-tailed (right):</b> H₁ says "greater than" (>). Whole rejection region in right tail.</li>
+<li><b>One-tailed (left):</b> H₁ says "less than" (<). Whole rejection region in left tail.</li>
+</ul>
+
+<h3>3.6 The Z-Test and Decision Rule</h3>
+<p>Testing a mean with known population standard deviation σ:</p>
+<div class="formula">Z = (x̄ − μ) ⁄ (σ ⁄ √n)</div>
+<div class="ex">
+<b>Decision rule.</b> At α = 0.05, two-tailed: <b>reject H₀ if |Z| > 1.96</b>; otherwise accept (do not reject) H₀. The acceptance region is the middle 95% of the curve; the rejection (critical) regions are the two tails beyond ±1.96.
+</div>
+
+<h3>3.7 Full Worked Example</h3>
+<div class="ex">
+<b>Example.</b> A machine fills bottles to 500 ml, σ = 5 ml. A sample of n = 40 gives x̄ = 502 ml. Test at 5% significance whether the mean fill has changed.<br><br>
+H₀: μ = 500 &nbsp;&nbsp; H₁: μ ≠ 500 (two-tailed)<br><br>
+Z = (502 − 500) ⁄ (5 ⁄ √40) = 2 ⁄ 0.7906 = 2.53<br><br>
+Critical value: ±1.96. Since 2.53 > 1.96 → <b>reject H₀</b>. The mean fill HAS changed at the 5% level. (Note: at the 1% level, 2.53 < 2.575, so we would accept H₀ — the conclusion depends on α.)
+</div>
+<div class="note">The general procedure: (1) state H₀ and H₁, (2) choose α, (3) compute the test statistic, (4) find the critical value and region, (5) decide: reject or accept H₀, (6) state the conclusion in plain words.</div>
+</div>
+
+<div class="card">
+<h2>MODULE 4 — Probability Distributions</h2>
+
+<h3>4.1 Binomial Distribution</h3>
+<p>Models the number of successes in a <b>fixed number n</b> of independent trials, each with the same probability p of success. Conditions: fixed n, two outcomes only, constant p, independent trials.</p>
+<div class="formula">P(X = r) = ⁿC<sub>r</sub> · p<sup>r</sup> · q<sup>n−r</sup> &nbsp; where q = 1 − p<br>Mean = np &nbsp;&nbsp; Variance = npq &nbsp;&nbsp; SD = √(npq)</div>
+<div class="ex">
+<b>Example (coin toss).</b> A fair coin is tossed 4 times. Probability of exactly 2 heads?<br><br>
+n = 4, r = 2, p = q = 0.5<br>
+P = ⁴C₂ (0.5)²(0.5)² = 6 × 0.0625 = <b>0.375</b><br><br>
+Mean = np = 2 heads; Variance = npq = 1.
+</div>
+
+<h3>4.2 Poisson Distribution</h3>
+<p>Models the number of events in a fixed interval when events happen independently at a constant average rate λ (e.g. calls per hour, defects per page). Key property: <b>mean = variance = λ</b>.</p>
+<div class="formula">P(X = r) = e<sup>−λ</sup> · λ<sup>r</sup> ⁄ r!</div>
+<div class="ex">
+<b>Example.</b> A receptionist receives an average of 3 calls per minute. Probability of exactly 2 calls in a minute?<br><br>
+λ = 3, r = 2<br>
+P = e⁻³ · 3² ⁄ 2! = 0.04979 × 9 ⁄ 2 = <b>0.2241</b><br><br>
+At least 1 call: P = 1 − P(0) = 1 − e⁻³ = 1 − 0.0498 = 0.9502
+</div>
+
+<h3>4.3 Poisson Approximation to the Binomial</h3>
+<p>When <b>n is large and p is small</b> (rule of thumb: n ≥ 50, p ≤ 0.1), the binomial is well approximated by the Poisson with:</p>
+<div class="formula">λ = np</div>
+<div class="ex">
+<b>Example.</b> A factory makes 200 items; 1% are defective. Probability of exactly 3 defectives?<br><br>
+Binomial: n = 200, p = 0.01 → λ = np = 2<br>
+Poisson: P(X=3) = e⁻² · 2³ ⁄ 3! = 0.1353 × 8 ⁄ 6 = <b>0.1804</b>
+</div>
+</div>
+</div>
+
+<!-- ===================== QUIZ ===================== -->
+<div id="quizView" class="hide">
+<div id="quizMenu">
+<div class="qwrap" style="text-align:center;padding:34px 22px">
+<div style="font-size:40px;margin-bottom:10px">🎯</div>
+<div style="font-size:20px;font-weight:800;color:#FFE08A;margin-bottom:8px">Practice Arena</div>
+<p style="font-size:14px;color:#b9c8bd;line-height:1.6;margin-bottom:6px">40 questions across all four modules.<br>Instant answers with full explanations after each pick.</p>
+<button class="btn" onclick="startQuiz()">Begin Practice</button>
+</div>
+</div>
+
+<div id="quizPlay" class="hide">
+<div class="qwrap">
+<div class="qtop"><div class="qnum" id="qNum"></div><div class="qscore" id="qScore">0 / 0</div></div>
+<div class="pbar"><div class="pfill" id="pFill" style="width:0%"></div></div>
+<div class="qtext" id="qText"></div>
+<div class="opts" id="qOpts"></div>
+<div class="explain" id="qExp"></div>
+<button class="btn hide" id="nextBtn" onclick="nextQ()">Next Question →</button>
+</div>
+</div>
+
+<div id="quizDone" class="hide">
+<div class="qwrap bigscore">
+<div style="font-size:40px;margin-bottom:6px">🏆</div>
+<div class="num" id="finalNum"></div>
+<div class="lbl" id="finalLbl"></div>
+<div class="verdict" id="verdict"></div>
+<button class="btn" onclick="startQuiz()">Practice Again</button>
+<button class="btn ghost" onclick="showTab('notes')">Review Notes</button>
+</div>
+</div>
+</div>
+
+</div>
+<script>
+const QS=[
+{t:"In the least-squares line y = a + bx, what does the method minimise?",o:["The sum of vertical deviations","The sum of squared vertical deviations","The maximum deviation","The product of deviations"],a:1,e:"Least squares squares each vertical deviation, then minimises the sum. Squaring stops positives and negatives cancelling and punishes big misses harder."},
+{t:"How many normal equations are needed to fit a least-squares parabola y = a + bx + cx²?",o:["Two","Three","Four","Depends on n"],a:1,e:"Three unknowns (a, b, c) → three normal equations. For a line it's two; for multiple regression with two predictors, also three."},
+{t:"Which set are the normal equations for fitting y = a + bx?",o:["Σy = na + bΣx and Σxy = aΣx + bΣx²","Σy = a + bΣx and Σxy = abΣx","Σx = na + bΣy and Σx²y = aΣx + bΣy","Σy² = na + bΣxy and Σx² = aΣy + bΣx"],a:0,e:"First equation from summing y = a + bx over all n points; second from multiplying by x and summing."},
+{t:"Σy = 20, Σxy = 67, Σx² = 55, n = 5, x̄ = 3, ȳ = 4. What is the slope b of the regression line?",o:["0.5","0.7","1.0","1.4"],a:1,e:"b = (Σxy − n x̄ ȳ) ⁄ (Σx² − n x̄²) = (67 − 60) ⁄ (55 − 45) = 7/10 = 0.7. Then a = 4 − 0.7(3) = 1.9."},
+{t:"A regression line gives y = 1.9 + 0.7x. Predict y when x = 6.",o:["5.4","6.1","6.7","7.2"],a:1,e:"y = 1.9 + 0.7(6) = 1.9 + 4.2 = 6.1."},
+{t:"In multiple regression y = a + b₁x₁ + b₂x₂, how many predictor variables are there?",o:["One","Two","Three","Depends on n"],a:1,e:"x₁ and x₂ are the two predictors. Three unknowns (a, b₁, b₂) mean three normal equations."},
+{t:"If the standard error of estimate S(y·x) equals zero, this means:",o:["No relationship exists","The points fit the regression line perfectly","The sample size was too small","The slope must be zero"],a:1,e:"S(y·x) = 0 means every observed point lies exactly on the fitted line — a perfect fit."},
+{t:"S(y·x) = √[...]. What goes in the numerator of the standard error of estimate?",o:["Σy − aΣx − bΣxy","Σy² − aΣy − bΣxy","Σy² − Σy·Σx","(Σy)² − na"],a:1,e:"S(y·x) = √[(Σy² − aΣy − bΣxy)/(n − 2)]. The unexplained sum of squares divided by degrees of freedom n − 2."},
+{t:"Predicting y for an x-value far outside the observed data range is called:",o:["Interpolation","Extrapolation","Correlation","Standardisation"],a:1,e:"Interpolation is inside the observed range (safe); extrapolation reaches outside it, where the relationship may not hold."},
+{t:"Pearson's correlation coefficient r is always between:",o:["0 and 1","−1 and +1","−∞ and +∞","−100 and 100"],a:1,e:"By construction, −1 ≤ r ≤ +1. r = ±1 is a perfect linear fit; r = 0 means no linear relationship."},
+{t:"If r = −0.92, the relationship between x and y is:",o:["Weak positive","Strong negative","No relationship","Non-existent"],a:1,e:"|r| = 0.92 is a very high correlation, and the negative sign means y falls as x rises."},
+{t:"nΣxy − ΣxΣy appears in the formula for:",o:["The slope b only","Pearson's r","The standard error of estimate","The Poisson mean"],a:1,e:"That expression is the numerator of Pearson's r (and also b up to the same scaling — b times √(nΣx²−(Σx)²) over √(nΣy²−(Σy)²) equals r)."},
+{t:"Spearman's rank correlation uses d, which is:",o:["The difference between paired values x − y","The difference between paired ranks","The mean of the ranks","The number of ties"],a:1,e:"d = rank of item by first variable − rank by second variable, for each item. Then Σd² feeds the formula ρ = 1 − 6Σd²/[n(n²−1)]."},
+{t:"Judge A ranks: 1,2,3,4,5. Judge B ranks: 2,1,4,3,5. Σd² = 4, n = 5. Spearman's ρ =",o:["0.6","0.8","0.9","1.0"],a:1,e:"ρ = 1 − 6(4)/[5(25−1)] = 1 − 24/120 = 1 − 0.2 = 0.8."},
+{t:"When two items tie in a ranking, what rank should they share?",o:["The higher of the two ranks","The lower of the two ranks","The average of the ranks they would have occupied","Each gets rank 1"],a:2,e:"Tied items take the mean of the ranks they span, e.g. items tied for 3rd and 4th each get rank 3.5."},
+{t:"A study finds ice-cream sales and drowning rates rise together. This proves ice cream causes drowning. This example illustrates:",o:["Strong correlation proves causation","Correlation does not imply causation","A Type I error","Perfect negative correlation"],a:1,e:"A hidden third variable (hot weather) drives both. Correlation alone never establishes causation."},
+{t:"The hypothesis assumed true until evidence rejects it is:",o:["The alternative hypothesis","The null hypothesis","The research hypothesis","The critical hypothesis"],a:1,e:"H₀ is the default claim (no difference/no effect). It is presumed true unless the data fall in the rejection region."},
+{t:"Rejecting H₀ when H₀ is actually true is:",o:["Type II error","Type I error","Correct decision","A power failure"],a:1,e:"Type I error = false alarm. Its probability is α, the significance level. Type II error = missing a real effect (β)."},
+{t:"Accepting H₀ when H₀ is actually false is:",o:["Type I error","Type II error","Correct decision","Statistical power"],a:1,e:"Type II error (β). Power = 1 − β is the chance of correctly rejecting a false H₀."},
+{t:"If α = 0.05, the probability of a Type I error is:",o:["0.01","0.05","0.95","Depends on n"],a:1,e:"By definition, the significance level α IS the probability of rejecting a true H₀, i.e. the Type I error rate."},
+{t:"Power of a test equals:",o:["α","β","1 − α","1 − β"],a:3,e:"Power = 1 − β: the probability the test correctly rejects H₀ when H₀ is false. Bigger samples and larger true effects raise power."},
+{t:"The most commonly used significance level is:",o:["10%","5%","1%","0.5%"],a:1,e:"α = 0.05 (5%) is the conventional standard; 1% is used when a stricter test is needed."},
+{t:"The critical value of Z for a two-tailed test at the 5% level is:",o:["1.645","1.96","2.33","2.575"],a:1,e:"Two tails split 5% into 2.5% each side, cutting off 0.025 in each tail → Z = ±1.96."},
+{t:"The critical value of Z for a one-tailed (right) test at 5% is:",o:["1.96","1.645","2.33","2.575"],a:1,e:"All 5% sits in the right tail, cutting off 0.05 → Z = 1.645."},
+{t:"The critical value of Z for a two-tailed test at the 1% level is:",o:["1.96","2.33","2.575","3.00"],a:2,e:"1% split into 0.5% per tail → Z = ±2.575. 2.33 is the one-tailed 1% value."},
+{t:"H₁: μ ≠ 500 describes:",o:["A one-tailed left test","A one-tailed right test","A two-tailed test","No test at all"],a:2,e:"'Not equal' means the rejection region is split across both tails — a two-tailed test."},
+{t:"H₁: μ > 100 describes:",o:["Two-tailed test","One-tailed right test","One-tailed left test","A test with no rejection region"],a:1,e:"'Greater than' places the entire rejection region in the right tail."},
+{t:"Z = (x̄ − μ)/(σ/√n). A larger sample size n makes the test:",o:["Less sensitive","More sensitive (detects smaller shifts)","Unchanged","Invalid"],a:1,e:"σ/√n shrinks as n grows, so the same shift in x̄ produces a larger Z — smaller shifts become detectable."},
+{t:"x̄ = 502, μ = 500, σ = 5, n = 40. The computed Z is about:",o:["1.6","2.0","2.53","4.0"],a:2,e:"σ/√n = 5/6.325 = 0.7906; Z = 2/0.7906 ≈ 2.53. This exceeds 1.96, so H₀ is rejected at 5% (two-tailed)."},
+{t:"Z computed = 2.53, two-tailed test at α = 0.05 (critical 1.96). Decision?",o:["Accept H₀","Reject H₀","Inconclusive","Compute β"],a:1,e:"|2.53| > 1.96 falls in the rejection region → reject H₀. (At α = 0.01, critical 2.575, you would accept H₀.)"},
+{t:"Z computed = 2.53, two-tailed test at α = 0.01 (critical 2.575). Decision?",o:["Accept H₀","Reject H₀","Type I error guaranteed","Re-test with β"],a:0,e:"2.53 < 2.575, so Z lies in the acceptance region at the stricter 1% level. Conclusion depends on the chosen α."},
+{t:"The region of the Z-curve where H₀ is NOT rejected is called the:",o:["Rejection region","Critical region","Acceptance region","Power region"],a:2,e:"The acceptance region is the middle of the curve (e.g. between ±1.96 at 5%); the critical/rejection regions are the tails."},
+{t:"In a binomial distribution, which is NOT required?",o:["Fixed number of trials","Constant probability of success","Independent trials","A large sample size"],a:3,e:"Binomial needs fixed n, two outcomes, constant p, independence — but no minimum sample size."},
+{t:"P(X = r) = ⁿC_r p^r q^(n−r). In this formula q equals:",o:["p","1 − p","np","n − r"],a:1,e:"q is the probability of failure, so q = 1 − p. Mean = np and variance = npq."},
+{t:"A fair coin is tossed 4 times. P(exactly 2 heads) =",o:["0.25","0.3125","0.375","0.5"],a:2,e:"⁴C₂(0.5)²(0.5)² = 6 × 1/16 = 6/16 = 0.375. Mean = np = 2, variance = npq = 1."},
+{t:"For a binomial distribution, the variance equals:",o:["np","npq","√(np)","n − p"],a:1,e:"Mean = np, variance = npq, standard deviation = √(npq)."},
+{t:"The Poisson distribution is used to model:",o:["Proportions in categories","Number of events per fixed interval at a constant average rate","Ranks of items","Slopes of lines"],a:1,e:"Classic uses: calls per hour, defects per page, arrivals per minute. Events must occur independently at the average rate λ."},
+{t:"In a Poisson distribution, mean and variance are:",o:["Equal (both λ)","Mean = λ, variance = λ²","Mean = λ, variance = 1","Always both 1"],a:0,e:"The defining property: mean = variance = λ. This distinguishes it from binomial (np vs npq)."},
+{t:"P(X=r) = e^(−λ) λ^r / r!. With λ = 3, P(X = 2) ≈",o:["0.15","0.224","0.30","0.45"],a:1,e:"e⁻³ × 3²/2! = 0.04979 × 9/2 ≈ 0.2241."},
+{t:"When is the Poisson a good approximation for the binomial?",o:["n small, p large","n large, p small (e.g. n ≥ 50, p ≤ 0.1)","n = p","Always"],a:1,e:"With n large and p small, use λ = np. E.g. n=200, p=0.01 → λ=2, and P(X=3) ≈ e⁻²2³/3! = 0.1804."},
+{t:"n = 200, p = 0.01. Using the Poisson approximation, P(X = 3) ≈",o:["0.135","0.180","0.241","0.286"],a:1,e:"λ = np = 2; P = e⁻² × 2³/3! = 0.1353 × 8/6 ≈ 0.1804."}];
+let qi=0,score=0,answered=false;
+function showTab(t){document.getElementById('notesView').classList.toggle('hide',t!=='notes');document.getElementById('quizView').classList.toggle('hide',t!=='quiz');document.getElementById('tabNotes').classList.toggle('on',t==='notes');document.getElementById('tabQuiz').classList.toggle('on',t==='quiz');window.scrollTo(0,0)}
+function startQuiz(){qi=0;score=0;document.getElementById('quizMenu').classList.add('hide');document.getElementById('quizDone').classList.add('hide');document.getElementById('quizPlay').classList.remove('hide');renderQ()}
+function renderQ(){answered=false;const q=QS[qi];document.getElementById('qNum').textContent='Question '+(qi+1)+' of '+QS.length;document.getElementById('qScore').textContent=score+' / '+qi;document.getElementById('pFill').style.width=(qi/QS.length*100)+'%';document.getElementById('qText').textContent=q.t;const box=document.getElementById('qOpts');box.innerHTML='';q.o.forEach((opt,i)=>{const b=document.createElement('div');b.className='opt';b.textContent=opt;b.onclick=()=>pick(i,b);box.appendChild(b)});document.getElementById('qExp').classList.remove('show');document.getElementById('nextBtn').classList.add('hide')}
+function pick(i,el){if(answered)return;answered=true;const q=QS[qi];document.querySelectorAll('#qOpts .opt').forEach((o,j)=>{o.classList.add('off');if(j===q.a)o.classList.add('right');else if(j===i)o.classList.add('wrong')});if(i===q.a)score++;const ex=document.getElementById('qExp');ex.innerHTML=(i===q.a?'<b>✔ Correct.</b> ':'<b>✘ Not quite.</b> ')+q.e;ex.classList.add('show');document.getElementById('qScore').textContent=score+' / '+(qi+1);document.getElementById('nextBtn').classList.remove('hide')}
+function nextQ(){qi++;if(qi>=QS.length){finish()}else{renderQ()}}
+function finish(){document.getElementById('quizPlay').classList.add('hide');document.getElementById('quizDone').classList.remove('hide');const pct=Math.round(score/QS.length*100);document.getElementById('finalNum').textContent=score+' / '+QS.length;document.getElementById('finalLbl').textContent=pct+'% — Practice Result';const v=document.getElementById('verdict');if(pct>=85){v.textContent='Outstanding. You are exam-ready on this material. Keep the momentum.'}else if(pct>=70){v.textContent='Strong. Review the questions you missed in the Notes tab, then run it again.'}else if(pct>=50){v.textContent='Halfway there. Read Modules 1–4 in the Notes tab carefully, then retake the practice.'}else{v.textContent='Fresh start — that is fine. Study the notes first, then come back. You will climb fast.'}window.scrollTo(0,0)}
+</script>
+</body>
+</html>
