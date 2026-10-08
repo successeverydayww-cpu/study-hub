@@ -238,7 +238,7 @@ function renderQ(){
    '<div class="microw"><button id="micbtn" onclick="micToggle()" '+(micOK?'':'disabled')+'>&#127908;</button><div class="miclbl">'+(micOK?'Tap the mic and answer with your voice.<br>I will write what I hear, then mark you.':'Voice capture not available here \u2014 type your answer below.')+'</div></div>'+
    '<div class="transcript" id="trans"></div>'+
    '<div class="txtin"><input id="txt" placeholder="or type your answer here..." oninput="txtTyping(this)" onkeydown="if(event.key===\'Enter\')txtDone()"><button class="vb ghost" style="flex:0 0 auto;padding:11px 16px" onclick="txtDone()">set</button></div>'+
-   '<div class="vbtns"><button class="vb" id="gbtn" onclick="doGrade()" disabled>Check my answer</button></div>'+
+   '<div class="vbtns"><button class="vb" id="gbtn" onclick="doGrade()">Check my answer</button></div>'+
    '<div class="verdict" id="v"></div>'+
    '<div class="keys" id="keys"></div>'+
    '<div class="model" id="model"><b>CORRECT ANSWER</b><br>'+q.model+'</div>'+
