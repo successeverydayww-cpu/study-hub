@@ -237,7 +237,7 @@ function renderQ(){
    '<div class="qtext" id="qtext">'+q.q+'</div>'+
    '<div class="microw"><button id="micbtn" onclick="micToggle()" '+(micOK?'':'disabled')+'>&#127908;</button><div class="miclbl">'+(micOK?'Tap the mic and answer with your voice.<br>I will write what I hear, then mark you.':'Voice capture not available here \u2014 type your answer below.')+'</div></div>'+
    '<div class="transcript" id="trans"></div>'+
-   '<div class="txtin"><input id="txt" placeholder="or type your answer here..." onkeydown="if(event.key===\'Enter\')txtDone()"><button class="vb ghost" style="flex:0 0 auto;padding:11px 16px" onclick="txtDone()">set</button></div>'+
+   '<div class="txtin"><input id="txt" placeholder="or type your answer here..." oninput="txtTyping(this)" onkeydown="if(event.key===\'Enter\')txtDone()"><button class="vb ghost" style="flex:0 0 auto;padding:11px 16px" onclick="txtDone()">set</button></div>'+
    '<div class="vbtns"><button class="vb" id="gbtn" onclick="doGrade()" disabled>Check my answer</button></div>'+
    '<div class="verdict" id="v"></div>'+
    '<div class="keys" id="keys"></div>'+
@@ -250,6 +250,7 @@ function renderQ(){
   say('Question '+(qi+1)+'. '+q.q);
 }
 function questionText(){return byId(cur).qs[qi].q;}
+function txtTyping(el){if(el.value.trim())document.getElementById('gbtn').disabled=false;}
 function txtDone(){
   var t=document.getElementById('txt').value.trim();
   if(!t)return;
@@ -291,8 +292,8 @@ function setMic(on){var b=document.getElementById('micbtn');if(b){b.classList.to
 function doGrade(){
   var s=byId(cur),q=s.qs[qi];
   var t=document.getElementById('trans').textContent.trim();
-  if(!t){say('Please answer with your voice or type your answer first.');return;}
   if(t.indexOf('listening')===0)t='';
+  if(!t){var ti=document.getElementById('txt');if(ti)t=ti.value.trim();}
   if(!t){say('Please answer with your voice or type your answer first.');return;}
   var g=gradeAnswer(t,q);
   qstate[qi]={mark:g.mark,frac:g.frac};
