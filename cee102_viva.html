@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#00A884">
+<title>CEE 102 Statistics Viva — AKSU</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#F0F2F5;color:#111827;margin:0;padding-bottom:96px}
+.hubhero{background:linear-gradient(135deg,#00785F 0%,#00A884 55%,#0BD4A0 100%);padding:34px 20px 30px;color:#fff;position:relative;overflow:hidden}
+.hubhero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08);top:-70px;right:-50px}
+.hubhero::before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.10);bottom:-50px;left:-30px}
+.hubhero h1{margin:0;font-size:26px;font-weight:800;letter-spacing:.01em}
+.hubhero p{margin:6px 0 0;font-size:13.5px;opacity:.93}
+.hubwrap{max-width:680px;margin:0 auto;padding:18px 14px 30px}
+.hubcards{display:flex;flex-direction:column;gap:14px}
+.hubcard{background:#fff;border-radius:18px;padding:18px 18px 16px;box-shadow:0 2px 10px rgba(15,23,42,.08);border-left:5px solid var(--c);position:relative}
+.hubcard h2{margin:0 0 4px;font-size:17px;font-weight:800;color:#0F172A}
+.hubcard p{margin:0 0 12px;font-size:12.5px;color:#64748B;line-height:1.5}
+.hubcard .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.hubcard .chip{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:20px;background:#F1F5F9;color:#475569}
+.hubcard .chip.gold{background:#FEF3C7;color:#92400E}
+.hubcard button{width:100%;padding:13px 0;border:none;border-radius:12px;background:var(--c);color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.hubcard button:active{filter:brightness(.94)}
+.hubnote{margin-top:18px;font-size:11.5px;color:#94A3B8;text-align:center;line-height:1.6}
+.sticky{position:fixed;top:0;left:0;right:0;background:rgba(0,168,132,.96);color:#fff;font-size:12px;font-weight:600;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;z-index:50;backdrop-filter:blur(6px)}
+.sticky button{background:rgba(255,255,255,.18);border:none;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:8px;cursor:pointer}
+main{max-width:680px;margin:0 auto;padding:16px 14px 0}
+.hero{background:#00A884;padding:24px 20px 26px;color:#fff}
+.hero h1{margin:0;font-size:21px;font-weight:800}
+.hero p{margin:6px 0 0;font-size:12.5px;opacity:.92}
+.sechead{margin:26px 2px 10px;font-size:12px;font-weight:800;letter-spacing:.09em;color:#00875F;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(15,23,42,.08);border:1.5px solid transparent}
+.card.right{border-color:rgba(0,168,132,.55)}
+.card.wrong{border-color:rgba(239,68,68,.5)}
+.qmeta{display:flex;gap:8px;align-items:baseline;margin-bottom:8px}
+.qnum{font-size:11px;font-weight:800;color:#fff;background:#00A884;border-radius:8px;padding:3px 8px;flex:0 0 auto}
+.qtag{font-size:10.5px;color:#94A3B8;font-weight:600}
+.qtext{font-size:14.5px;font-weight:600;line-height:1.55;margin-bottom:12px}
+.opt{display:flex;gap:10px;align-items:center;padding:11px 12px;border:1.5px solid #E2E8F0;border-radius:11px;margin-bottom:8px;cursor:pointer;font-size:13.5px;line-height:1.45}
+.opt b{font-size:11px;color:#00A884;border:1.5px solid #00A884;border-radius:7px;padding:1px 7px;flex:0 0 auto;font-weight:800}
+.opt.sel{border-color:#00A884;background:#F0FDF9}
+.opt.dis{cursor:default}
+.opt.correct{border-color:#00A884;background:#ECFDF5}
+.opt.miss{border-color:#EF4444;background:#FEF2F2}
+.verdict{font-size:13px;font-weight:800;margin:2px 0 8px;display:none}
+.verdict.ok{color:#059669;display:block}
+.verdict.no{color:#DC2626;display:block}
+.expl{display:none;font-size:12.5px;color:#334155;background:#F8FAFC;border-radius:10px;padding:10px 12px;line-height:1.6;margin-top:4px}
+.card.done .expl{display:block}
+.tutbtn{display:none;width:100%;margin-top:10px;padding:10px 0;border:1.5px solid #00A884;background:#fff;color:#00875F;border-radius:10px;font-size:12.5px;font-weight:800;cursor:pointer}
+.card.done .tutbtn{display:block}
+.tutbtn:active{background:#F0FDF9}
+.score{display:none;background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(15,23,42,.1);text-align:center;margin:8px 0 22px}
+.score.show{display:block}
+.score .n{font-size:34px;font-weight:800;color:#0F172A}
+.score .d{font-size:12px;color:#64748B;margin:6px 0 10px}
+.score .m{font-size:13px;font-weight:700;color:#00875F}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #E2E8F0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:50}
+.barin{max-width:680px;margin:0 auto;display:flex;gap:10px}
+.barin button{flex:1;padding:13px 0;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer}
+#submit{background:#00A884;color:#fff}
+#reset{background:#fff;color:#00A884;border:1.5px solid #00A884}
+#mus{position:fixed;right:14px;bottom:calc(88px + env(safe-area-inset-bottom));width:46px;height:46px;border-radius:50%;border:none;background:#fff;color:#00A884;font-size:20px;line-height:1;box-shadow:0 2px 10px rgba(15,23,42,.18);z-index:60;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#mus.playing{background:#00A884;color:#fff}
+#tutor{position:fixed;left:0;right:0;bottom:0;max-height:78vh;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(15,23,42,.25);z-index:90;display:none;flex-direction:column}
+#tutor.open{display:flex}
+.tuthead{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #E2E8F0}
+.tuthead b{font-size:14px;color:#0F172A}
+.tuthead small{display:block;font-size:11px;color:#94A3B8;font-weight:600}
+.tuthead button{background:#F1F5F9;border:none;color:#475569;font-size:12px;font-weight:800;padding:6px 12px;border-radius:9px;cursor:pointer}
+.tutchat{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.tutmsg{max-width:85%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.55}
+.tutmsg.t{background:#F0FDF9;color:#0F172A;border-bottom-left-radius:4px;align-self:flex-start}
+.tutmsg.s{background:#00A884;color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.tutmsg.sys{background:#FEF3C7;color:#92400E;align-self:center;font-size:11.5px;text-align:center;max-width:95%}
+.tutchips{display:flex;gap:8px;padding:0 16px 8px;flex-wrap:wrap}
+.tutchips button{background:#F1F5F9;border:none;color:#0F172A;font-size:11.5px;font-weight:700;padding:7px 11px;border-radius:20px;cursor:pointer}
+.tutin{display:flex;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #E2E8F0;align-items:center}
+#tutmic{width:46px;height:46px;border-radius:50%;border:none;background:#00A884;color:#fff;font-size:17px;cursor:pointer;flex:0 0 auto}
+#tutmic.rec{background:#EF4444;animation:pulse 1.1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}70%{box-shadow:0 0 0 14px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+#tuttxt{flex:1;border:1.5px solid #E2E8F0;border-radius:22px;padding:11px 14px;font-size:13.5px;outline:none;font-family:inherit}
+#tutsend{width:46px;height:46px;border-radius:50%;border:none;background:#0F172A;color:#fff;font-size:15px;cursor:pointer;flex:0 0 auto}
+.tutstatus{font-size:11px;color:#94A3B8;text-align:center;padding:0 0 6px}
+
+/* ---- viva additions ---- */
+.microw{display:flex;gap:8px;align-items:center;margin:10px 0 4px}
+#micbtn{width:54px;height:54px;border-radius:50%;border:none;background:#00A884;color:#fff;font-size:22px;cursor:pointer;flex:0 0 auto;box-shadow:0 2px 8px rgba(15,23,42,.18)}
+#micbtn.rec{background:#EF4444;animation:pulse 1.1s infinite}
+#micbtn:disabled{background:#CBD5E1}
+.miclbl{font-size:11.5px;color:#64748B;font-weight:700;line-height:1.4}
+.transcript{display:none;margin:10px 0 4px;border:1.5px dashed #CBD5E1;border-radius:11px;padding:10px 12px;font-size:13px;line-height:1.55;color:#0F172A;min-height:44px;background:#F8FAFC}
+.transcript.show{display:block}
+.transcript .hint{color:#94A3B8;font-size:11.5px}
+.keys{display:none;margin:8px 0 2px}
+.keys.show{display:block}
+.keyrow{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;line-height:1.5;margin-bottom:5px;color:#334155}
+.keyrow .kt{flex:0 0 auto;font-weight:800}
+.keyrow.hit .kt{color:#059669}.keyrow.miss .kt{color:#DC2626}
+.vbtns{display:flex;gap:8px;margin-top:12px}
+.vbtns button{flex:1;padding:12px 0;border:none;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer}
+.vb{background:#00A884;color:#fff}
+.vb.ghost{background:#fff;color:#00875F;border:1.5px solid #00A884}
+.vb.dark{background:#0F172A;color:#fff}
+.vb:disabled{background:#CBD5E1;color:#fff;border:none}
+.model{display:none;margin-top:10px;font-size:12.5px;color:#1E293B;background:#F0FDF9;border:1.5px solid rgba(0,168,132,.35);border-radius:10px;padding:11px 13px;line-height:1.65}
+.model.show{display:block}
+.model b{color:#00875F}
+.txtin{display:flex;gap:8px;margin-top:10px}
+.txtin input{flex:1;border:1.5px solid #E2E8F0;border-radius:22px;padding:11px 14px;font-size:13.5px;outline:none;font-family:inherit}
+.spk{background:#fff;border:1.5px solid #00A884;color:#00875F;border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:800;cursor:pointer}
+.qspeak{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.sessionend{display:none;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(15,23,42,.1);margin:8px 0 22px}
+.sessionend.show{display:block}
+.srow{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 2px;border-bottom:1px solid #F1F5F9;color:#334155}
+.srow b{font-weight:700}
+.voicepill{font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;background:#F1F5F9;color:#475569;flex:0 0 auto}
+.voicepill.on{background:#ECFDF5;color:#059669}
+</style></head><body>
+
+<div id="hub">
+<div class="hubhero"><h1>CEE 102 Statistics Viva</h1><p>AKSU Statistics for Civil Engineering &middot; speak your answers &middot; get corrected aloud &middot; master the whole course by voice</p></div>
+<div class="hubwrap"><div class="hubcards" id="hubcards"></div>
+<div class="hubnote">I ask the theory and the calculations. You answer with your voice.<br>Every calculation shows the full working from the beginning.<br>Works offline too &mdash; if voice capture is unavailable, type your answer instead.<br>Tip: tap anywhere to start the music. &#9834;</div></div>
+</div>
+
+<div id="vivaview" style="display:none">
+<div class="sticky"><span id="qprog"></span><span style="display:flex;gap:8px;align-items:center"><span class="voicepill" id="voicepill" onclick="voiceToggle()">voice: on</span><button onclick="backToHub()">&#9666; Hub</button></span></div>
+<div class="hero" id="vhero"></div>
+<main id="vmain"></main>
+</div>
+
+<button id="mus" onclick="musToggle()" aria-label="Play background music">&#9834;</button>
+
+<script>
+var SESSIONS=[{"id": "s1", "title": "Introduction to Statistics", "desc": "Definition, importance, descriptive vs inferential, population & sample", "color": "#2563EB", "icon": "&#128202;", "qs": [{"section": "DEFINITION", "q": "What is statistics? Define it in full.", "model": "Statistics is the science of collecting, organising, analysing, presenting and interpreting numerical data, so that useful information can be extracted for making decisions under uncertainty. In simpler terms: statistics is the study of numerical values and diagrams that describe data and help us draw reliable conclusions from them.", "keys": [["science of collecting organising analysing presenting and interpreting data", "collecting organising analysing and interpreting data", "collecting analysing and interpreting data", "collection organisation analysis interpretation of data", "collect analyse present interpret data", "gathering analysing interpreting data"], ["numerical data", "numerical values", "numbers", "data"], ["making decisions", "decision making", "decisions under uncertainty", "useful information", "reliable conclusions", "draw conclusions"]], "thr": 0.6}, {"section": "IMPORTANCE", "q": "Why is statistics important to a civil engineer?", "model": "Because engineering quantities — material strengths, loads, rainfall, traffic — are never perfectly certain. Statistics lets the engineer measure and describe variability (concrete strength differs cube to cube), make safe decisions under uncertainty using probability, control the quality of materials and workmanship, analyse data to estimate design values, and test whether observed differences are real or merely due to chance.", "keys": [["variability of materials", "materials vary", "material strength varies", "variability", "uncertainty in loads", "loads are never certain", "uncertain quantities"], ["quality control", "quality of materials", "control the quality"], ["decisions under uncertainty", "make safe decisions", "decision making", "safe decisions"], ["estimate design values", "analyse data", "data analysis", "design values"]], "thr": 0.5}, {"section": "DESCRIPTIVE", "q": "What is meant by descriptive statistics?", "model": "Descriptive statistics covers the methods of organising, summarising and presenting data — tables, graphs and charts, and summary numbers such as the mean and the standard deviation. It describes what the data shows without drawing conclusions beyond the data itself.", "keys": [["organising summarising and presenting data", "organising and summarising data", "summarising and presenting", "organise summarise present"], ["tables graphs and charts", "graphs and charts", "tables and charts", "frequency tables", "graphs"], ["mean and standard deviation", "mean standard deviation", "summary numbers", "summary measures", "measures such as the mean"]], "thr": 0.6}, {"section": "INFERENTIAL", "q": "What is inferential statistics?", "model": "Inferential (inductive) statistics uses a random sample to make estimates and test claims about the whole population. It includes estimation, hypothesis testing, regression analysis and analysis of variance. We study a sample because the population is usually too large or too costly to measure completely, and we use probability to state how reliable our conclusions are.", "keys": [["random sample", "uses a sample", "from a sample"], ["make inferences about the population", "estimates about the population", "conclusions about the population", "generalise to the population", "draw conclusions about the population", "population"], ["hypothesis testing", "estimation", "regression", "analysis of variance"]], "thr": 0.66}, {"section": "BASIC TERMS", "q": "Distinguish between a population and a sample.", "model": "A population is the complete set of all items or measurements under study — every concrete cube, every vehicle, the whole data set. A sample is a smaller part selected from the population. A value describing the population is called a parameter (like the true mean mu); the corresponding value computed from a sample is called a statistic (like the sample mean).", "keys": [["complete set of all items", "entire set", "all items or measurements", "whole group", "every member", "all the observations"], ["smaller part selected from the population", "subset of the population", "part of the population", "selected from the population", "small part of the population"], ["parameter", "statistic"]], "thr": 0.55}]}, {"id": "s2", "title": "Applications in Engineering", "desc": "Where statistics is used across civil engineering", "color": "#059669", "icon": "&#128740;", "qs": [{"section": "APPLICATIONS", "q": "List four areas of civil engineering where statistics is applied.", "model": "Statistics is applied in: (1) structural and materials engineering — variability of concrete and steel strength, dead and live loads; (2) geotechnical engineering — variability of soil properties such as CBR, shear strength and compressibility; (3) transportation and traffic engineering — traffic flow, peak flow, travel time and road capacity analysis; (4) hydrology and water resources — rainfall intensity, flood frequency analysis and water gauging. Also quality control of materials and reliability analysis.", "keys": [["structural engineering", "structures", "concrete strength", "material strength", "strength of materials", "steel strength", "materials engineering"], ["geotechnical", "soil properties", "soil", "CBR", "shear strength"], ["traffic engineering", "transportation", "traffic flow", "traffic", "road capacity"], ["hydrology", "water resources", "rainfall", "flood", "flood analysis", "water gauging"]], "thr": 0.6}, {"section": "MATERIALS", "q": "Give two examples of statistical quantities in structural materials engineering.", "model": "In structural engineering, statistics handles the variability of the compressive strength of concrete (cubes cast from the same mix still give different results), the elastic modulus of materials, and the design loads — dead loads and live or traffic loads. These quantities are treated as random variables, and characteristic values (such as the lower five-percentile strength) are used for design.", "keys": [["compressive strength of concrete", "concrete strength", "concrete cube strength", "cube strength"], ["elastic modulus", "modulus of elasticity", "young modulus"], ["dead loads", "live loads", "traffic loads", "design loads"], ["random variables", "characteristic values", "percentile"]], "thr": 0.5}, {"section": "TRAFFIC", "q": "How is statistics used in traffic and transportation engineering?", "model": "Traffic engineers collect data on traffic volume and flow, peak-hour flow, travel time and speed studies, then analyse them statistically to design road capacity, intersections and signal timings, and to forecast future traffic demand.", "keys": [["traffic volume", "traffic flow", "flow of traffic", "peak flow", "peak hour"], ["travel time", "speed studies", "speeds"], ["road capacity", "capacity analysis", "design of roads", "intersections", "signals", "forecast"]], "thr": 0.66}, {"section": "HYDROLOGY", "q": "How is statistics used in hydrology and water resources engineering?", "model": "Rainfall intensity, stream flow, flood peaks and water demand vary from year to year. Engineers use frequency analysis — especially flood frequency analysis — and probability distributions to estimate design rainfall, size culverts and drainage works, and predict floods and droughts.", "keys": [["rainfall intensity", "rainfall", "rain"], ["flood frequency", "frequency analysis", "flood analysis", "floods", "flood prediction", "flood"], ["stream flow", "water gauging", "flow measurement", "runoff", "drainage", "drought", "culverts"]], "thr": 0.6}, {"section": "VARIABILITY", "q": "What is variability of materials, and why must an engineer account for it?", "model": "Material properties — concrete strength, steel yield strength, soil shear strength, CBR, elastic modulus — are not single fixed numbers; they scatter from test to test. If the engineer ignores this scatter the design may be unsafe (if an optimistic value is used) or wasteful (if an over-conservative value is used). Statistics gives measures of the scatter, such as the mean and standard deviation, and lets the engineer pick a safe characteristic value.", "keys": [["properties are not fixed", "properties vary", "scatter from test to test", "properties differ", "values differ", "no single fixed value", "vary from sample to sample"], ["unsafe or wasteful", "unsafe design", "over conservative", "too optimistic", "unsafe"], ["mean and standard deviation", "standard deviation", "measure of scatter", "measures of the scatter", "characteristic value", "safe value"]], "thr": 0.6}]}, {"id": "s3", "title": "Types of Statistics & Data", "desc": "Parametric vs non-parametric, kinds of data", "color": "#7C3AED", "icon": "&#128193;", "qs": [{"section": "TYPES", "q": "What are the two main types of statistics?", "model": "The two main types are descriptive statistics and inferential (inductive) statistics. Descriptive statistics organises, summarises and presents data — tables, charts, means, standard deviations. Inferential statistics uses a sample to draw conclusions about the population — estimation, hypothesis testing, regression.", "keys": [["descriptive statistics", "descriptive"], ["inferential statistics", "inferential", "inductive statistics", "inductive"]], "thr": 1.0}, {"section": "PARAMETRIC", "q": "What is the difference between parametric and non-parametric statistics?", "model": "Parametric statistical methods assume the data follow a known distribution — usually the normal — and make statements about parameters such as the mean and variance. Examples: the Z-test, the t-test, the F-test (analysis of variance) and chi-square. Non-parametric methods make no such distribution assumption; they are distribution-free and often work with ranks. Examples: the sign test, the rank-sum (Mann-Whitney) test, and the runs test.", "keys": [["assume a known distribution", "assume the data follow a distribution", "assumes a normal distribution", "distribution assumption", "known distribution"], ["parameters such as the mean", "statements about parameters", "mean and variance", "about parameters"], ["Z test", "Z-test", "t test", "t-test", "F test", "F-test", "ANOVA", "analysis of variance", "chi square", "chi-square"], ["no distribution assumption", "distribution free", "distribution-free", "do not assume a distribution", "make no assumption"], ["sign test", "rank sum", "rank-sum", "mann whitney", "runs test", "ranks", "rank correlation"]], "thr": 0.6}, {"section": "PARAMETRIC", "q": "Name three parametric statistical methods.", "model": "Three parametric methods: (1) the Z-test for a mean when the population standard deviation is known; (2) the t-test for a mean when the standard deviation is unknown or the sample is small; (3) the F-test or analysis of variance for comparing several means. The chi-square test for variance and goodness of fit is also parametric.", "keys": [["Z test", "Z-test", "z test"], ["t test", "t-test", "students t", "student t"], ["F test", "F-test", "ANOVA", "analysis of variance", "chi square", "chi-square"]], "thr": 0.66}, {"section": "NON-PARAMETRIC", "q": "Name three non-parametric statistical methods.", "model": "Three non-parametric methods: (1) the sign test; (2) the Wilcoxon rank-sum test, also called the Mann-Whitney test; (3) the Kruskal-Wallis test for several samples. The runs test and Spearman's rank correlation are also non-parametric.", "keys": [["sign test", "sign"], ["rank sum", "rank-sum", "mann whitney", "wilcoxon", "rank sum test"], ["kruskal wallis", "kruskal-wallis", "runs test", "spearman", "rank correlation", "median test"]], "thr": 0.66}, {"section": "DATA TYPES", "q": "What are the two kinds of data? Give engineering examples.", "model": "Qualitative (categorical) data describe a quality or category — for example the type of soil (clay, sand, gravel) or pass/fail of a concrete cube. Quantitative data are numerical — cube strength in newtons per square millimetre, CBR value, rainfall in millimetres. Quantitative data are further divided into discrete data (counted, like the number of trucks passing) and continuous data (measured, like compressive strength).", "keys": [["qualitative", "categorical", "category data", "type of soil", "pass or fail", "pass fail"], ["quantitative", "numerical data", "numerical"], ["discrete", "counted", "number of"], ["continuous", "measured", "measurement"]], "thr": 0.6}]}, {"id": "s4", "title": "Mean & Median", "desc": "Formulas and calculations for ungrouped and grouped data", "color": "#EA580C", "icon": "&#10135;", "qs": [{"section": "MEAN", "q": "Define the arithmetic mean and give its formula for ungrouped data.", "model": "The arithmetic mean is the sum of all the observations divided by the number of observations. For ungrouped data: mean = Σx / n, where Σx is the sum of all values and n is how many values there are. The mean is the balance point of the data — the sum of deviations from the mean is zero — and it is strongly affected by extreme values (outliers).", "keys": [["sum of all observations divided by the number", "sum of values divided by how many", "sum divided by the number of observations", "add all the values and divide by the count", "total divided by the number of values"], ["sigma x over n", "sum of x divided by n", "sigma x divided by n", "sum of the values over n"], ["affected by extreme values", "affected by outliers", "outliers affect the mean", "extreme values affect", "sum of deviations is zero", "balance point"]], "thr": 0.66}, {"section": "MEAN", "q": "Give the formula for the mean of grouped data and define each symbol.", "model": "For grouped data: mean = Σfx / Σf, where x is the class mark (the midpoint of each class) and f is the frequency of the class. Multiply each class mark by its frequency, add the products to get Σfx, then divide by the total frequency Σf.", "keys": [["sigma f x divided by sigma f", "sum of f x over sum of f", "sigma fx over sigma f", "fx divided by the total frequency", "sum of fx over the sum of f"], ["class mark", "midpoint", "mid-point", "middle of each class"], ["frequency", "frequencies", "number of observations in each class", "how many times each value occurs"]], "thr": 0.66}, {"section": "CALCULATION", "q": "Compute the mean of these five concrete cube strengths: 20, 22, 25, 28 and 30 newtons per square millimetre.", "model": "Worked from the beginning: add the values: 20 + 22 + 25 + 28 + 30 = 125. The number of values n = 5. Mean = 125 / 5 = 25 newtons per square millimetre.", "keys": [["25", "twenty five"]], "thr": 1.0}, {"section": "MEDIAN", "q": "Define the median and explain how to find it for ungrouped data.", "model": "The median is the middle value of the data when the values are arranged in order of size. If n is odd, the median is the single middle value at position (n + 1)/2. If n is even, the median is the average of the two middle values. Unlike the mean, the median is not distorted by extreme values.", "keys": [["middle value", "middle item", "middle of the ordered data", "central value"], ["arranged in order", "ordered", "sorted", "order of size", "arrange the data first"], ["average of the two middle values", "mean of the two middle values", "two middle values averaged"], ["odd", "even"]], "thr": 0.6}, {"section": "MEDIAN", "q": "Give the formula for the median of grouped data and define the symbols.", "model": "Median = L + ((n/2 − F) / f_m) × h. L is the lower class boundary of the median class (the class that contains the n/2-th value); F is the cumulative frequency of all the classes before the median class; f_m is the frequency of the median class; h is the class width; n is the total frequency.", "keys": [["L plus", "lower class boundary", "lower boundary", "L is the lower boundary", "lower class limit"], ["cumulative frequency before", "cumulative frequency of the classes before", "F is the cumulative frequency", "cumulative frequency"], ["frequency of the median class", "median class frequency"], ["class width", "class interval size", "h is the class width", "width of the class"]], "thr": 0.66}]}, {"id": "s5", "title": "Mode & Grouped Example", "desc": "Mode formula, modal class, worked grouped-data example", "color": "#0891B2", "icon": "&#128208;", "qs": [{"section": "MODE", "q": "Define the mode.", "model": "The mode is the value that occurs most frequently in the data. A data set can have one mode (unimodal), two modes (bimodal), or no mode at all if no value repeats. For grouped data we first identify the modal class — the class with the highest frequency.", "keys": [["occurs most frequently", "most frequent value", "value that occurs most", "most common value", "appears most often"], ["no mode", "bimodal", "unimodal", "two modes", "one mode"], ["modal class", "highest frequency class", "class with the highest frequency"]], "thr": 0.6}, {"section": "MODE", "q": "Give the grouped-data formula for the mode.", "model": "Mode = L + (Δ1 / (Δ1 + Δ2)) × h. L is the lower class boundary of the modal class; Δ1 (delta one) is the frequency of the modal class minus the frequency of the class just before it; Δ2 (delta two) is the frequency of the modal class minus the frequency of the class just after it; h is the class width.", "keys": [["L plus", "lower class boundary", "lower boundary of the modal class", "lower limit of the modal class"], ["delta one", "delta 1", "frequency of the modal class minus", "modal class minus the previous class", "difference between the modal class and the class before"], ["delta two", "delta 2", "modal class minus the class after", "frequency of the modal class minus the class after", "difference between the modal class and the class after"], ["class width", "h is the class width", "width"]], "thr": 0.6}, {"section": "CALCULATION", "q": "A grouped table of concrete strengths has classes 15 to 19, 20 to 24, 25 to 29, 30 to 34 and 35 to 39, with frequencies 4, 9, 15, 10 and 7. Which class is the modal class, and why?", "model": "The modal class is 25 to 29, because it carries the highest frequency, 15. (The class marks are 17, 22, 27, 32 and 37; the total frequency is 45; and the mean works out to Σfx / Σf = 1250 / 45 = 27.78 newtons per square millimetre.)", "keys": [["25 to 29", "twenty five to twenty nine", "modal class is 25", "highest frequency 15"]], "thr": 1.0}, {"section": "CALCULATION", "q": "In that same table, Σfx equals 1250 and Σf equals 45. Compute the mean strength.", "model": "Worked: mean = Σfx / Σf = 1250 / 45 = 27.78 newtons per square millimetre, approximately.", "keys": [["27.78", "twenty seven point seven eight", "27.8", "twenty seven point eight", "about twenty eight", "28"]], "thr": 1.0}, {"section": "MEDIAN VS MEAN", "q": "When is the median preferred to the mean?", "model": "The median is preferred when the data contain extreme values or a skewed distribution, because the mean is dragged toward the outliers while the median stays at the true middle. For example, if one house in a street sells for far more than the rest, the median price describes the typical house better than the mean price.", "keys": [["extreme values", "outliers", "skewed distribution", "skew", "extreme observations"], ["mean is dragged", "mean is affected", "mean moves toward the outliers", "mean is distorted", "pulled toward"], ["true middle", "typical value", "middle", "describes the typical"]], "thr": 0.66}]}, {"id": "s6", "title": "Measures of Dispersion", "desc": "Range, variance, standard deviation, coefficient of variation", "color": "#DC2626", "icon": "&#128207;", "qs": [{"section": "DISPERSION", "q": "What is dispersion, and why does the mean alone not describe data well?", "model": "Dispersion (also called scatter or spread) measures how spread out the data are around the central value. Two data sets can have the same mean but very different spread, so a measure of central tendency alone does not describe data well — we also need a measure of dispersion such as the range, variance, standard deviation or coefficient of variation.", "keys": [["spread", "scatter", "how spread out", "spread out", "variability"], ["same mean but a different spread", "same mean", "mean alone is not enough", "does not describe the data fully", "not enough on its own"], ["range", "variance", "standard deviation", "coefficient of variation", "quartiles"]], "thr": 0.6}, {"section": "RANGE", "q": "Define the range and state its weakness.", "model": "The range is the difference between the largest and the smallest observation: Range = maximum − minimum. Its weakness is that it uses only the two extreme values, so a single outlier can give a misleading picture, and it says nothing about the values in between.", "keys": [["difference between the largest and the smallest", "maximum minus minimum", "largest minus smallest", "biggest minus smallest", "highest minus lowest"], ["uses only the two extreme values", "only two values", "ignores the values in between", "one outlier", "affected by outliers", "misleading"]], "thr": 0.66}, {"section": "VARIANCE", "q": "Define the variance and the standard deviation for ungrouped data.", "model": "The variance is the average of the squared deviations from the mean: variance = Σ(x − mean)² / n for a population (divide by n − 1 for a sample). The standard deviation is the square root of the variance. Because it is in the same units as the data, the standard deviation is the most widely used measure of spread.", "keys": [["average of the squared deviations", "sum of squared deviations divided by", "squared deviations from the mean", "squares of the deviations"], ["n minus 1", "n-1", "divide by n minus one", "sample variance"], ["square root of the variance", "square root of variance", "root of the variance"]], "thr": 0.6}, {"section": "CALCULATION", "q": "Compute the standard deviation of 20, 22, 25, 28 and 30, given that the mean is 25.", "model": "Worked from the beginning: deviations from the mean: −5, −3, 0, +3, +5. Squares: 25, 9, 0, 9, 25. Sum of squares = 68. Divide by n = 5: variance = 68 / 5 = 13.6. Standard deviation = the square root of 13.6 = 3.69, approximately.", "keys": [["3.69", "three point six nine", "3.7", "three point seven", "13.6", "thirteen point six", "68", "sixty eight"]], "thr": 1.0}, {"section": "CV", "q": "Define the coefficient of variation and state what it is used for.", "model": "The coefficient of variation is CV = (standard deviation / mean) × 100 percent. It expresses the spread as a percentage of the mean, so it has no units. Because it is unit-free it is used to compare the variability of two different quantities — for example, whether concrete strength or soil CBR is the more variable property.", "keys": [["standard deviation over the mean", "standard deviation divided by the mean", "sd over the mean", "sd divided by the mean"], ["100 percent", "percentage of the mean", "times 100", "as a percentage"], ["compare the variability", "compare variability", "unit free", "no units", "relative variability", "compare the spread", "comparison between different quantities"]], "thr": 0.6}]}, {"id": "s7", "title": "Bernoulli & Binomial", "desc": "Bernoulli trials, binomial conditions, formula and calculations", "color": "#DB2777", "icon": "&#129689;", "qs": [{"section": "BERNOULLI", "q": "What is a Bernoulli trial?", "model": "A Bernoulli trial is a single random experiment with exactly two possible outcomes: success, with probability p, and failure, with probability q = 1 − p. Examples: a single toss of a coin, or a single concrete cube passing or failing a test. Repeated independent Bernoulli trials give rise to the binomial distribution.", "keys": [["two possible outcomes", "exactly two outcomes", "two outcomes", "success and failure", "only two results"], ["probability of success is p", "probability p", "p is the probability of success"], ["probability of failure", "one minus p", "q equals one minus p", "q is 1 minus p", "failure is one minus p"], ["coin", "pass or fail", "passing or failing", "single toss"]], "thr": 0.6}, {"section": "BINOMIAL", "q": "State the four conditions of the binomial distribution.", "model": "The binomial distribution applies when: (1) there is a fixed number n of trials; (2) each trial has only two outcomes, success or failure; (3) the probability p of success is the same in every trial; and (4) the trials are independent — the outcome of one trial does not affect any other.", "keys": [["fixed number of trials", "fixed n", "the number of trials is fixed", "a fixed number n"], ["two outcomes", "success and failure", "only two outcomes"], ["same probability", "constant p", "constant probability", "p is the same", "probability does not change"], ["independent trials", "the trials are independent", "independence", "one trial does not affect the others"]], "thr": 0.66}, {"section": "BINOMIAL", "q": "Write the binomial probability formula, and state its mean and variance.", "model": "P(X = x) = nCx · pˣ · q⁽ⁿ⁻ˣ⁾, for x = 0, 1, 2, ..., n. Here n is the number of trials, x is the number of successes wanted, p is the probability of success on one trial, q = 1 − p, and nCx is the number of ways of choosing the x successes from n trials. The mean is np, the variance is npq, and the standard deviation is the square root of npq.", "keys": [["n c x", "n choose x", "combination", "ways of choosing", "combinations"], ["p to the power x", "p raised to the power x", "p power x"], ["q to the n minus x", "q raised to n minus x", "q power n minus x", "one minus p raised to n minus x"], ["mean np", "the mean is n p", "mean equals np", "expected value np"], ["variance npq", "the variance is n p q", "npq", "standard deviation is the square root of npq", "square root of npq"]], "thr": 0.6}, {"section": "CALCULATION", "q": "A fair coin is tossed four times. What is the probability of getting exactly two heads? Work it out.", "model": "Worked from the beginning: n = 4, x = 2, p = 1/2, q = 1/2. P(X = 2) = 4C2 × (1/2)² × (1/2)² = 6 × 1/4 × 1/4 = 6/16 = 0.375. So the probability of exactly two heads is 0.375, or 37.5 percent.", "keys": [["0.375", "zero point three seven five", "three eighths", "6 over 16", "six over sixteen", "37.5", "thirty seven point five", "0.37"]], "thr": 1.0}, {"section": "CALCULATION", "q": "The probability that a concrete cube fails a test is 0.1. Five cubes are tested independently. What is the probability that exactly two fail?", "model": "Worked from the beginning: n = 5, x = 2, p = 0.1, q = 0.9. P(X = 2) = 5C2 × (0.1)² × (0.9)³ = 10 × 0.01 × 0.729 = 0.0729. So the probability is 0.0729, about 7.3 percent. (The mean number of failures is np = 0.5.)", "keys": [["0.0729", "zero point zero seven two nine", "0.073", "seven point three", "7.3", "zero point zero seven three"]], "thr": 1.0}]}, {"id": "s8", "title": "Poisson Distribution", "desc": "Conditions, formula, mean and variance, worked calculations", "color": "#9333EA", "icon": "&#127754;", "qs": [{"section": "POISSON", "q": "When is the Poisson distribution used?", "model": "The Poisson distribution models the number of times an event occurs within a fixed interval of time, distance, area or volume, when the events occur independently at a constant average rate. Examples: the number of vehicles arriving at a junction per minute, the number of accidents per month, or the number of defects per length of weld.", "keys": [["number of occurrences", "number of times an event occurs", "count of events", "events occurring in a fixed interval", "number of events"], ["fixed interval", "per unit time", "fixed period", "per minute", "per hour", "per unit length", "per unit area", "within a fixed"], ["independently", "independent events", "constant average rate", "average rate", "at a constant rate"], ["vehicles", "accidents", "defects", "arrivals", "example"]], "thr": 0.6}, {"section": "POISSON", "q": "Write the Poisson probability formula and state its mean and variance.", "model": "P(X = x) = (e⁻ᵐ × mˣ) / x!, for x = 0, 1, 2, 3, ... Here m (also written lambda) is the average number of occurrences per interval, e is the exponential constant 2.718..., and x is the number of occurrences wanted. The mean of the Poisson distribution is m, and the variance is also m — the mean and variance are equal.", "keys": [["e to the minus m", "e to the power minus m", "e raised to negative m", "e negative m", "e to the negative m"], ["m to the x", "m power x", "m raised to the power x"], ["divided by x factorial", "over x factorial", "x factorial", "factorial of x"], ["mean and variance are equal", "the mean equals the variance", "variance is also m", "the mean is m and the variance is m", "both equal m", "mean equals variance"]], "thr": 0.6}, {"section": "CALCULATION", "q": "Vehicles arrive at a junction at an average of 3 per minute. Find the probability that exactly 2 arrive in one minute.", "model": "Worked from the beginning: m = 3, x = 2. P(X = 2) = e⁻³ × 3² / 2! = 0.04979 × 9 / 2 = 0.224. So the probability is about 0.224, or 22.4 percent.", "keys": [["0.224", "zero point two two four", "0.22", "22 percent", "twenty two percent", "twenty two point four", "22.4"]], "thr": 1.0}, {"section": "POISSON", "q": "State the relationship between the binomial and the Poisson distributions.", "model": "The Poisson distribution is the limiting form of the binomial when the number of trials n is very large and the probability of success p is very small, so that the product np = m stays finite. In that case the binomial can be approximated by P(X = x) = e⁻ᵐ mˣ / x!, where m = np. For example, with n = 100 and p = 0.02, m = 2 and the Poisson approximation is accurate.", "keys": [["limiting form", "limit of the binomial", "approximation to the binomial", "approximates the binomial", "special case of the binomial", "binomial approaches the poisson"], ["large n", "n is large", "the number of trials is large", "a large number of trials"], ["small p", "p is small", "a small probability"], ["np equals m", "n times p", "m equals np", "np remains", "np stays finite", "m is np"]], "thr": 0.66}, {"section": "CALCULATION", "q": "Flood records show an average of 2 floods per decade at a site. Find the probability of zero floods in a decade.", "model": "Worked from the beginning: m = 2, x = 0. P(X = 0) = e⁻² × 2⁰ / 0! = e⁻² × 1 / 1 = 0.1353. So the probability of no flood in the decade is about 0.135, or 13.5 percent.", "keys": [["0.135", "zero point one three five", "13.5", "thirteen point five", "0.1353", "e to the minus two"]], "thr": 1.0}]}, {"id": "s9", "title": "Geometric, Neg. Binomial & Exponential", "desc": "The other distributions in the syllabus", "color": "#16A34A", "icon": "&#9201;", "qs": [{"section": "GEOMETRIC", "q": "What does the geometric distribution model? Give its formula, mean and variance.", "model": "The geometric distribution models the number of trials needed up to and including the first success, in repeated independent Bernoulli trials with success probability p. P(X = x) = q⁽ˣ⁻¹⁾ × p, for x = 1, 2, 3, ... Its mean is 1/p and its variance is q/p².", "keys": [["the first success", "the trial on which the first success", "until the first success", "first occurrence of success", "waiting for the first success", "number of trials until"], ["q to the x minus one", "q power x minus 1", "one minus p to the x minus one", "q raised to x minus 1"], ["multiplied by p", "times p"], ["mean is one over p", "mean is 1 over p", "mean is the reciprocal of p", "expected number is 1 over p", "mean 1/p"]], "thr": 0.6}, {"section": "CALCULATION", "q": "The probability that a soil sample shows contamination is 0.2. What is the probability that the first contaminated sample appears on the third test? Work it out.", "model": "Worked from the beginning: p = 0.2, q = 0.8, x = 3. P(X = 3) = q² × p = (0.8)² × 0.2 = 0.64 × 0.2 = 0.128. So the probability is 0.128. The expected number of tests to the first success is 1/p = 5.", "keys": [["0.128", "zero point one two eight", "twelve point eight", "12.8"]], "thr": 1.0}, {"section": "NEGATIVE BINOMIAL", "q": "What does the negative binomial distribution model?", "model": "The negative binomial distribution models the number of failures x that occur before the r-th success, in repeated independent Bernoulli trials. Its probability function is P(X = x) = C(x + r − 1, x) × pʳ × qˣ. The mean number of failures is rq/p and the variance is rq/p². When r = 1 it reduces to the geometric distribution.", "keys": [["number of failures before", "failures before the r-th success", "before the third success", "failures that occur before", "the number of failures x before"], ["r-th success", "rth success", "third success", "r successes", "r success"], ["combinations", "c of x plus r minus one", "choose"], ["mean rq over p", "r q divided by p", "rq/p", "variance rq over p squared"], ["reduces to the geometric", "same as the geometric when r is one", "geometric when r equals 1", "special case of the geometric"]], "thr": 0.6}, {"section": "EXPONENTIAL", "q": "What does the exponential distribution model? Give its mean and variance.", "model": "The exponential distribution is a continuous distribution modelling the waiting time between consecutive events occurring at a constant average rate — for example, the time between vehicle arrivals. Its density is f(x) = λe⁻λˣ for x ≥ 0. The mean is 1/λ, the variance is 1/λ², and the probability of exceeding time t is P(X > t) = e⁻λᵗ. It is the continuous analogue of the geometric distribution.", "keys": [["waiting time", "the time between", "time until the next", "interval between events", "gap between events"], ["continuous", "continuous distribution"], ["mean is one over lambda", "mean is 1 over lambda", "one over the rate", "reciprocal of lambda", "mean 1/lambda"], ["variance is one over lambda squared", "1 over lambda squared", "variance is the square of the mean", "1/λ²"], ["analogue of the geometric", "analog of the geometric", "discrete analogue", "geometric is the discrete analogue"]], "thr": 0.6}, {"section": "CALCULATION", "q": "A pump fails at an average rate of 0.5 failures per year. Find the probability that it survives more than 2 years without failing.", "model": "Worked from the beginning: λ = 0.5, t = 2. P(X > 2) = e⁻λᵗ = e⁻⁽⁰·⁵ ˣ ²⁾ = e⁻¹ = 0.3679. So the probability is about 0.368, or 36.8 percent. The mean time to failure is 1/λ = 2 years.", "keys": [["0.368", "zero point three six eight", "0.3679", "36.8", "thirty six point eight", "e to the minus one", "0.37"]], "thr": 1.0}]}, {"id": "s10", "title": "Hypothesis Testing", "desc": "H0 and H1, Type I and II errors, procedure, Z-test calculation", "color": "#0F766E", "icon": "&#129514;", "qs": [{"section": "HYPOTHESES", "q": "What is a hypothesis? State the two hypotheses used in a statistical test.", "model": "A hypothesis is a claim or assumption about a population parameter that can be tested with data. The null hypothesis H0 states that there is no difference — that any observed difference between the claimed value and the observed value is due to chance or sampling fluctuations alone. The alternative hypothesis H1 is the complementary claim we accept when H0 is rejected — it says the difference is real.", "keys": [["claim about a population", "assumption", "a statement about a population", "claim about a parameter", "assumption about the population", "claim that can be tested"], ["null hypothesis", "H0", "h nought", "h zero", "no difference", "due to chance", "chance alone", "sampling fluctuations"], ["alternative hypothesis", "H1", "h one", "complementary", "the difference is real"]], "thr": 0.66}, {"section": "ERRORS", "q": "Explain Type I and Type II errors, with their probabilities.", "model": "A Type I error is rejecting the null hypothesis when it is actually true — a false alarm. Its probability is α, the level of significance. A Type II error is accepting (failing to reject) the null hypothesis when it is actually false — a missed detection. Its probability is β. The power of a test is 1 − β: the probability of correctly rejecting a false null hypothesis.", "keys": [["rejecting H0 when it is true", "rejecting the null when it is true", "rejecting a true null", "rejecting H0 when true", "false alarm"], ["alpha", "α", "the level of significance", "significance level"], ["accepting H0 when it is false", "accepting the null when it is false", "not rejecting H0 when false", "accepting a false null", "when it should be rejected", "missed detection"], ["beta", "β", "the power is 1 minus beta", "one minus beta", "the power of the test"]], "thr": 0.6}, {"section": "PROCEDURE", "q": "State the steps of a test of hypothesis.", "model": "(1) State the null hypothesis H0 and the alternative hypothesis H1. (2) Choose the level of significance α. (3) Compute the test statistic from the sample data. (4) Find the critical value and the critical (rejection) region from tables. (5) Decide: if the statistic falls in the critical region, reject H0; otherwise accept (do not reject) H0. (6) State the conclusion in plain words.", "keys": [["state H0 and H1", "state the null and the alternative", "formulate the hypotheses", "state the null hypothesis", "set up the hypotheses"], ["choose alpha", "choose the level of significance", "select alpha", "significance level"], ["compute the test statistic", "calculate the test statistic", "the test statistic"], ["critical value", "critical region", "rejection region", "from tables"], ["reject or accept", "decide whether to reject", "reject H0", "decision"], ["state the conclusion", "conclusion in plain words", "conclude"]], "thr": 0.6}, {"section": "TAILS", "q": "Distinguish between a one-tailed and a two-tailed test, giving the critical Z values at the 5 percent level.", "model": "A two-tailed test has H1 saying 'different from' (not equal); the 5 percent rejection region is split between the two tails and the critical values are ±1.96. A one-tailed right test has H1 saying 'greater than'; the whole 5 percent sits in the right tail with critical value 1.645. A one-tailed left test has H1 saying 'less than', with critical value −1.645.", "keys": [["not equal", "different from", "both tails", "two tails", "split between both tails", "plus or minus 1.96", "1.96"], ["greater than", "more than", "right tail", "1.645"], ["less than", "left tail", "negative 1.645", "minus 1.645"]], "thr": 0.66}, {"section": "Z-TEST", "q": "Concrete should have a mean strength of 25 newtons per square millimetre, with population standard deviation 2. A sample of 36 cubes gives a mean of 25.8. At the 5 percent level, two-tailed, has the mean changed? Compute Z and decide.", "model": "Worked from the beginning: H0: μ = 25; H1: μ ≠ 25; α = 0.05, critical values ±1.96. Z = (x̄ − μ) / (σ/√n) = (25.8 − 25) / (2/√36) = 0.8 / 0.3333 = 2.4. Since 2.4 > 1.96, the statistic falls in the rejection region: reject H0. The mean strength has changed (increased) at the 5 percent level of significance.", "keys": [["2.4", "two point four", "z is 2.4", "z equals 2.4"], ["reject H0", "reject the null hypothesis", "reject the null", "in the rejection region", "in the critical region"], ["the mean has changed", "has changed", "increased", "changed at the 5 percent level", "mean strength has changed"]], "thr": 0.66}]}];
+
+/* ---------- state ---------- */
+var cur=null,qi=0,score=0,qstate=[],voiceOn=true,rec=null,listening=false,recognized=false;
+
+/* ---------- speech out ---------- */
+var VOICE=null;
+function pickVoice(){
+  var vs=window.speechSynthesis?speechSynthesis.getVoices():[];
+  if(!vs.length)return null;
+  var pref=['en-NG','en_ZA','en-GB','en_IN','en-US','en'];
+  for(var i=0;i<pref.length;i++){for(var j=0;j<vs.length;j++){if(vs[j].lang&&vs[j].lang.toLowerCase().indexOf(pref[i].toLowerCase())===0)return vs[j];}}
+  for(var k=0;k<vs.length;k++){if(/en/i.test(vs[k].lang))return vs[k];}
+  return vs[0];
+}
+if(window.speechSynthesis){speechSynthesis.onvoiceschanged=function(){VOICE=pickVoice();};VOICE=pickVoice();}
+function say(text,ondone){
+  if(!voiceOn||!window.speechSynthesis){if(ondone)ondone();return;}
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.rate=0.97;u.pitch=1;
+    if(!VOICE)VOICE=pickVoice();
+    if(VOICE)u.voice=VOICE;
+    if(ondone)u.onend=ondone;
+    speechSynthesis.speak(u);
+  }catch(e){if(ondone)ondone();}
+}
+function voiceToggle(){voiceOn=!voiceOn;var p=document.getElementById('voicepill');p.textContent='voice: '+(voiceOn?'on':'off');p.classList.toggle('on',voiceOn);if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel();}
+
+/* ---------- speech in ---------- */
+function SR(){return window.SpeechRecognition||window.webkitSpeechRecognition||null;}
+function micSupported(){return !!SR();}
+
+/* ---------- grading ---------- */
+function norm(s){
+  return (' '+s.toLowerCase().replace(/[^a-z0-9%.\/-]+/g,' ').replace(/\s+/g,' ')+' ')
+    .replace(/ hats /g,' hats ').replace(/\bfeet\b/g,'foot');
+}
+var STOP=new Set(['the','a','an','of','and','or','to','in','on','is','are','be','it','its','with','for','that','this','which','by','from','into','at','as','when','used','use','using']);
+function stem(w){
+  w=w.replace(/\.$/,'');
+  if(w.length>4&&/ies$/.test(w))return w.slice(0,-3)+'y';
+  if(w.length>4&&/(ing|ers?)$/.test(w))return w.slice(0,-3).replace(/(\w\w)$/,'$1');
+  if(w.length>4&&/ed$/.test(w))return w.slice(0,-2).replace(/(\w\w)$/,'$1').replace(/i$/,'y');
+  if(w.length>3&&/es$/.test(w))return w.slice(0,-2);
+  if(w.length>3&&/[^sui]s$/.test(w))return w.slice(0,-1);
+  return w;
+}
+function words(s){return norm(s).split(' ').filter(function(w){return w.length>1&&!STOP.has(w);}).map(stem);}
+function phraseHit(alt,trans){
+  var ws=words(alt),tw=words(trans);
+  if(!ws.length)return false;
+  var hit=0;
+  ws.forEach(function(w){if(tw.indexOf(w)>=0)hit++;});
+  return hit/Math.max(ws.length,1)>=0.7;
+}
+function gradeAnswer(trans,q){
+  var hits=[],n=0;
+  q.keys.forEach(function(key){
+    var any=key.some(function(alt){return phraseHit(alt,trans);});
+    hits.push(any);if(any)n++;
+  });
+  var frac=n/q.keys.length;
+  var mark=frac>=q.thr?1:(frac>=q.thr*0.5?0.5:0);
+  return {hits:hits,frac:frac,mark:mark,n:n,total:q.keys.length};
+}
+
+/* ---------- hub ---------- */
+function bestKey(id){return 'cee102viva_best_'+id;}
+function renderHub(){
+  var c=document.getElementById('hubcards');c.innerHTML='';
+  SESSIONS.forEach(function(s){
+    var best=localStorage.getItem(bestKey(s.id));
+    var d=document.createElement('div');d.className='hubcard';d.style.setProperty('--c',s.color);
+    d.innerHTML='<h2>'+s.icon+' '+s.title+'</h2><p>'+s.desc+'</p>'+
+      '<div class="chips"><span class="chip">5 questions</span>'+(best?'<span class="chip gold">best '+best+'/5</span>':'')+'</div>'+
+      '<button onclick="openSession(\''+s.id+'\')">Start viva</button>';
+    c.appendChild(d);
+  });
+}
+
+/* ---------- session ---------- */
+function openSession(id){
+  cur=id;qi=0;score=0;
+  var s=byId(id);
+  qstate=s.qs.map(function(){return {mark:null,frac:0};});
+  document.getElementById('hub').style.display='none';
+  document.getElementById('vivaview').style.display='block';
+  window.scrollTo({top:0});
+  renderQ();
+}
+function byId(id){for(var i=0;i<SESSIONS.length;i++)if(SESSIONS[i].id===id)return SESSIONS[i];return null;}
+function renderQ(){
+  var s=byId(cur),q=s.qs[qi];
+  document.getElementById('qprog').textContent=s.title+' \u00b7 '+(qi+1)+' / '+s.qs.length+' \u00b7 score '+score;
+  var main=document.getElementById('vmain');
+  var micOK=micSupported();
+  main.innerHTML=
+   '<div class="card" id="qcard">'+
+   '<div class="qspeak"><span class="qnum">Q'+(qi+1)+'</span><span class="qtag">'+q.section+' \u00b7 say your answer aloud</span><button class="spk" onclick="say(questionText())">&#128266; repeat</button></div>'+
+   '<div class="qtext" id="qtext">'+q.q+'</div>'+
+   '<div class="microw"><button id="micbtn" onclick="micToggle()" '+(micOK?'':'disabled')+'>&#127908;</button><div class="miclbl">'+(micOK?'Tap the mic and answer with your voice.<br>I will write what I hear, then mark you.':'Voice capture not available here \u2014 type your answer below.')+'</div></div>'+
+   '<div class="transcript" id="trans"></div>'+
+   '<div class="txtin"><input id="txt" placeholder="or type your answer here..." oninput="txtTyping(this)" onkeydown="if(event.key===\'Enter\')txtDone()"><button class="vb ghost" style="flex:0 0 auto;padding:11px 16px" onclick="txtDone()">set</button></div>'+
+   '<div class="vbtns"><button class="vb" id="gbtn" onclick="doGrade()">Check my answer</button></div>'+
+   '<div class="verdict" id="v"></div>'+
+   '<div class="keys" id="keys"></div>'+
+   '<div class="model" id="model"><b>CORRECT ANSWER</b><br>'+q.model+'</div>'+
+   '<div class="vbtns"><button class="vb ghost" id="mbtn" style="display:none" onclick="showModel()">show correct answer</button>'+
+   '<button class="vb dark" id="nbtn" style="display:none" onclick="nextQ()">'+(qi===s.qs.length-1?'Finish session':'Next question')+'</button></div>'+
+   '</div>';
+  var card=document.getElementById('qcard');
+  var se=document.createElement('div');se.className='sessionend';se.id='sessend';main.appendChild(se);
+  say('Question '+(qi+1)+'. '+q.q);
+}
+function questionText(){return byId(cur).qs[qi].q;}
+function txtTyping(el){if(el.value.trim())document.getElementById('gbtn').disabled=false;}
+function txtDone(){
+  var t=document.getElementById('txt').value.trim();
+  if(!t)return;
+  var tr=document.getElementById('trans');tr.classList.add('show');tr.textContent=t;
+  document.getElementById('gbtn').disabled=false;
+  if(listening)try{rec.stop();}catch(e){}
+}
+function micToggle(){
+  if(listening){try{rec.stop();}catch(e){}return;}
+  var R=SR();if(!R)return;
+  rec=new R();listening=true;recognized=false;
+  rec.lang='en-NG';rec.interimResults=true;rec.maxAlternatives=1;rec.continuous=true;
+  var tr=document.getElementById('trans');tr.classList.add('show');
+  tr.innerHTML='<span class="hint">listening... speak now, then tap the mic again when done</span>';
+  var final='';
+  rec.onresult=function(e){
+    var interim='';
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    tr.textContent=final||interim;
+    if(final)document.getElementById('gbtn').disabled=false;
+  };
+  rec.onerror=function(e){
+    listening=false;setMic(false);
+    if(e.error==='language-not-supported'&&rec){try{rec=new SR();rec.lang='en-US';rec.start();listening=true;setMic(true);return;}catch(e2){}}
+    tr.innerHTML='<span class="hint">mic error: '+e.error+' \u2014 you can type your answer below</span>';
+  };
+  rec.onend=function(){
+    listening=false;setMic(false);
+    var t=tr.textContent.trim();
+    if(t&&t.indexOf('listening')!==0){recognized=true;document.getElementById('gbtn').disabled=false;}
+  };
+  try{rec.start();setMic(true);}catch(e){listening=false;}
+}
+function setMic(on){var b=document.getElementById('micbtn');if(b){b.classList.toggle('rec',on);b.innerHTML=on?'&#9209;':'&#127908;';}}
+
+function doGrade(){
+  var s=byId(cur),q=s.qs[qi];
+  var t=document.getElementById('trans').textContent.trim();
+  if(t.indexOf('listening')===0)t='';
+  if(!t){var ti=document.getElementById('txt');if(ti)t=ti.value.trim();}
+  if(!t){say('Please answer with your voice or type your answer first.');return;}
+  var g=gradeAnswer(t,q);
+  qstate[qi]={mark:g.mark,frac:g.frac};
+  score+=g.mark;
+  var v=document.getElementById('v');
+  var keys=document.getElementById('keys');
+  var missK=[];
+  keys.innerHTML='';
+  q.keys.forEach(function(k,i){
+    var row=document.createElement('div');row.className='keyrow '+(g.hits[i]?'hit':'miss');
+    row.innerHTML='<span class="kt">'+(g.hits[i]?'\u2714':'\u2718')+'</span><span>'+k[0]+'</span>';
+    keys.appendChild(row);
+    if(!g.hits[i])missK.push(k[0]);
+  });
+  keys.classList.add('show');
+  var spoke;
+  if(g.mark===1){v.textContent='\u2714 Correct! You covered all '+g.total+' key points.';v.className='verdict ok';spoke='Correct! Well done. You covered all the key points.';}
+  else if(g.mark===0.5){v.textContent='\u25d1 Partly correct \u2014 you hit '+g.n+' of '+g.total+' key points.';v.className='verdict no';spoke='Partly correct. You got '+g.n+' of '+g.total+' key points. You missed: '+(missK.slice(0,3).join('; '))+'. The correct answer is: '+q.model;}
+  else{v.textContent='\u2718 Not quite \u2014 you hit '+g.n+' of '+g.total+' key points.';v.className='verdict no';spoke='Not quite. You hit '+g.n+' of '+g.total+' key points. The correct answer is: '+q.model;}
+  document.getElementById('model').classList.add('show');
+  document.getElementById('mbtn').style.display='none';
+  document.getElementById('nbtn').style.display='block';
+  document.getElementById('gbtn').disabled=true;
+  document.getElementById('qprog').textContent=s.title+' \u00b7 '+(qi+1)+' / '+s.qs.length+' \u00b7 score '+score;
+  say(spoke);
+}
+function showModel(){
+  var q=byId(cur).qs[qi];
+  document.getElementById('model').classList.add('show');
+  say('The correct answer is: '+q.model);
+  if(document.getElementById('nbtn').style.display==='none'){document.getElementById('nbtn').style.display='block';}
+}
+function nextQ(){
+  var s=byId(cur);
+  if(qstate[qi].mark===null)score+=0;
+  if(qi===s.qs.length-1){sessionEnd();return;}
+  qi++;renderQ();
+}
+function sessionEnd(){
+  var s=byId(cur);
+  var best=localStorage.getItem(bestKey(s.id));
+  var pc=Math.round(score/s.qs.length*100);
+  if(!best||score>parseFloat(best))localStorage.setItem(bestKey(s.id),score);
+  var rows=s.qs.map(function(q,i){
+    var st=qstate[i];
+    var lab=st.mark===null?'skipped':(st.mark===1?'\u2714 correct':(st.mark===0.5?'\u25d1 partly':'\u2718 wrong'));
+    return '<div class="srow"><span>Q'+(i+1)+' '+q.q.slice(0,46)+(q.q.length>46?'...':'')+'</span><b>'+lab+'</b></div>';
+  }).join('');
+  var msg=pc>=70?'You know this section well \u2014 move to the next session.':(pc>=50?'Fair. Revisit the questions you missed, then retake.':'Sit with the correct answers, then retake this session.');
+  document.getElementById('qprog').textContent=s.title+' \u00b7 done \u00b7 '+score+' / '+s.qs.length;
+  var main=document.getElementById('vmain');
+  var card=document.getElementById('qcard');if(card)card.style.display='none';
+  var se=document.getElementById('sessend');se.classList.add('show');
+  se.innerHTML='<div class="n" style="font-size:34px;font-weight:800;color:#0F172A">'+score+' / '+s.qs.length+'</div>'+
+   '<div class="d" style="font-size:12px;color:#64748B;margin:6px 0 12px">'+pc+'% \u00b7 '+s.title+'</div>'+rows+
+   '<div class="m" style="font-size:13px;font-weight:700;color:#00875F;margin:12px 0 16px">'+msg+'</div>'+
+   '<div class="vbtns"><button class="vb ghost" onclick="openSession(cur)">retake</button><button class="vb" onclick="backToHub()">back to sessions</button></div>';
+  se.scrollIntoView({behavior:'smooth'});
+  say('Session complete. You scored '+score+' out of '+s.qs.length+'. '+msg);
+}
+function backToHub(){
+  if(window.speechSynthesis)speechSynthesis.cancel();
+  if(listening){try{rec.stop();}catch(e){}}
+  cur=null;
+  document.getElementById('vivaview').style.display='none';
+  document.getElementById('hub').style.display='block';
+  renderHub();window.scrollTo({top:0});
+}
+renderHub();
+</script>
+</body></html>
