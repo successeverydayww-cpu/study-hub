@@ -134,6 +134,15 @@ function renderHub(){
       '<button onclick="openQuiz(\''+id+'\')">Start</button>';
     el.appendChild(card);
   });
+  [{title:"Integration Viva",desc:"50 spoken questions in 5 sessions: substitution, by parts, partial fractions, definite integrals. Speak your answers, get corrected aloud.",color:"#7C3AED",icon:"&#8747;",url:"integration_viva.html",n:"50 viva questions"},
+   {title:"Differentiation Viva",desc:"50 spoken questions in 5 sessions: power rule, product/quotient rules, chain rule, implicit/parametric, applications.",color:"#0D9488",icon:"&#176;",url:"differentiation_viva.html",n:"50 viva questions"}].forEach(function(z){
+    var card=document.createElement('div');
+    card.className='hubcard';card.style.setProperty('--c',z.color);
+    card.innerHTML='<h2>'+z.icon+' '+z.title+'</h2><p>'+z.desc+'</p>'+
+      '<div class="chips"><span class="chip">'+z.n+'</span><span class="chip gold">voice viva</span><span class="chip">Ask Viva deep dives</span></div>'+
+      '<button onclick="window.open(&quot;'+z.url+'&quot;,&quot;_self&quot;)">Start viva</button>';
+    el.appendChild(card);
+  });
 }
 function backToHub(){
   tutClose();
