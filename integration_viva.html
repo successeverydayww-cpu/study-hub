@@ -227,7 +227,7 @@ function renderHub(){
     var best=localStorage.getItem(bestKey(s.id));
     var d=document.createElement('div');d.className='hubcard';d.style.setProperty('--c',s.color);
     d.innerHTML='<h2>'+s.icon+' '+s.title+'</h2><p>'+s.desc+'</p>'+
-      '<div class="chips"><span class="chip">5 questions</span>'+(best?'<span class="chip gold">best '+best+'/5</span>':'')+'</div>'+
+      '<div class="chips"><span class="chip">10 questions</span>'+(best?'<span class="chip gold">best '+best+'/10</span>':'')+'</div>'+
       '<button onclick="openSession(\''+s.id+'\')">Start viva</button>';
     c.appendChild(d);
   });
