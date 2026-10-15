@@ -1,0 +1,39 @@
+═══════════════════════════════════════════════════════
+SKY WORLD — ITERATION PROMPT PACK
+(Use these one by one after each build; paste, wait for the rebuild,
+test, then move to the next that applies. Samuel/I drive these.)
+═══════════════════════════════════════════════════════
+
+LIVELINESS AUDIT — paste this after every build:
+"Run an audit of Sky World against this 7-point liveliness bar and fix
+every gap in one rebuild: (1) character physically walks and appears
+inside venue scenes with poses; (2) every action shows a speech bubble
++ progress bar for its minutes; (3) in-game clock visibly advances and
+drives day/night; (4) moodlet chips decay over hours and drive a mood
+meter; (5) a story feed narrates events as headlines; (6) named NPCs
+walk the streets with dialogue; (7) weekly rent/salary consequences.
+Anything that is a button-menu instead of a scene fails the bar."
+
+DEPTHS (apply one at a time):
+2. "Expand the action catalog to 300+: add 20+ actions per venue type
+     with unique bubbles, poses, minutes, costs and moodlets."
+3. "Add the full career system: 12+ career tracks with 5 promotion
+     levels each, salary scales, gate skills, and exam requirements."
+4. "Add relationships: friendship, dating, marriage, children with
+     meters, shared activities, gift-giving and story consequences."
+5. "Add the economy layer: bank savings + interest, investment market
+     with risk, land purchase, business ownership with daily income."
+6. "Add housing: rent → buy → furnish room by room, with moodlets for
+     upgrades and eviction warnings for unpaid rent."
+7. "Add the locale packs for all 12 flagship cities + the fallback
+     generator for any town on Earth; verify a small town loads with
+     correct currency, language flavor and region naming."
+8. "Add world events: weather per city, power outages, traffic days,
+     festivals; each with story headlines and moodlets."
+9. "Optimize: load under 2 seconds on a mid Android phone, no jank,
+     save file survives reload; test it and report."
+
+FINAL REVIEW FORMAT — paste when you think it's done:
+"Prove it's done: list every system from the master prompt with a
+one-line status. Anything missing, build it now. Then summarize what
+a player can do from birth to aspiration-achievement in one sentence."

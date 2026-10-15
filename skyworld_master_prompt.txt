@@ -1,0 +1,113 @@
+═══════════════════════════════════════════════════════
+SKY WORLD — MASTER BUILD PROMPT
+(Paste this entire prompt into Gemini / Google AI Studio)
+═══════════════════════════════════════════════════════
+
+Build me a browser-based, mobile-first, offline-capable PWA life
+simulation game called SKY WORLD.
+
+THE VISION: It must play and feel exactly like the Nigerian viral game
+"Lagos Life" — but GLOBAL. The player can live in ANY real place on
+Earth: any country, any region/state, any city, town or local
+government. A player in Berlin gets Berlin; a player in Uyo gets Uyo;
+a player in Tokyo gets Tokyo. Same engine, local soul.
+
+═════════════════════════════════════════════
+PART 1 — THE ENGINE (non-negotiable mechanics)
+═════════════════════════════════════════════
+
+1. CHARACTER CREATION: name, avatar, brief origin story. The character
+   is a visible sprite that WALKS the city map and appears inside
+   every venue scene.
+
+2. IN-GAME CLOCK: every action costs minutes; the clock visibly advances;
+   sky changes Morning → Afternoon → Evening → Night; sleeping rolls
+   the day. Time is compressed (1 real second ≈ 10 game minutes).
+
+3. LIFE METERS: hunger, energy, fun, social, hygiene, health — each
+   decays daily and each action restores or drains them.
+
+4. SCENE-BASED ACTIONS (the heart of liveliness): every action plays as
+   a scene — the character walks to the venue, takes a POSE (sit, eat,
+   dance, sleep, work), shows a speech bubble with an emoji, for the
+   action's minutes while a progress bar runs. Aim for hundreds of
+   actions across dozens of venues (jobs, food spots, schools, gyms,
+   religious centers, banks, markets, bars/clubs, parks, hospitals).
+
+5. MOODLETS: 200+ named mood states, each with emoji, mood value (+/-),
+   and duration in hours ("Promoted! +25 for 24h", "Broke -10 for 6h").
+   They decay over time and drive an overall MOOD meter. Shown as chips
+   on the character card.
+
+6. STORY FEED: a running narration log with headline + emoji + tone
+   (good/bad/info) for everything that happens — paydays, rent, gossip,
+   power outages, exam results, promotions. Life must read like a story.
+
+7. NAMED NPCs: other citizens with names, personalities and dialogue
+   lines walk the streets; the player can interact/gist with them.
+   NPCs also drive relationships.
+
+8. CAREERS & EDUCATION: job listings with salary tracks and promotions;
+   school enrollment, classes, exams with grades; skills that gate
+   better jobs. Salaries pay weekly; rent/bills are due weekly.
+
+9. RELATIONSHIPS: friendship → dating → marriage → children, with
+   relationship meters affected by shared activities and gifts.
+
+10. ECONOMY: local currency; bank account (savings + interest);
+    investments; buy food/pantry, clothes, phones; rent apartments,
+    buy land, businesses, and furnish homes room by room.
+
+11. WORLD EVENTS: daily weather roll; country-appropriate events
+    (power outages, traffic jams, market days, festivals, rain season).
+
+12. ASPIRATIONS: long-term goals (degrees, careers, wealth, family)
+    that grant big rewards and structure progression.
+
+13. CONSEQUENCES: unpaid rent = eviction warnings; crime has police
+    records; health collapses if meters stay at zero. Actions must have
+    STORY consequences, not just stat bumps.
+
+═════════════════════════════════════════════
+PART 2 — THE GLOBAL LAYER (the hard part)
+═════════════════════════════════════════════
+
+Do NOT hand-write content for every city on Earth. Instead:
+
+A. VENUE/ACTION TEMPLATES: define ~40 generic venue types (market,
+   eatery, school, bank, clinic, gym, place of worship, park, club,
+   barbershop, transport hub...), each with a template action list
+   (bubble, pose, minutes, cost, stat effects, moodlets).
+
+B. LOCALE PACKS: each country/city is a small data pack — currency
+   name/symbol, timezone, typical weather, local food names, local
+   first names, landmark venues, local slang flavor lines, local
+   event names. Ship packs for at least 12 major cities across
+   continents (Lagos, Abuja, Nairobi, Accra, London, New York, Berlin,
+   Paris, Dubai, Mumbai, Tokyo, São Paulo) plus a FALLBACK generator
+   that adapts any other city/town from its country's data
+   (language, currency, region name like "Local Government Area" vs
+   "County" vs "District").
+
+C. PLACE PICKER: at character creation, choose Country → Region →
+   City/Town with a search box. Every real country must be selectable.
+   Small towns get the country fallback pack with their region name —
+   never a "sorry, not available" answer.
+
+═════════════════════════════════════════════
+PART 3 — TECH & QUALITY BAR
+═════════════════════════════════════════════
+
+- Single HTML file or minimal files; runs fully client-side;
+  localStorage saves; works on an Android phone browser; no backend,
+  no accounts, no payments, nothing real-money.
+- Mobile-first UI, dark theme, fast (<2s load).
+- QUALITY BAR: it must FEEL alive — walking character, scene actions,
+  bubble + progress, advancing clock, moodlet chips, story headlines,
+  named citizens, weekly rent/salary rhythm. A plain stat menu with
+  buttons FAILS the bar even if it has content.
+- Build it in one pass, complete and runnable, then wait for my
+  review. I will test it and give you iterative fix prompts.
+
+Begin with the character creator + one full city (Lagos) fully alive,
+then add the locale pack system and the place picker, then the rest.
