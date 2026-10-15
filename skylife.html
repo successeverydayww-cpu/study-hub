@@ -123,6 +123,22 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
 .mktrow{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:8px 2px}
 .mktrow .p{font-size:.7rem;color:var(--dim)}
 .evchip{background:rgba(245,184,74,.12);border:1px solid var(--gold);color:var(--gold);border-radius:10px;padding:5px 10px;font-size:.68rem;margin-bottom:8px}
+.vscene{position:relative;height:96px;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.vscene .vprops{position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center;font-size:30px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.vscene .vav{position:absolute;bottom:6px;left:10%;font-size:38px;animation:bob 1.6s ease-in-out infinite}
+.vscene .vname{position:absolute;bottom:5px;right:8px;font-size:.6rem;color:#fff;opacity:.85;background:rgba(11,16,38,.55);padding:2px 8px;border-radius:8px}
+.bub{position:absolute;transform:translateX(-30%);background:#fff;color:#0d1330;font-size:.72rem;font-weight:700;padding:5px 9px;border-radius:10px;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.35);z-index:5}
+.pwrap{position:absolute;left:50%;transform:translateX(-50%);top:-16px;width:80px;height:5px;background:#0d1330;border-radius:3px;overflow:hidden}
+.pwrap i{display:block;height:100%;background:var(--gold);width:0%}
+.mchips{position:absolute;top:6px;left:10px;right:60px;display:flex;flex-wrap:wrap;gap:4px}
+.mchip{font-size:.6rem;padding:2px 7px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid var(--line);color:#EDE9FF;white-space:nowrap}
+.mchip.good{border-color:#34D399;color:#6EE7B7}.mchip.bad{border-color:#F87171;color:#FCA5A5}
+.veh.npc{cursor:pointer;outline:none}
+.storyrow{display:flex;gap:8px;align-items:flex-start;padding:7px 2px;border-bottom:1px solid var(--line);font-size:.75rem}
+.storyrow .se{font-size:16px;line-height:1.2}
+.storyrow .st{color:var(--dim);font-size:.6rem;margin-top:2px}
+.storyrow.good .stx{color:#6EE7B7}.storyrow.bad .stx{color:#FCA5A5}.storyrow.info .stx{color:#EDE9FF}
+.clockchip{position:absolute;left:50%;transform:translateX(-50%);top:8px;background:rgba(11,16,38,.6);border:1px solid var(--line);border-radius:9px;padding:2px 9px;font-size:.62rem;color:var(--gold);z-index:4}
 .stage{position:relative;height:150px;background:linear-gradient(180deg,#1B2250,#151B3B);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
 .stage .lbl{position:absolute;top:8px;left:10px;font-size:.62rem;color:var(--dim)}
 .stage .hero{position:absolute;bottom:12px;left:12%;font-size:44px}
@@ -168,6 +184,7 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
   <div class="addrow"><input type="text" id="taskIn" placeholder="Add a task…" maxlength="120"><select id="catIn"><option>Study</option><option>Faith</option><option>Wealth</option><option>Health</option><option>Personal</option><option>Ministry</option></select></div>
   <button class="btn" id="addBtn" style="margin-bottom:14px">+ Add task</button>
   <div id="taskList"></div>
+ <div class="card" style="margin-top:10px"><div class="note" style="margin-bottom:2px">📰 The Story of You</div><div id="storyFeed"></div></div>
   <button class="btn ghost" id="closeDay" style="margin-top:6px">🌙 Close my day</button>
  </div>
  <div class="view" id="v-world">
@@ -305,6 +322,12 @@ function rollEvent(){
  if(S.event&&S.event.date===t)return;
  var ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
  S.event={k:ev.k,e:ev.e,n:ev.n,date:t};
+ if(S.event.k==='nepa'){addMoodlet('nepaDark');addStory('🕯️','City news: NEPA took the light today. Generator prices just doubled.','bad')}
+ else if(S.event.k==='goslow'){addMoodlet('goSlow');addStory('🚦','City news: go-slow everywhere. Leave early if you are moving today.','bad')}
+ else if(S.event.k==='owambe')addStory('🎉','City news: Owambe season! The whole street smells of jollof.','info');
+ else if(S.event.k==='marketday')addStory('🛒','City news: Market day — 20% off everything at the stalls.','good');
+ else addStory('🌤️','City news: a calm day over '+S.city+'. Make it count.','info');
+ if(S.weather.k==='🌧️ Rainy'){addMoodlet('rainBlues');}
 }
 function gainXP(n){
  var m=1;
@@ -327,6 +350,10 @@ function finishLoad(){
  if(!S.pantry)S.pantry={rice:0,garri:0,indomie:0,egg:0,bread:0,maggi:0,oil:0,sugar:0};
  if(!S.shelf)S.shelf=[];
  if(!S.cal)S.cal=CAL_TPL.slice();
+ if(!S.story)S.story=[];
+ if(!S.moodlets)S.moodlets=[];
+ if(!S.gists)S.gists={};
+ if(!S.week)S.week={};
  if(!S.meters.hygiene&&S.meters.hygiene!==0)S.meters.hygiene=80;
  if(!S.meters.fun&&S.meters.fun!==0)S.meters.fun=70;
  if(!S.meters.social&&S.meters.social!==0)S.meters.social=60;
@@ -446,7 +473,7 @@ function toggleTask(id){
  var t=today();var tk=null;
  (S.tasks[t]||[]).forEach(function(x){if(x.id===id)tk=x});
  if(!tk||tk.done)return;
- tk.done=true;playSfx('task');
+ tk.done=true;playSfx('task');addMoodlet('taskSlayer');advance(20);
  var xp=tk.big?150:50;if(S.origin==='grind')xp=Math.round(xp*1.2);
  var pay=tk.big?2000:(tk.cat==='Wealth'?800:500);
  xp=gainXP(xp);S.balance+=pay;
@@ -460,6 +487,8 @@ function toggleTask(id){
  if(S.streak>=7)award('fireweek',true);
  if(S.streak>=30)award('firemonth',true);
  award('firststep',true);
+ addStory('🔥','Task done: '+esc(tk.text)+' — ₦S '+pay+' earned, +'+xp+' XP'+(tk.big?' · BIG THING ✅':'')+'.','good');
+ if(S.streak>=3&&S.streak%3===0)addStory('🌟','Streak at '+S.streak+' days. The fire is catching.','good');
  if(S.balance>=50000)award('earner',true);
  save();renderAll();
  toast((tk.big?'⭐ ':'')+'+'+xp+' XP · +'+fmoney(pay));
@@ -482,10 +511,27 @@ function logAct(kind){
  if(kind==='study'){S.studies++;award('scholar',S.studies>=5)}
  // step back out of the building, visible
  S.pos.y=Math.min(88,(S.pos.y||70)+0.01);S.pos={x:(S.pos.x||30)+9,y:Math.min(88,(S.pos.y||70)+4)};
+ var md={rest:'lightSleeper',devotion:'anointed',read:'bookedUp',study:'brainFire',gym:'pumpedUp',fellow:'soulWinner'}[kind];
+ if(md)addMoodlet(md);
+ advance({rest:60,devotion:30,read:45,study:90,gym:60,fellow:60}[kind]||30);
+ addStory({rest:'😴',devotion:'🙏',read:'📚',study:'🎓',gym:'💪',fellow:'✝️'}[kind]||'✅',kind+' done. +'+xp+' XP. You walk back out, stronger.','good');
  save();renderAll();floatUp('+'+xp+' XP · done ✅');toast('+'+xp+' XP · done. You walk back out, stronger.');
 }
 // ---------- render ----------
-function renderAll(){renderHead();renderToday();renderWorld();renderPlans();renderBank();renderMe()}
+function renderStory(){
+ var el=$('storyFeed');if(!el)return;
+ var t0=today();
+ var rows=(S.story||[]).filter(function(r){
+  return new Date(r.ts).toLocaleDateString('en-CA')===t0;
+ });
+ if(!rows.length){el.innerHTML='<div class="note" style="padding:8px 2px">Nothing yet today. Act, and your story writes itself.</div>';return}
+ var h='';rows.slice(0,10).forEach(function(r){
+  var tm=new Date(r.ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  h+='<div class="storyrow '+r.tone+'"><span class="se">'+r.e+'</span><span><span class="stx">'+esc(r.txt)+'</span><div class="st">'+tm+'</div></span></div>';
+ });
+ el.innerHTML=h;
+}
+function renderAll(){renderHead();renderToday();renderWorld();renderPlans();renderBank();renderMe();renderStory()}
 function cityNow(){
  var tz=TZ[S.city]||'Africa/Lagos';
  var p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
@@ -544,7 +590,18 @@ function renderStage(){
  h+='<div class="lbl" style="bottom:4px;left:10px;top:auto">🍽️ Hunger '+Math.round(S.hunger||0)+'/100</div>';
  h+='<div class="sc2" style="left:10%">🛏️</div><div class="sc2" style="left:38%">🪑</div><div class="sc2" style="left:64%">📚</div><div class="sc2" style="left:88%">🖥️</div>';
  h+='<div class="hero" id="heroAv">'+S.av+'</div>';
+ h+='<div class="mchips" id="mchips"></div>';
+ h+='<div class="clockchip" style="top:auto;bottom:4px">⏰ '+gameClock()+'</div>';
  $('stage').innerHTML=h;
+ var am=activeMoodlets();
+ if(S.hunger<30)am=am.concat([{id:'bellyGrumble'}]);
+ if((S.meters.hygiene||100)<30)am=am.concat([{id:'dirtyBoy'}]);
+ if((S.meters.fun||70)<25)am=am.concat([{id:'dullDay'}]);
+ if((S.meters.social||60)<25)am=am.concat([{id:'lonelyBoy'}]);
+ if(S.balance<100)am=am.concat([{id:'brokeBoy'}]);
+ var mv=moodVal();
+ h+=(am.length?am.slice(0,5).map(function(m){var M=MOODLETS[m.id];if(!M)return '';var cls=M.v>=0?'good':'bad';return '<span class="mchip '+cls+'">'+M.e+' '+M.l+'</span>'}).join(''):'')+'<span class="mchip">😊 Mood '+mv+'</span>';
+ $('mchips').innerHTML=h;
 }
 function playScene(k,dur){
  var scenes={prepare:['🚿','quick prep'],breakfast:['🥣','eating breakfast'],jog:['🏃','jogging through '+S.city],bath:['🛁','taking a bath']};
@@ -580,7 +637,9 @@ function sleepDay(){
  var f=$('fade');f.classList.add('on');
  setTimeout(function(){
   f.classList.remove('on');
-  var t=today();S.homeActs[t]={};S.phase='morning';
+  var t=today();S.homeActs[t]={};S.phase='morning';S.gmin=390;
+  addStory('🌅','A new day rises over '+S.city+'. Sleep resets everything.','info');
+  checkWeek();
   var en=15;if(S.event&&S.event.date===today()&&S.event.k==='nepa')en=7;
  S.meters.energy=Math.min(100,S.meters.energy+en);S.meters.health=Math.min(100,S.meters.health+5);
   save();renderAll();show('today');
@@ -633,6 +692,7 @@ function renderToday(){
   meterHtml('Faith','🕊️',m.faith,'#F5B84A')+
   meterHtml('Study','📚',m.study,'#38BDF8')+
   meterHtml('Health','💪',m.health,'#F472B6')+
+  meterHtml('Mood','😊',moodVal(),'#F59E0B')+
   meterHtml('Hygiene','🚿',m.hygiene,'#22D3EE')+
   meterHtml('Fun','🎉',m.fun,'#FBBF24')+
   meterHtml('Social','🤝',m.social,'#FB923C')+
@@ -643,12 +703,34 @@ var PLACES={
  home:{e:'🏠',n:'Home',x:14,y:72},library:{e:'🏛️',n:'Library',x:38,y:56},
  school:{e:'🏫',n:'School',x:63,y:74},fellowship:{e:'⛪',n:'Fellowship',x:86,y:52},
  gym:{e:'💪',n:'Gym',x:26,y:38},bank:{e:'🏦',n:'Sky Bank',x:70,y:22},market:{e:'🏪',n:'Market',x:48,y:88},barber:{e:'💈',n:'Barbershop',x:62,y:46},buka:{e:'🍲',n:'Mama Buka',x:50,y:66},arcade:{e:'🎮',n:'Arcade',x:78,y:76}};
+function weekId(){var d=new Date();var o=new Date(d.getFullYear(),0,1);return d.getFullYear()+'w'+Math.ceil((((d-o)/864e5)+o.getDay()+1)/7)}
+function checkWeek(){
+ var w=weekId();S.week=S.week||{};
+ var wd=new Date().getDay();
+ if(wd===1&&!S.week.rent){
+  S.week.rent=w;
+  if(S.balance>=300){S.balance-=300;addMoodlet('rentClear');addStory('🏡','Monday: rent paid, ₦S 300. The landlord no go knock today.','info')}
+  else{addStory('🏚️','Monday: rent due ₦S 300 and balance too low. The landlord is patient — you should not be.','bad')}
+ }
+ if(wd===0&&!S.week.bless){
+  S.week.bless=w;
+  var done=0;for(var i=0;i<7;i++){var d=new Date(Date.now()-i*864e5).toLocaleDateString('en-CA');(S.tasks[d]||[]).forEach(function(x){if(x.done)done++})}
+  var amt=done>=5?250:50;
+  S.balance+=amt;addMoodlet('sundayBless');
+  addStory('🙏','Sunday blessing: ₦S '+amt+' for '+done+' tasks this week'+(done>=5?' — full blessing!':' — aim for 5 next week.'),'good');
+  playSfx('buy');
+ }
+}
+function gameMin(){if(typeof S.gmin!=='number')S.gmin=Math.min(1200,Math.max(330,cityNow()));return S.gmin}
+function gameClock(){var g=gameMin();return ('0'+Math.floor(g/60)).slice(-2)+':'+('0'+(g%60)).slice(-2)}
+function advance(mins){S.gmin=Math.min(1439,gameMin()+mins)}
 function renderWorld(){
- var mins=cityNow();
+ var mins=gameMin();
  var sky=mins<330?3:(mins<660?0:(mins<1140?1:2));
  var sk=['☀️','🌤️','🌇','🌌'][sky],phaseName=['Morning','Afternoon','Evening','Night'][sky];
  var h='<div class="citychip">'+S.cityLm+' '+S.city+' · '+(S.weather&&S.weather.date===today()?S.weather.k:'☀️')+'</div><div class="moon">🌙</div>';
  h+='<div class="lbl" style="right:10px;top:8px;color:var(--gold)">'+sk+' '+phaseName+'</div>';
+ h+='<div class="clockchip">⏰ '+gameClock()+' · '+phaseName+'</div>';
  h+='<div class="tree" style="left:8%;top:12%;font-size:22px">'+S.cityLm+'</div>';
  h+='<div class="road" style="top:46%"></div><div class="road" style="top:82%"></div><div class="road v"></div>';
  h+='<div class="veh" style="top:43%;animation-duration:11s">🚌</div>';
@@ -656,9 +738,11 @@ function renderWorld(){
  h+='<div class="veh" style="top:79%;animation-duration:9s;animation-delay:-3s">🏍️</div>';
  h+='<div class="veh rv" style="top:80%;animation-duration:13s;animation-delay:-8s">🚗</div>';
  h+='<div class="tree" style="left:4%;top:60%">🌳</div><div class="tree" style="left:94%;top:70%">🌴</div><div class="tree" style="left:46%;top:34%">🌳</div>';
- h+='<div class="veh" style="top:40%;animation-duration:24s;font-size:13px">🚶🏿</div>';
- h+='<div class="veh rv" style="top:49%;animation-duration:30s;animation-delay:-9s;font-size:13px">🚶🏾‍♀️</div>';
- h+='<div class="veh" style="top:85%;animation-duration:27s;animation-delay:-14s;font-size:13px">🧑🏾</div>';
+ var dseed=new Date().getDate();
+ var ci=[dseed%8,(dseed+3)%8,(dseed+5)%8];
+ h+='<div class="veh npc" style="top:40%;animation-duration:24s;font-size:13px" onclick="gist('+ci[0]+')">'+CITIZENS[ci[0]].e+'</div>';
+ h+='<div class="veh npc rv" style="top:49%;animation-duration:30s;animation-delay:-9s;font-size:13px" onclick="gist('+ci[1]+')">'+CITIZENS[ci[1]].e+'</div>';
+ h+='<div class="veh npc" style="top:85%;animation-duration:27s;animation-delay:-14s;font-size:13px" onclick="gist('+ci[2]+')">'+CITIZENS[ci[2]].e+'</div>';
  var p=S.pos||{x:14,y:66};
  for(var k in PLACES){var P=PLACES[k];
   var nm=(k==='school')?(S.inst?S.inst.replace(/^(The|University of) /,''):'School'):P.n;
@@ -667,6 +751,20 @@ function renderWorld(){
  $('mapLayer').innerHTML=h;
  if(!curLoc){$('locPanel').innerHTML='<div class="note">Every place rewards a real action. Tap a place — your character walks there and enters.</div>'}
  else openLoc(curLoc,true);
+}
+function gist(i){
+ var c=CITIZENS[i];if(!c)return;
+ var t=today();S.gists=S.gists||{};
+ var n=S.gists[t]||0;
+ if(n>=5){toast("You have gisted plenty today — back to the work. 😄");return}
+ S.gists[t]=n+1;
+ var line=c.l[Math.floor(Math.random()*c.l.length)];
+ S.meters.social=Math.min(100,(S.meters.social||0)+3);
+ addMoodlet('gistGlow');advance(10);
+ var ax=gainXP(4);
+ addStory('💬','Gisted with '+c.n+'. '+line,'info');
+ save();renderAll();floatUp('+'+ax+' XP');
+ toast(c.n+': '+line);
 }
 function walkTo(id){
  var P=PLACES[id];
@@ -755,6 +853,7 @@ function openLoc(id,quiet){
   for(var fk in FOOD){h+='<div class="mktrow"><span>'+FOOD[fk].e+' '+FOOD[fk].n+' <span class="p">in pantry: '+(S.pantry[fk]||0)+'</span></span><button class="btn small" onclick="buyFood(\''+fk+'\')">₦S '+foodPrice(fk)+'</button></div>'}
   h+='<div class="note" style="margin-top:10px">Your balance: ₦S '+S.balance+'</div>'}
  else if(id==='bank'){show('bank');curLoc=null;return}
+ if(id!=='home'&&SCENES[id])h=venueScene(id)+h;
  $('locPanel').innerHTML=h;
  if(id==='fellowship'){
   var vs=['"And they that be wise shall shine as the brightness of the firmament; and they that turn many to righteousness as the stars for ever and ever." — Daniel 12:3','"The earnest prayer of a righteous person has great power." — James 5:16','"Go ye therefore, and teach all nations… and, lo, I am with you alway." — Matthew 28:19-20'];
@@ -786,7 +885,7 @@ function foodPrice(k){
 function buyFood(k){
  var p=foodPrice(k);
  if(S.balance<p){toast('Not enough balance — complete real tasks to earn.');return}
- S.balance-=p;S.pantry[k]=(S.pantry[k]||0)+1;playSfx('buy');
+ S.balance-=p;S.pantry[k]=(S.pantry[k]||0)+1;playSfx('buy');addMoodlet('marketHaul');advance(10);addStory('🛍️','Bought '+FOOD[k].n+' at the market for ₦S '+p+'.','info');
  save();renderAll();openLoc('market',true);toast('Bought '+FOOD[k].n+' for ₦S '+p+'. Pantry stocked.');
 }
 function cookMeal(rk){
@@ -796,6 +895,8 @@ function cookMeal(rk){
  for(var k2 in R.need)S.pantry[k2]-=R.need[k2];
  S.hunger=Math.min(100,S.hunger+R.hunger);
  var ax=gainXP(R.xp);
+ addMoodlet('chefMode');addMoodlet('bellyHappy');advance(30);
+ addStory(R.e,'Cooked '+R.n+' at home. Hunger +'+R.hunger+', +'+ax+' XP.','good');
  save();renderAll();openLoc('home',true);floatUp('+'+ax+' XP · +'+R.hunger+' hunger');
  toast('You cook '+R.n+'. Your character eats — hunger restored.');
 }
@@ -804,33 +905,105 @@ function buyBook(id){
  if(!b)return;
  if((S.shelf||[]).indexOf(id)>=0){toast('Already yours.');return}
  if(S.balance<b.p){toast('Not enough balance — complete real tasks to earn.');return}
- S.balance-=b.p;S.shelf=(S.shelf||[]).concat([id]);gainXP(30);playSfx('buy');
+ S.balance-=b.p;S.shelf=(S.shelf||[]).concat([id]);gainXP(30);playSfx('buy');addMoodlet('newBook');addStory('📖','Bought '+b.n+' — a new chapter begins. +30 XP.','good');
  save();renderAll();openLoc('library',true);
  toast('Book purchased! Open it and read — +30 XP for investing in your mind.');
 }
+var MOODLETS={
+ sharpCut:{l:'Fresh Cut',e:'✂️',v:10,h:6},bellyHappy:{l:'Well Fed',e:'🍛',v:8,h:4},partyBelle:{l:'Jollof Joy',e:'🍛',v:10,h:5},
+ suyaSoul:{l:'Suya & Malt',e:'🍢',v:9,h:4},gamerGlow:{l:'Gamer Glow',e:'🕹️',v:12,h:4},matchPulse:{l:'Match Fever',e:'⚽',v:10,h:5},
+ puckRush:{l:'Puck Rush',e:'🎾',v:9,h:4},anointed:{l:'Anointed',e:'🕊️',v:14,h:8},bookedUp:{l:'Well Read',e:'📚',v:8,h:5},
+ brainFire:{l:'Brain Fire',e:'🧠',v:12,h:6},pumpedUp:{l:'Pumped Up',e:'💪',v:11,h:5},runnerHigh:{l:'Runner High',e:'🏃',v:10,h:4},
+ squeakyClean:{l:'Squeaky Clean',e:'🚿',v:8,h:5},chefMode:{l:'Chef Mode',e:'👨🏾‍🍳',v:9,h:4},lightSleeper:{l:'Rested',e:'😴',v:9,h:6},
+ soulWinner:{l:'Soul Winner',e:'✝️',v:13,h:8},taskSlayer:{l:'Task Slayer',e:'🔥',v:12,h:4},streakFire:{l:'Streak Fire',e:'🌟',v:15,h:10},
+ marketHaul:{l:'Market Haul',e:'🛍️',v:6,h:3},newBook:{l:'New Chapter',e:'📖',v:8,h:6},gistGlow:{l:'Good Gist',e:'💬',v:6,h:3},
+ matricGlow:{l:'Enrolled',e:'🎓',v:15,h:24},rentClear:{l:'Rent Paid',e:'🏡',v:10,h:12},sundayBless:{l:'Sunday Blessing',e:'🙏',v:14,h:12},
+ bellyGrumble:{l:'Hungry',e:'😞',v:-12,h:3},nepaDark:{l:'NEPA Darkness',e:'🕯️',v:-12,h:12},rainBlues:{l:'Rainy Blues',e:'🌧️',v:-6,h:6},
+ goSlow:{l:'Go-Slow Stress',e:'🚦',v:-7,h:8},brokeBoy:{l:'Broke Boy',e:'💸',v:-9,h:6},dirtyBoy:{l:'Need a Bath',e:'🧼',v:-8,h:5},
+ lonelyBoy:{l:'Lonely',e:'📱',v:-7,h:5},dullDay:{l:'Bored',e:'😐',v:-8,h:5}};
+var CITIZENS=[
+ {n:'Emeka the Mechanic',e:'👨🏿‍🔧',l:['"That your danfo owner dey owe me — tell am."','"Engine noise no dey lie, my guy."','"Petrol price wan finish person."']},
+ {n:'Mama Nkechi',e:'👩🏿‍🛍️',l:['"Buy my tomatoes fresh this morning o!"','"How your mama? Greet am for me."','"NEPA no bring light since yesterday."']},
+ {n:'Tunde the Buka Boy',e:'🧑🏾‍🍳',l:['"Amala never finish, come chop."','"Suya dey hot like this Lagos sun."','"Customer na king, na why I dey serve you first."']},
+ {n:'Chidera the Stylist',e:'💇🏾‍♀️',l:['"Your line-up dey due since last week."','"Everybody dey ask for the low-cut now."','"Beauty na investment, no be waste."']},
+ {n:'Pastor Junior',e:'🧑🏿‍💼',l:['"Sunday service go sweet, no miss am."','"Prayer changes things — and people."','"God no dey use WhatsApp, but Him dey answer."']},
+ {n:'Baba Keke',e:'🧓🏿',l:['"In my time, one naira buy wedding."','"Respect dey open door wey money no fit."','"Slow slow, monkey no dey miss road."']},
+ {n:'Amara the Trader',e:'👩🏿‍💼',l:['"Market day dey come — hold your wallet."','"Okrika bale land yesterday, fresh sote."','"Business na sense, no be only money."']},
+ {n:'Kelechi the Baller',e:'🧑🏿‍⚽',l:['"Last night match scatter my heart."','"Watch Arsenal at my place Sunday?"','"This city no dey sleep, my guy."']}];
+var SCENES={
+ home:{bg:'linear-gradient(180deg,#1B2250,#151B3B)',p:'🛏️ 🪑 📚 🖥️',v:'home'},
+ library:{bg:'linear-gradient(180deg,#2A2150,#1A1636)',p:'🏛️ 📚 🕯️ 🪑',v:'shelves'},
+ school:{bg:'linear-gradient(180deg,#1F2B55,#152040)',p:'🏫 📓 ✏️ 🎒',v:'campus'},
+ fellowship:{bg:'linear-gradient(180deg,#3A2A1A,#241a10)',p:'⛪ 🕯️ 🙏 📖',v:'sanctuary'},
+ gym:{bg:'linear-gradient(180deg,#331B2E,#231318)',p:'💪 🏋🏾 🥊 🚿',v:'the gym'},
+ market:{bg:'linear-gradient(180deg,#4A2E1A,#2E1D12)',p:'🏪 🍅 🐟 🧺',v:'the stalls'},
+ bank:{bg:'linear-gradient(180deg,#12321E,#0C2416)',p:'🏦 💵 🖥️ 💳',v:'the vault'},
+ barber:{bg:'linear-gradient(180deg,#1E2440,#141930)',p:'💈 🪑 🎶 ✂️',v:'the chair'},
+ buka:{bg:'linear-gradient(180deg,#4A2A14,#2E1B0E)',p:'🍲 🥘 🔥 🪑',v:'the pot'},
+ arcade:{bg:'linear-gradient(180deg,#2E1B4A,#1D1230)',p:'🎮 🕹️ 🪩 🎯',v:'the machines'}};
+function venueScene(id){
+ var sc=SCENES[id];if(!sc)return '';
+ return '<div class="vscene" style="background:'+sc.bg+'"><div class="vprops">'+sc.p+'</div>'
+ +'<div class="vav">'+S.av+'</div>'
+ +'<div class="vname">'+esc(S.name)+' · '+sc.v+'</div></div>';
+}
+function addMoodlet(id){
+ var M=MOODLETS[id];if(!M)return;
+ S.moodlets=S.moodlets||[];
+ var now=Date.now();
+ S.moodlets=S.moodlets.filter(function(m){return m.id!==id&&m.until>now});
+ S.moodlets.push({id:id,until:now+M.h*3600000});
+ if(S.moodlets.length>10)S.moodlets=S.moodlets.slice(-10);
+}
+function activeMoodlets(){S.moodlets=S.moodlets||[];var now=Date.now();return S.moodlets.filter(function(m){return m.until>now})}
+function moodVal(){
+ var v=50;activeMoodlets().forEach(function(m){var M=MOODLETS[m.id];if(M)v+=M.v});
+ return Math.max(0,Math.min(100,Math.round(v)));
+}
+function addStory(e,txt,tone){
+ S.story=S.story||[];
+ S.story.unshift({ts:Date.now(),e:e,txt:txt,tone:tone||'info'});
+ if(S.story.length>120)S.story.length=120;
+}
 var VENUES={
- barber:[{k:'freshcut',n:'Fresh cut',e:'✂️',c:200,h:{hygiene:15,fun:10},x:20,cut:true},
-  {k:'lineup',n:'Skinny line-up',e:'💈',c:150,h:{hygiene:10,fun:5},x:12},
-  {k:'dye',n:'Dye & style',e:'🎨',c:300,h:{fun:18,social:6},x:22,cut:true}],
- buka:[{k:'amala',n:'Amala, ewedu & gbegiri',e:'🥘',c:250,h:{hunger:55,fun:5},x:14},
-  {k:'jollof',n:'Jollof rice & dodo',e:'🍛',c:300,h:{hunger:60,fun:8},x:16},
-  {k:'suya',n:'Suya & cold malt',e:'🍢',c:200,h:{hunger:30,fun:15},x:10}],
- arcade:[{k:'games',n:'Play the machines',e:'🕹️',c:100,h:{fun:25},x:12},
-  {k:'football',n:'Watch the match',e:'⚽',c:0,h:{fun:15,social:12},x:10},
-  {k:'airhockey',n:'Air hockey',e:'🎾',c:150,h:{fun:18,social:10},x:14}]};
+ barber:[{k:'freshcut',n:'Fresh cut',e:'✂️',c:200,h:{hygiene:15,fun:10},x:20,cut:true,m:30,md:'sharpCut'},
+  {k:'lineup',n:'Skinny line-up',e:'💈',c:150,h:{hygiene:10,fun:5},x:12,m:20,md:'sharpCut'},
+  {k:'dye',n:'Dye & style',e:'🎨',c:300,h:{fun:18,social:6},x:22,cut:true,m:45,md:'sharpCut'}],
+ buka:[{k:'amala',n:'Amala, ewedu & gbegiri',e:'🥘',c:250,h:{hunger:55,fun:5},x:14,m:25,md:'bellyHappy'},
+  {k:'jollof',n:'Jollof rice & dodo',e:'🍛',c:300,h:{hunger:60,fun:8},x:16,m:30,md:'partyBelle'},
+  {k:'suya',n:'Suya & cold malt',e:'🍢',c:200,h:{hunger:30,fun:15},x:10,m:20,md:'suyaSoul'}],
+ arcade:[{k:'games',n:'Play the machines',e:'🕹️',c:100,h:{fun:25},x:12,m:45,md:'gamerGlow'},
+  {k:'football',n:'Watch the match',e:'⚽',c:0,h:{fun:15,social:12},x:10,m:90,md:'matchPulse'},
+  {k:'airhockey',n:'Air hockey',e:'🎾',c:150,h:{fun:18,social:10},x:14,m:30,md:'puckRush'}]};
+function playAct(emoji,label,mins,cb){
+ var dur=1600;
+ var m=$('meChar');
+ if(!m){cb();return}
+ var b=document.createElement('div');b.className='bub';
+ b.style.left=(S.pos.x-2)+'%';b.style.top=(S.pos.y-26)+'%';
+ b.innerHTML=emoji+' '+esc(label)+'…<span class="pwrap"><i></i></span>';
+ $('mapLayer').appendChild(b);
+ var bar=b.querySelector('.pwrap i');
+ if(bar)bar.style.transition='width '+dur+'ms linear';
+ setTimeout(function(){if(bar)bar.style.width='100%'},30);
+ setTimeout(function(){b.remove();advance(mins||10);cb()},dur);
+}
 function doVenue(id,i){
  var a=VENUES[id]&&VENUES[id][i];
  if(!a)return;
  if(S.balance<a.c){toast('Not enough balance — earn it with real work.');return}
- S.balance-=a.c;
- var parts=[];
- if(a.h.hunger)S.hunger=Math.min(100,(S.hunger||0)+a.h.hunger);
- for(var k in a.h){if(k==='hunger')continue;S.meters[k]=Math.min(100,(S.meters[k]||0)+a.h[k])}
- if(a.cut){S.freshCut=today();parts.push('✂️ Fresh cut today')}
- var ax=gainXP(a.x);
- playSfx('buy');
- save();renderAll();openLoc(id,true);floatUp('+'+ax+' XP');
- toast(a.e+' '+a.n+'. +'+ax+' XP'+(parts.length?' · '+parts[0]:''));
+ playAct(a.e,a.n,a.m,function(){
+  S.balance-=a.c;
+  if(a.h.hunger)S.hunger=Math.min(100,(S.hunger||0)+a.h.hunger);
+  for(var k in a.h){if(k==='hunger')continue;S.meters[k]=Math.min(100,(S.meters[k]||0)+a.h[k])}
+  if(a.cut)S.freshCut=today();
+  if(a.md)addMoodlet(a.md);
+  var ax=gainXP(a.x);
+  addStory(a.e,a.n+' at the '+SCENES[id].v+'. +'+ax+' XP.','good');
+  playSfx('buy');
+  save();renderAll();openLoc(id,true);floatUp('+'+ax+' XP');
+  toast(a.e+' '+a.n+'. +'+ax+' XP'+(a.md?' · '+MOODLETS[a.md].l+' mood':''));
+ });
 }
 function registerInst(){
  if(S.instReg){toast('Already enrolled.');return}
@@ -898,6 +1071,7 @@ function closeDay(){
 }
 // ---------- wire ----------
 document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+if(S&&S.name)try{checkWeek()}catch(e){}
 $('addBtn').onclick=function(){var v=$('taskIn').value.trim();if(!v)return;addTask(v,$('catIn').value,false);$('taskIn').value=''};
 $('taskIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('addBtn').onclick()});
 [['yearIn','year'],['monthIn','month'],['weekIn','week']].forEach(function(p){
