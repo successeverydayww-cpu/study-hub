@@ -100,6 +100,24 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:#1B2250;border:1px solid var(--gold);color:var(--ink);border-radius:12px;padding:10px 16px;font-size:.8rem;z-index:30;animation:fadein .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .link{color:#8FB4FF;text-decoration:underline;font-size:.82rem;display:block;padding:8px 0;border-bottom:1px solid var(--line)}
 .verse{font-size:.82rem;color:#FDE68A;line-height:1.6;font-style:italic}
+.stage{position:relative;height:150px;background:linear-gradient(180deg,#1B2250,#151B3B);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.stage .lbl{position:absolute;top:8px;left:10px;font-size:.62rem;color:var(--dim)}
+.stage .hero{position:absolute;bottom:12px;left:12%;font-size:44px}
+.stage .hero.eat{animation:bob .3s infinite alternate}
+.stage .hero.run{animation:runacross 4s linear forwards}
+@keyframes runacross{from{left:8%}to{left:78%}}
+.stage .prop{position:absolute;bottom:16px;right:16%;font-size:34px}
+.stage .sc2{position:absolute;bottom:14px;font-size:24px;opacity:.9}
+.routine{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.routine button{flex:1;min-width:72px;padding:10px 4px;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-size:.7rem;cursor:pointer}
+.routine button:disabled{opacity:.4}
+.routine button b{display:block;font-size:16px;margin-bottom:2px}
+.fade{position:fixed;inset:0;background:#04060f;z-index:40;opacity:0;transition:opacity .6s;pointer-events:none}
+.fade.on{opacity:1}
+.obcity{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.obcity button{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 6px;color:var(--ink);cursor:pointer;font-size:.8rem}
+.obcity button span{display:block;font-size:20px;margin-bottom:4px}
+.citychip{position:absolute;top:8px;left:10px;font-size:.62rem;color:var(--gold);z-index:2;background:rgba(21,27,59,.85);border:1px solid var(--line);border-radius:8px;padding:2px 8px}
 .note{font-size:.7rem;color:var(--dim);line-height:1.5}
 </style>
 </head>
@@ -114,7 +132,9 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
 </header>
 <main>
  <div class="view" id="v-today">
-  <div class="streak"><span class="fl">🔥</span><div><div class="st">CONSISTENCY STREAK</div><div class="sn" id="stStreak">0 days</div></div></div>
+  <div class="stage" id="stage"></div>
+ <div class="routine" id="routine"></div>
+ <div class="streak"><span class="fl">🔥</span><div><div class="st">CONSISTENCY STREAK</div><div class="sn" id="stStreak">0 days</div></div></div>
   <div class="big"><div class="tag">⭐ ONE BIG THING</div><div class="bt" id="bigThing">Tap ✓ on your Big Thing task below — or set one in Plans.</div></div>
   <h2>Life meters</h2>
   <div class="meters" id="meters"></div>
@@ -183,6 +203,18 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
  <div class="choice"><button onclick="start('grace')"><b>🕊️ Grace</b><span>Start with ₦S 5,000 in the bank</span></button><button onclick="start('grind')"><b>🔨 Grind</b><span>Start at ₦S 0, earn +20% XP forever</span></button></div>
  <p class="note" style="margin-top:14px">Everyone starts different. How you finish is what counts.</p>
 </div></div>
+<div class="overlay" id="ob2" style="display:none"><div class="ob">
+ <h1>Where do you live?</h1>
+ <p>Pick your city — your whole world is built around it.</p>
+ <div class="obcity" id="cityGrid"></div>
+</div></div>
+<div class="overlay" id="ob3" style="display:none"><div class="ob">
+ <h1>Your institution</h1>
+ <p>Choose any institution in the world. You\'ll register and pay your fees there, in the world.</p>
+ <input type="text" id="instIn" placeholder="e.g. University of Ghana" maxlength="60">
+ <div class="choice"><button onclick="finishSetup()"><b>🎓 Continue</b><span>Register &amp; pay fees at the School building</span></button></div>
+</div></div>
+<div class="fade" id="fade"></div>
 <script>
 "use strict";
 var K='skylife_v1';
@@ -198,7 +230,7 @@ function toast(t){var d=document.createElement('div');d.className='toast';d.text
 // ---------- state ----------
 function fresh(name,origin){
  return {name:name,origin:origin,av:avatars[Math.floor(Math.random()*avatars.length)],
-  xp:0,balance:origin==='grace'?5000:0,vault:0,invest:null,pos:{x:14,y:66},
+  xp:0,balance:origin==='grace'?5000:0,vault:0,invest:null,pos:{x:14,y:66},city:'Lagos',cityLm:'🌉',inst:null,instReg:false,phase:'morning',homeActs:{},
   meters:{focus:55,energy:60,faith:65,study:50,health:60},
   streak:0,lastDone:null,lastDay:today(),
   tasks:{},plans:{year:[],month:[],week:[]},tomorrow:null,
@@ -221,25 +253,39 @@ function rollover(){
 function load(){
  try{S=JSON.parse(localStorage.getItem(K))}catch(e){S=null}
  if(!S){$('onb').style.display='flex';return}
- rollover();save();renderAll();
+ rollover();
+ if(!S.city){S.city='Lagos';S.cityLm='🌉'}
+ if(!S.homeActs)S.homeActs={};
+ if(!S.phase)S.phase='morning';
+ save();renderAll();
 }
+var CITIES=[['Lagos','🌉','Third Mainland Bridge'],['Accra','🚩','Independence Arch'],['Abuja','⛰️','Aso Rock'],['London','🕰️','Big Ben'],['New York','🗽','Statue of Liberty'],['Nairobi','🦒','Nairobi National Park'],['Dubai','🏗️','Burj Khalifa'],['Tokyo','🗻','Mount Fuji']];
+var INST_SUG={Lagos:'University of Lagos',Accra:'University of Ghana',Abuja:'University of Abuja',London:'Imperial College London','New York':'Columbia University',Nairobi:'University of Nairobi',Dubai:'United Arab Emirates University',Tokyo:'University of Tokyo'};
 function start(origin){
  var n=$('obName').value.trim()||'Champion';
  S=fresh(n,origin);$('onb').style.display='none';
- // seed day-1 tasks from Samuel's real world
- S.tasks[today()]=[
-  {id:1,text:'Read one chapter of "The Person & Work of the Holy Spirit"',cat:'Faith',big:false,done:false},
-  {id:2,text:'Do a Maths CBT section',cat:'Study',big:false,done:false}
- ];
- save();renderAll();
- toast('Welcome to SkyLife, '+n+'. Your world is live. 🌟');
+ var h='';CITIES.forEach(function(c,i){h+='<button onclick="pickCity('+i+')"><span>'+c[1]+'</span>'+c[0]+'</button>'});
+ $('cityGrid').innerHTML=h;$('ob2').style.display='flex';
+ save();
 }
-// ---------- actions ----------
-function addTask(text,cat,big){
- var t=today();if(!S.tasks[t])S.tasks[t]=[];
- if(big){S.tasks[t].forEach(function(x){x.big=false})}
- S.tasks[t].push({id:Date.now(),text:text,cat:cat,big:!!big,done:false});
- save();renderToday();
+function pickCity(i){
+ var c=CITIES[i];S.city=c[0];S.cityLm=c[1];S.cityLmName=c[2];
+ $('instIn').placeholder='e.g. '+INST_SUG[c[0]];
+ $('instIn').value=INST_SUG[c[0]];
+ $('ob2').style.display='none';$('ob3').style.display='flex';
+ save();
+}
+function finishSetup(){
+ S.inst=$('instIn').value.trim()||INST_SUG[S.city];
+ $('ob3').style.display='none';
+ S.tasks[today()]=[
+  {id:1,text:'Prepare, breakfast, then step outside',cat:'Personal',big:false,done:false},
+  {id:2,text:'Register at '+S.inst+' & pay fees',cat:'Study',big:false,done:false},
+  {id:3,text:'Do a Maths CBT section',cat:'Study',big:false,done:false}
+ ];
+ S.plans.year.push({text:'Rise every morning on time, in '+S.city,done:false});
+ save();renderAll();
+ toast('Welcome home, '+S.name+'. A new life in '+S.city+' begins. 🌅');
 }
 function toggleTask(id){
  var t=today();var tk=null;
@@ -285,10 +331,55 @@ function logAct(kind){
 }
 // ---------- render ----------
 function renderAll(){renderHead();renderToday();renderWorld();renderPlans();renderBank();renderMe()}
+function renderStage(){
+ var t=today();var HA=S.homeActs[t]=S.homeActs[t]||{};
+ var phase=S.phase==='morning'?'🌅 Morning':'🌇 Day in '+S.city;
+ var h='<div class="lbl">'+phase+' · '+esc(S.name)+'\'s house, '+esc(S.city)+'</div>';
+ h+='<div class="sc2" style="left:10%">🛏️</div><div class="sc2" style="left:38%">🪑</div><div class="sc2" style="left:64%">📚</div><div class="sc2" style="left:88%">🖥️</div>';
+ h+='<div class="hero" id="heroAv">'+S.av+'</div>';
+ $('stage').innerHTML=h;
+}
+function playScene(k,dur){
+ var scenes={prepare:['🚿','quick prep'],breakfast:['🥣','eating breakfast'],jog:['🏃','jogging through '+S.city]};
+ var sc=scenes[k];
+ var h='<div class="lbl">'+sc[1]+'…</div>';
+ h+='<div class="road" style="position:absolute;left:0;right:0;bottom:34px;height:14px;background:#232A55;border-radius:0"></div>';
+ h+='<div class="prop">'+sc[0]+'</div>';
+ h+='<div class="hero'+(k==='jog'?' run':' eat')+'" id="heroAv">'+(k==='jog'?'🏃':S.av)+'</div>';
+ $('stage').innerHTML=h;
+}
+function homeAct(k){
+ var t=today();S.homeActs[t]=S.homeActs[t]||{};
+ if(S.homeActs[t][k]){toast('Already done today.');return}
+ var g={prepare:[2,'energy',3,30],breakfast:[3,'energy',6,30],jog:[4,'health',8,30]}[k];
+ playScene(k,g[0]);
+ setTimeout(function(){
+  S.homeActs[t][k]=true;
+  S.meters[g[1]]=Math.min(100,(S.meters[g[1]]||0)+g[2]);
+  if(k==='jog')S.meters.energy=Math.max(0,S.meters.energy-3);
+  S.xp+=g[3];S.phase='day';
+  save();renderAll();floatUp('+'+g[3]+' XP');toast('You see yourself finish — +'+g[3]+' XP');
+ },g[0]*1000);
+}
+function goOut(){
+ S.phase='day';save();renderStage();show('world');
+ toast('You step outside into '+S.city+'. 🌇');
+}
+function sleepDay(){
+ var f=$('fade');f.classList.add('on');
+ setTimeout(function(){
+  f.classList.remove('on');
+  var t=today();S.homeActs[t]={};S.phase='morning';
+  S.meters.energy=Math.min(100,S.meters.energy+15);S.meters.health=Math.min(100,S.meters.health+5);
+  save();renderAll();show('today');
+  toast('🌅 Good morning! A new day rises over '+S.city+'.');
+ },1400);
+}
+
 function renderHead(){
  $('hAv').textContent=S.av;$('hName').textContent=S.name;
  var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
- $('hSub').textContent=days[d.getDay()]+', '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+(S.origin==='grace'?' · 🕊️ Grace':' · 🔨 Grind');
+ $('hSub').textContent=days[d.getDay()]+', '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+S.city+(S.origin==='grace'?' · 🕊️':' · 🔨');
  $('hLvl').textContent='Lv '+level();
  var p=Math.round(((S.xp||0)-prevXp())/Math.max(1,nextXp()-prevXp())*100);
  $('hXp').textContent=(S.xp||0)+' XP · '+p+'% to Lv '+(level()+1);
@@ -297,6 +388,17 @@ function meterHtml(n,ic,v,col){
  return '<div class="meter"><div class="mn"><span>'+ic+' '+n+'</span></div><div class="mv">'+v+'<span style="font-size:.6rem;color:var(--dim)">%</span></div><div class="bar"><i style="width:'+v+'%;background:'+col+'"></i></div></div>'
 }
 function renderToday(){
+ renderStage();
+ var t=today();var HA=S.homeActs[t]=S.homeActs[t]||{};
+ var rt=[['prepare','🧴','Prepare'],['breakfast','🥣','Breakfast'],['jog','🏃','Jog'],['goOut','🚪','Go out'],['sleep','🌙','Sleep']];
+ var rh='';
+ rt.forEach(function(r){
+  if(r[0]==='goOut'){rh+='<button onclick="goOut()"><b>'+r[1]+'</b>'+r[2]+'</button>';return}
+  if(r[0]==='sleep'){rh+='<button onclick="sleepDay()"><b>'+r[1]+'</b>'+r[2]+'</button>';return}
+  var done=HA[r[0]];
+  rh+='<button onclick="homeAct(\''+r[0]+'\')"'+(done?' disabled':'')+'><b>'+(done?'✅':r[1])+'</b>'+r[2]+'</button>';
+ });
+ $('routine').innerHTML=rh;
  $('stStreak').textContent=S.streak+' day'+(S.streak===1?'':'s');
  var bt=null;(S.tasks[today()]||[]).forEach(function(x){if(x.big)bt=x});
  $('bigThing').innerHTML=bt?esc(bt.text)+(bt.done?' <span style="color:var(--good)">✔ done</span>':' <span class="pill" style="margin-left:6px">tap ✓ below</span>'):'No Big Thing set — add a task and star it in Plans.';
@@ -324,12 +426,14 @@ var PLACES={
  school:{e:'🏫',n:'School',x:63,y:74},fellowship:{e:'⛪',n:'Fellowship',x:86,y:52},
  gym:{e:'💪',n:'Gym',x:26,y:38},bank:{e:'🏦',n:'Sky Bank',x:70,y:22}};
 function renderWorld(){
- var h='<div class="moon">🌙</div>';
+ var h='<div class="citychip">'+S.cityLm+' '+S.city+'</div><div class="moon">🌙</div>';
+ h+='<div class="tree" style="left:8%;top:12%;font-size:22px">'+S.cityLm+'</div>';
  h+='<div class="road" style="top:46%"></div><div class="road" style="top:82%"></div><div class="road v"></div>';
  h+='<div class="tree" style="left:4%;top:60%">🌳</div><div class="tree" style="left:94%;top:70%">🌴</div><div class="tree" style="left:46%;top:34%">🌳</div>';
  var p=S.pos||{x:14,y:66};
  for(var k in PLACES){var P=PLACES[k];
-  h+='<div class="bld'+(curLoc===k?' here':'')+'" style="left:'+P.x+'%;top:'+P.y+'%" onclick="walkTo(\''+k+'\')"><span class="e">'+P.e+'</span><span class="n">'+P.n+'</span></div>';}
+  var nm=(k==='school')?(S.inst?S.inst.replace(/^(The|University of) /,''):'School'):P.n;
+  h+='<div class="bld'+(curLoc===k?' here':'')+'" style="left:'+P.x+'%;top:'+P.y+'%" onclick="walkTo(\''+k+'\')"><span class="e">'+P.e+'</span><span class="n">'+nm+'</span></div>';}
  h+='<div class="me" id="meChar" style="left:'+(p.x-2)+'%;top:'+(p.y-11)+'%"><span class="bob">'+S.av+'</span></div>';
  $('mapLayer').innerHTML=h;
  if(!curLoc){$('locPanel').innerHTML='<div class="note">Every place rewards a real action. Tap a place — your character walks there and enters.</div>'}
@@ -367,13 +471,19 @@ function openLoc(id,quiet){
   +'<a class="link" href="holy_spirit_book.html">The Person & Work of the Holy Spirit (R. A. Torrey)</a>'
   +'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn small" onclick="logAct(\'read\')">✅ Log reading session</button></div>'
   +'<div class="note" style="margin-top:8px">Read a chapter, then log it. Faith +8, Study +4.</div>'}
- else if(id==='school'){h='<h2 style="margin-top:0">🏫 School</h2><div class="note">Your real study tools, embedded in the world.</div>'
+ else if(id==='school'){
+  if(!S.instReg){h='<h2 style="margin-top:0">🏫 '+esc(S.inst||'School')+'</h2><div class="note">Registration desk. Enroll and pay your fees — then every class you attend levels you up.</div>'
+  +'<div class="stat"><span>Registration + fees</span><b>₦S 3,000</b></div>'
+  +'<div class="stat"><span>Your balance</span><b>'+fmoney(S.balance)+'</b></div>'
+  +'<div style="margin-top:12px"><button class="btn small" onclick="registerInst()">🎓 Register &amp; pay fees</button></div>'
+  +'<div class="note" style="margin-top:8px">Not enough balance? Complete real tasks to earn, then come back.</div>'}
+  else{h='<h2 style="margin-top:0">🏫 '+esc(S.inst)+'</h2><div class="note">Enrolled ✓ — your real study tools, embedded in the world.</div>'
   +'<a class="link" href="maths_cbt.html">Maths CBT — 126 verified questions</a>'
   +'<a class="link" href="integration_viva.html">Integration Viva</a>'
   +'<a class="link" href="differentiation_viva.html">Differentiation Viva</a>'
   +'<a class="link" href="cee102_viva.html">CEE102 Viva</a>'
-  +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'study\')">✅ Log study session</button></div>'
-  +'<div class="note" style="margin-top:8px">Study +10, Focus +5. Do a session, then log it.</div>'}
+  +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'study\')">✅ Attend class / log study session</button></div>'
+  +'<div class="note" style="margin-top:8px">Study +10, Focus +5. Do a session, then log it.</div>'}}
  else if(id==='fellowship'){h='<h2 style="margin-top:0">⛪ Fellowship</h2>'
   +'<div class="stat"><span>Soul-winning / service (Faith +10)</span><b>'+(did('fellow')?'done today':'available')+'</b></div>'
   +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'fellow\')">✅ Log ministry action</button></div>'
@@ -399,6 +509,13 @@ function renderPlans(){
  }
  rows('year','yearList');rows('month','monthList');rows('week','weekList');
  $('tomCard').innerHTML=S.tomorrow?('Tomorrow\'s Big Thing: <b>'+esc(S.tomorrow)+'</b>'):'<span class="note">Not set.</span>';
+}
+function registerInst(){
+ if(S.instReg){toast('Already enrolled.');return}
+ if(S.balance<3000){toast('Fees are ₦S 3,000 — complete real tasks to earn first.');return}
+ S.balance-=3000;S.instReg=true;S.xp+=200;
+ save();renderAll();
+ toast('🎓 Enrolled at '+(S.inst||'your institution')+'. Fees paid. Welcome, student.');
 }
 function planDone(key,i){var p=S.plans[key][i];if(!p||p.done)return;p.done=true;S.xp+=S.origin==='grind'?96:80;save();renderAll();toast('Milestone advanced. +'+(S.origin==='grind'?96:80)+' XP')}
 function planDel(key,i){S.plans[key].splice(i,1);save();renderPlans()}
