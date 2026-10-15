@@ -1,0 +1,21 @@
+{
+  "name": "SkyLife \u2014 Live Your Real Plans",
+  "short_name": "SkyLife",
+  "description": "A life world driven by your real plans: complete real tasks, grow your character, practice saving and investing.",
+  "start_url": "skylife.html",
+  "display": "standalone",
+  "background_color": "#0B1026",
+  "theme_color": "#0B1026",
+  "icons": [
+    {
+      "src": "skylife-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "skylife-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

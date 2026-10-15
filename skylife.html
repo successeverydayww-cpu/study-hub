@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SkyLife — Live Your Real Plans</title>
+<meta name="theme-color" content="#0B1026">
+<link rel="manifest" href="skylife-manifest.json">
+<style>
+:root{--bg:#0B1026;--card:#151B3B;--card2:#1B2250;--ink:#EAEAFF;--dim:#8E96C9;--gold:#F5B84A;--good:#34D399;--bad:#F87171;--line:#2A3161}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5}
+header{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,#0B1026 70%,rgba(11,16,38,.92));padding:10px 14px 8px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:10px}
+.avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#F5B84A,#D97706);display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
+.hname{font-weight:700;font-size:1rem;line-height:1.2}
+.hsub{font-size:.72rem;color:var(--dim)}
+.lvlchip{margin-left:auto;text-align:right}
+.lvlchip .l{color:var(--gold);font-weight:800;font-size:.95rem}
+.lvlchip .s{font-size:.65rem;color:var(--dim)}
+main{max-width:520px;margin:0 auto;padding:12px 14px 92px;position:relative;z-index:1}
+.view{display:none;animation:fadein .18s ease}
+.view.on{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:16px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.meters{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.meter{background:var(--card2);border-radius:10px;padding:8px}
+.meter .mn{font-size:.62rem;color:var(--dim);display:flex;justify-content:space-between}
+.meter .mv{font-size:.95rem;font-weight:800;margin:2px 0 4px}
+.bar{height:5px;background:#0d1330;border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;transition:width .5s}
+.streak{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#3A1D0A,#151B3B);border:1px solid #6B4E1B;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.streak .fl{font-size:24px}
+.streak .st{font-size:.7rem;color:var(--dim)}
+.streak .sn{font-weight:800;font-size:1.05rem}
+.big{background:linear-gradient(90deg,#2A2107,#151B3B);border:1px solid #6B4E1B;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.big .tag{font-size:.62rem;color:var(--gold);font-weight:700;letter-spacing:.1em}
+.big .bt{font-weight:700;margin-top:4px}
+.task{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.task .cb{width:26px;height:26px;border-radius:8px;border:2px solid var(--dim);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent;background:none}
+.task.done .cb{background:var(--good);border-color:var(--good);color:#04250F}
+.task.done .tx{text-decoration:line-through;color:var(--dim)}
+.task .tx{flex:1;font-size:.92rem;line-height:1.35;word-break:break-word}
+.cat{font-size:.58rem;padding:2px 7px;border-radius:20px;background:#232A55;color:var(--dim);flex:0 0 auto}
+.task.done .cat{background:#14351F;color:var(--good)}
+.crown{flex:0 0 auto;font-size:14px}
+.addrow{display:flex;gap:8px;margin:10px 0}
+.addrow input,.addrow select{flex:1;min-width:0;background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px 12px;font-size:.9rem}
+.addrow select{flex:0 0 110px}
+.btn{width:100%;padding:13px;border:0;border-radius:12px;background:linear-gradient(135deg,#F5B84A,#D97706);color:#231503;font-weight:800;font-size:.95rem;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card2);color:var(--ink);border:1px solid var(--line);font-weight:600}
+.btn.small{padding:9px 12px;font-size:.8rem;width:auto}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:6;background:rgba(11,16,38,.97);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(8px + env(safe-area-inset-bottom))}
+nav button{background:none;border:0;color:var(--dim);font-size:.62rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;cursor:pointer}
+nav button .ic{font-size:20px}
+nav button.on{color:var(--gold)}
+.locs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.loc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center;cursor:pointer}
+.loc .ic{font-size:28px}
+.loc .nm{font-weight:700;margin-top:6px;font-size:.9rem}
+.loc .ds{font-size:.68rem;color:var(--dim);margin-top:3px;line-height:1.4}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:6px 11px;font-size:.72rem;margin:0 6px 6px 0}
+.badge.locked{opacity:.35}
+.pill{display:inline-block;font-size:.6rem;background:#232A55;color:var(--dim);border-radius:20px;padding:3px 9px;margin-right:6px}
+.money{font-weight:800;color:var(--gold);font-size:1.25rem}
+.stat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.stat:last-child{border-bottom:0}
+.stat b{color:var(--gold)}
+input[type=text],input[type=number]{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px 12px;font-size:.9rem;width:100%}
+.overlay{position:fixed;inset:0;background:rgba(6,8,22,.96);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px}
+.ob{max-width:380px;width:100%;text-align:center}
+.ob h1{font-size:1.7rem;background:linear-gradient(90deg,#F5B84A,#FDE68A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ob p{color:var(--dim);font-size:.85rem;line-height:1.6;margin:10px 0 18px}
+.choice{display:flex;gap:10px;margin-top:14px}
+.choice button{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 8px;color:var(--ink);cursor:pointer}
+.choice button b{display:block;color:var(--gold);font-size:.95rem;margin-bottom:4px}
+.choice button span{font-size:.68rem;color:var(--dim);line-height:1.4;display:block}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:#1B2250;border:1px solid var(--gold);color:var(--ink);border-radius:12px;padding:10px 16px;font-size:.8rem;z-index:30;animation:fadein .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.link{color:#8FB4FF;text-decoration:underline;font-size:.82rem;display:block;padding:8px 0;border-bottom:1px solid var(--line)}
+.verse{font-size:.82rem;color:#FDE68A;line-height:1.6;font-style:italic}
+.note{font-size:.7rem;color:var(--dim);line-height:1.5}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<header>
+ <div class="hrow">
+  <div class="avatar" id="hAv">🦁</div>
+  <div><div class="hname" id="hName">SkyLife</div><div class="hsub" id="hSub">Loading…</div></div>
+  <div class="lvlchip"><div class="l" id="hLvl">Lv 1</div><div class="s" id="hXp">0 XP</div></div>
+ </div>
+</header>
+<main>
+ <div class="view" id="v-today">
+  <div class="streak"><span class="fl">🔥</span><div><div class="st">CONSISTENCY STREAK</div><div class="sn" id="stStreak">0 days</div></div></div>
+  <div class="big"><div class="tag">⭐ ONE BIG THING</div><div class="bt" id="bigThing">Tap ✓ on your Big Thing task below — or set one in Plans.</div></div>
+  <h2>Life meters</h2>
+  <div class="meters" id="meters"></div>
+  <h2>Today's plan</h2>
+  <div class="addrow"><input type="text" id="taskIn" placeholder="Add a task…" maxlength="120"><select id="catIn"><option>Study</option><option>Faith</option><option>Wealth</option><option>Health</option><option>Personal</option><option>Ministry</option></select></div>
+  <button class="btn" id="addBtn" style="margin-bottom:14px">+ Add task</button>
+  <div id="taskList"></div>
+  <button class="btn ghost" id="closeDay" style="margin-top:6px">🌙 Close my day</button>
+ </div>
+ <div class="view" id="v-world">
+  <h2>Your world</h2>
+  <div class="locs" id="locs"></div>
+  <h2>Where you are</h2>
+  <div class="card" id="locPanel"><div class="note">Tap a place to enter it. Every place rewards a real action.</div></div>
+ </div>
+ <div class="view" id="v-plans">
+  <h2>Year themes</h2>
+  <div class="addrow"><input type="text" id="yearIn" placeholder="A theme for this year…" maxlength="80"></div>
+  <div id="yearList"></div>
+  <h2>Month milestones</h2>
+  <div class="addrow"><input type="text" id="monthIn" placeholder="A milestone for this month…" maxlength="80"></div>
+  <div id="monthList"></div>
+  <h2>Week targets</h2>
+  <div class="addrow"><input type="text" id="weekIn" placeholder="A target for this week…" maxlength="80"></div>
+  <div id="weekList"></div>
+  <h2>Tomorrow's Big Thing</h2>
+  <div class="addrow"><input type="text" id="tomIn" placeholder="Plant it now, live it tomorrow…" maxlength="120"></div>
+  <div class="note">Set tonight, it becomes tomorrow's One Big Thing automatically.</div>
+  <div class="card" id="tomCard"></div>
+ </div>
+ <div class="view" id="v-bank">
+  <h2>Sky Bank</h2>
+  <div class="card"><div class="note">ACCOUNT BALANCE (earned by real work)</div><div class="money" id="bal">₦S 0</div></div>
+  <div class="card"><div class="note">SAVINGS VAULT (earns 0.5% daily — compound growth)</div><div class="money" id="vault">₦S 0</div>
+   <div class="addrow" style="margin:12px 0 0"><input type="number" id="amtIn" placeholder="Amount" min="1"><button class="btn small" id="saveBtn">Save</button><button class="btn small ghost" id="wdBtn">Withdraw</button></div></div>
+  <h2>Savings goal (real world)</h2>
+  <div class="card" id="goalCard"></div>
+  <h2>Investment simulator</h2>
+  <div class="card"><div class="note">Watch compound interest work — teaching tool, no real money.</div>
+   <div class="addrow" style="margin:10px 0"><input type="number" id="invP" placeholder="Principal ₦" min="1"><input type="number" id="invR" placeholder="Rate %/yr" min="1"></div>
+   <div class="addrow" style="margin:0 0 10px"><input type="number" id="invY" placeholder="Years" min="1"><button class="btn small" id="invBtn">Project</button></div>
+   <div id="invOut"></div></div>
+ </div>
+ <div class="view" id="v-me">
+  <h2>Character</h2>
+  <div class="card" id="meCard"></div>
+  <h2>Badges</h2>
+  <div class="card" id="badges"></div>
+  <h2>Data</h2>
+  <div class="card"><div class="note">Your data lives on this phone only. Back it up any time.</div>
+   <div style="display:flex;gap:8px;margin-top:10px"><button class="btn small" id="expBtn">⬇ Backup</button><button class="btn small ghost" id="rstBtn">Reset</button></div></div>
+  <div class="note" style="margin-top:14px;text-align:center">SkyLife Phase 1 · solo world · friends & districts arrive in Phase 2</div>
+ </div>
+</main>
+<nav>
+ <button data-v="today" class="on"><span class="ic">☀️</span>Today</button>
+ <button data-v="world"><span class="ic">🗺️</span>World</button>
+ <button data-v="plans"><span class="ic">🎯</span>Plans</button>
+ <button data-v="bank"><span class="ic">🏦</span>Bank</button>
+ <button data-v="me"><span class="ic">🦁</span>Me</button>
+</nav>
+<div class="overlay" id="onb" style="display:none"><div class="ob">
+ <h1>SkyLife</h1>
+ <p>Live out your <b>real</b> plans in a world built for them. Plan your day, complete real tasks, watch your character rise. Consistency — not your starting point — wins here.</p>
+ <input type="text" id="obName" placeholder="Your name, champion" maxlength="20">
+ <div class="choice"><button onclick="start('grace')"><b>🕊️ Grace</b><span>Start with ₦S 5,000 in the bank</span></button><button onclick="start('grind')"><b>🔨 Grind</b><span>Start at ₦S 0, earn +20% XP forever</span></button></div>
+ <p class="note" style="margin-top:14px">Everyone starts different. How you finish is what counts.</p>
+</div></div>
+<script>
+"use strict";
+var K='skylife_v1';
+var S=null, avatars=['🦁','🦅','🐐','🐋','🦋','⚡'];
+function $(x){return document.getElementById(x)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function today(){return new Date().toLocaleDateString('en-CA')}
+function fmoney(n){return '₦S '+Number(n||0).toLocaleString()}
+function level(){return Math.floor(Math.sqrt((S.xp||0)/100))+1}
+function nextXp(){return 100*Math.pow(level(),2)}
+function prevXp(){var l=level();return l<=1?0:100*Math.pow(l-1,2)}
+function toast(t){var d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},2200)}
+// ---------- state ----------
+function fresh(name,origin){
+ return {name:name,origin:origin,av:avatars[Math.floor(Math.random()*avatars.length)],
+  xp:0,balance:origin==='grace'?5000:0,vault:0,invest:null,
+  meters:{focus:55,energy:60,faith:65,study:50,health:60},
+  streak:0,lastDone:null,lastDay:today(),
+  tasks:{},plans:{year:[],month:[],week:[]},tomorrow:null,
+  logs:{},goal:null,badges:[],big5:0,reads:0,studies:0,closedDays:0}
+}
+function save(){localStorage.setItem(K,JSON.stringify(S))}
+function rollover(){
+ var t=today();
+ if(S.lastDay===t)return;
+ // tomorrow's Big Thing becomes today's
+ var tl=S.tasks[t]||[];
+ if(S.tomorrow){tl.push({id:Date.now(),text:S.tomorrow,cat:'Personal',big:true,done:false});S.tomorrow=null}
+ S.tasks[t]=tl;
+ // meters decay
+ ['focus','energy','faith','study','health'].forEach(function(m){S.meters[m]=Math.max(0,(S.meters[m]||50)-9)});
+ // vault compound interest 0.5%/day
+ if(S.vault>0)S.vault=Math.round(S.vault*1.005);
+ S.lastDay=t;
+}
+function load(){
+ try{S=JSON.parse(localStorage.getItem(K))}catch(e){S=null}
+ if(!S){$('onb').style.display='flex';return}
+ rollover();save();renderAll();
+}
+function start(origin){
+ var n=$('obName').value.trim()||'Champion';
+ S=fresh(n,origin);$('onb').style.display='none';
+ // seed day-1 tasks from Samuel's real world
+ S.tasks[today()]=[
+  {id:1,text:'Read one chapter of "The Person & Work of the Holy Spirit"',cat:'Faith',big:false,done:false},
+  {id:2,text:'Do a Maths CBT section',cat:'Study',big:false,done:false}
+ ];
+ save();renderAll();
+ toast('Welcome to SkyLife, '+n+'. Your world is live. 🌟');
+}
+// ---------- actions ----------
+function addTask(text,cat,big){
+ var t=today();if(!S.tasks[t])S.tasks[t]=[];
+ if(big){S.tasks[t].forEach(function(x){x.big=false})}
+ S.tasks[t].push({id:Date.now(),text:text,cat:cat,big:!!big,done:false});
+ save();renderToday();
+}
+function toggleTask(id){
+ var t=today();var tk=null;
+ (S.tasks[t]||[]).forEach(function(x){if(x.id===id)tk=x});
+ if(!tk||tk.done)return;
+ tk.done=true;
+ var xp=tk.big?150:50;if(S.origin==='grind')xp=Math.round(xp*1.2);
+ var pay=tk.big?2000:(tk.cat==='Wealth'?800:500);
+ S.xp+=xp;S.balance+=pay;
+ var m={Study:['study',8,'focus',4],Faith:['faith',10],Wealth:['focus',6],Health:['health',10,'energy',5],Ministry:['faith',8],Personal:['focus',5,'energy',3]}[tk.cat]||['focus',5];
+ S.meters[m[0]]=Math.min(100,(S.meters[m[0]]||0)+(m[2]||m[1]));
+ if(m[3])S.meters[m[3]]=Math.min(100,(S.meters[m[3]]||0)+m[3]);
+ // streak
+ var t2=today();
+ if(S.lastDone!==t2){S.streak=(S.lastDone===new Date(Date.now()-864e5).toLocaleDateString('en-CA'))?S.streak+1:1;S.lastDone=t2}
+ if(tk.big){S.big5++;award('bigfinish',S.big5>=5)}
+ if(S.streak>=7)award('fireweek',true);
+ if(S.streak>=30)award('firemonth',true);
+ award('firststep',true);
+ if(S.balance>=50000)award('earner',true);
+ save();renderAll();
+ toast((tk.big?'⭐ ':'')+'+'+xp+' XP · +'+fmoney(pay));
+}
+function award(id,on){
+ if(!on||S.badges.indexOf(id)>=0)return;
+ S.badges.push(id);save();
+ var names={firststep:'First Step',bigfinish:'Big Finisher ×5',fireweek:'Week of Fire',firemonth:'Month of Blaze',earner:'High Earner ₦S 50k',reader:'Reader ×3',scholar:'Scholar ×5',vaultmaster:'Vault Master ₦S 10k'};
+ toast('🏅 Badge earned: '+(names[id]||id));
+}
+function logAct(kind){
+ var t=today();S.logs[t]=S.logs[t]||{};
+ if(S.logs[t][kind]){toast('Already logged today — come back tomorrow. 🌙');return}
+ S.logs[t][kind]=true;
+ var g={rest:['energy',15],devotion:['faith',12],read:['faith',8,'study',4],study:['study',10,'focus',5],gym:['health',10,'energy',5],fellow:['faith',10]}[kind];
+ S.meters[g[0]]=Math.min(100,(S.meters[g[0]]||0)+g[1]);
+ if(g[2])S.meters[g[2]]=Math.min(100,(S.meters[g[2]]||0)+g[3]);
+ var xp=S.origin==='grind'?60:50;S.xp+=xp;
+ if(kind==='read'){S.reads++;award('reader',S.reads>=3)}
+ if(kind==='study'){S.studies++;award('scholar',S.studies>=5)}
+ save();renderAll();toast('+'+xp+' XP · logged.');
+}
+// ---------- render ----------
+function renderAll(){renderHead();renderToday();renderWorld();renderPlans();renderBank();renderMe()}
+function renderHead(){
+ $('hAv').textContent=S.av;$('hName').textContent=S.name;
+ var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+ $('hSub').textContent=days[d.getDay()]+', '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+(S.origin==='grace'?' · 🕊️ Grace':' · 🔨 Grind');
+ $('hLvl').textContent='Lv '+level();
+ var p=Math.round(((S.xp||0)-prevXp())/Math.max(1,nextXp()-prevXp())*100);
+ $('hXp').textContent=(S.xp||0)+' XP · '+p+'% to Lv '+(level()+1);
+}
+function meterHtml(n,ic,v,col){
+ return '<div class="meter"><div class="mn"><span>'+ic+' '+n+'</span></div><div class="mv">'+v+'<span style="font-size:.6rem;color:var(--dim)">%</span></div><div class="bar"><i style="width:'+v+'%;background:'+col+'"></i></div></div>'
+}
+function renderToday(){
+ $('stStreak').textContent=S.streak+' day'+(S.streak===1?'':'s');
+ var bt=null;(S.tasks[today()]||[]).forEach(function(x){if(x.big)bt=x});
+ $('bigThing').innerHTML=bt?esc(bt.text)+(bt.done?' <span style="color:var(--good)">✔ done</span>':' <span class="pill" style="margin-left:6px">tap ✓ below</span>'):'No Big Thing set — add a task and star it in Plans.';
+ var cs={Study:'#60A5FA',Faith:'#F5B84A',Wealth:'#34D399',Health:'#F472B6',Personal:'#A78BFA',Ministry:'#FB923C'};
+ var h='';
+ var list=(S.tasks[today()]||[]).slice().sort(function(a,b){return(b.big?1:0)-(a.big?1:0)});
+ list.forEach(function(x){
+  h+='<div class="task'+(x.done?' done':'')+'"><button class="cb" onclick="toggleTask('+x.id+')">✓</button><span class="tx">'+(x.big?'⭐ ':'')+esc(x.text)+'</span><span class="cat" style="color:'+(cs[x.cat]||'#8E96C9')+'">'+x.cat+'</span></div>';
+ });
+ if(!list.length)h='<div class="note" style="text-align:center;padding:20px">Empty day. Champions plan before they play — add your first task.</div>';
+ $('taskList').innerHTML=h;
+ var m=S.meters;
+ var cons=Math.min(100,S.streak*10);
+ $('meters').innerHTML=
+  meterHtml('Focus','🎯',m.focus,'#60A5FA')+
+  meterHtml('Energy','⚡',m.energy,'#A78BFA')+
+  meterHtml('Faith','🕊️',m.faith,'#F5B84A')+
+  meterHtml('Study','📚',m.study,'#38BDF8')+
+  meterHtml('Health','💪',m.health,'#F472B6')+
+  meterHtml('Consistency','🔥',cons,'#FB923C');
+}
+var curLoc=null;
+function renderWorld(){
+ var locs=[
+  ['home','🏠','Home','Rest, devotion, family'],
+  ['library','📖','Library','Read real books, earn Faith & Study'],
+  ['school','🎓','School','CBT & viva drills — real study, real XP'],
+  ['fellowship','🙌','Fellowship','Ministry & soul-winning logs'],
+  ['gym','💪','Gym','Workouts & health'],
+  ['bank','🏦','Sky Bank','Savings, goals & investing']]
+ var h='';locs.forEach(function(l){h+='<div class="loc" onclick="openLoc(\''+l[0]+'\')"><div class="ic">'+l[1]+'</div><div class="nm">'+l[2]+'</div><div class="ds">'+l[3]+'</div></div>'});
+ $('locs').innerHTML=h;
+ if(!curLoc){$('locPanel').innerHTML='<div class="note">Tap a place to enter it. Every place rewards a real action.</div>'}
+}
+function openLoc(id){
+ curLoc=id;var t=today();S.logs[t]=S.logs[t]||{};
+ var did=function(k){return S.logs[t][k]};
+ var h='';
+ if(id==='home'){h='<h2 style="margin-top:0">🏠 Home</h2>'
+  +'<div class="stat"><span>Rest (recover Energy +15)</span><b>'+(did('rest')?'done today':'available')+'</b></div>'
+  +'<div class="stat"><span>Devotion time (Faith +12)</span><b>'+(did('devotion')?'done today':'available')+'</b></div>'
+  +'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn small" onclick="logAct(\'rest\')">😴 Rest</button><button class="btn small" onclick="logAct(\'devotion\')">🙏 Devotion</button></div>'}
+ else if(id==='library'){h='<h2 style="margin-top:0">📖 Library</h2><div class="note">Your real shelf — reading here feeds your character.</div>'
+  +'<a class="link" href="holy_spirit_book.html">The Person & Work of the Holy Spirit (R. A. Torrey)</a>'
+  +'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn small" onclick="logAct(\'read\')">✅ Log reading session</button></div>'
+  +'<div class="note" style="margin-top:8px">Read a chapter, then log it. Faith +8, Study +4.</div>'}
+ else if(id==='school'){h='<h2 style="margin-top:0">🎓 School</h2><div class="note">Your real study tools, embedded in the world.</div>'
+  +'<a class="link" href="maths_cbt.html">Maths CBT — 126 verified questions</a>'
+  +'<a class="link" href="integration_viva.html">Integration Viva</a>'
+  +'<a class="link" href="differentiation_viva.html">Differentiation Viva</a>'
+  +'<a class="link" href="cee102_viva.html">CEE102 Viva</a>'
+  +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'study\')">✅ Log study session</button></div>'
+  +'<div class="note" style="margin-top:8px">Study +10, Focus +5. Do a session, then log it.</div>'}
+ else if(id==='fellowship'){h='<h2 style="margin-top:0">🙌 Fellowship</h2>'
+  +'<div class="stat"><span>Soul-winning / service (Faith +10)</span><b>'+(did('fellow')?'done today':'available')+'</b></div>'
+  +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'fellow\')">✅ Log ministry action</button></div>'
+  +'<div class="verse" style="margin-top:12px" id="vv"></div>'}
+ else if(id==='gym'){h='<h2 style="margin-top:0">💪 Gym</h2>'
+  +'<div class="stat"><span>Workout (Health +10, Energy +5)</span><b>'+(did('gym')?'done today':'available')+'</b></div>'
+  +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'gym\')">✅ Log workout</button></div>'}
+ else if(id==='bank'){show('bank');curLoc=null;return}
+ $('locPanel').innerHTML=h;
+ if(id==='fellowship'){
+  var vs=['"And they that be wise shall shine as the brightness of the firmament; and they that turn many to righteousness as the stars for ever and ever." — Daniel 12:3','"The earnest prayer of a righteous person has great power." — James 5:16','"Go ye therefore, and teach all nations… and, lo, I am with you alway." — Matthew 28:19-20'];
+  $('vv').textContent=vs[new Date().getDate()%vs.length];
+ }
+}
+function renderPlans(){
+ function rows(key,listEl,mark){
+  var h='';(S.plans[key]||[]).forEach(function(p,i){
+   h+='<div class="task'+(p.done?' done':'')+'"><button class="cb" onclick="planDone(\''+key+'\','+i+')">✓</button><span class="tx">'+esc(p.text)+'</span><button class="cb" style="border-color:var(--bad)" onclick="planDel(\''+key+'\','+i+')">✕</button></div>';
+  });
+  if(!h)h='<div class="note" style="padding:8px 2px">Nothing yet. Aim before you run.</div>';
+  $(listEl).innerHTML=h;
+ }
+ rows('year','yearList');rows('month','monthList');rows('week','weekList');
+ $('tomCard').innerHTML=S.tomorrow?('Tomorrow\'s Big Thing: <b>'+esc(S.tomorrow)+'</b>'):'<span class="note">Not set.</span>';
+}
+function planDone(key,i){var p=S.plans[key][i];if(!p||p.done)return;p.done=true;S.xp+=S.origin==='grind'?96:80;save();renderAll();toast('Milestone advanced. +'+(S.origin==='grind'?96:80)+' XP')}
+function planDel(key,i){S.plans[key].splice(i,1);save();renderPlans()}
+function renderBank(){
+ $('bal').textContent=fmoney(S.balance);
+ $('vault').textContent=fmoney(S.vault);
+ if(S.vault>=10000)award('vaultmaster',true);
+ var g=S.goal;
+ var h='';
+ if(!g){h='<input type="text" id="gName" placeholder="What are you saving for?" maxlength="40"><div class="addrow" style="margin-top:8px"><input type="number" id="gAmt" placeholder="Target ₦ (real money)" min="1"><button class="btn small" id="gSet">Set goal</button></div>'}
+ else{
+  var pct=Math.min(100,Math.round((g.saved/g.target)*100));
+  h='<b>'+esc(g.name)+'</b><div class="note" style="margin:4px 0 8px">₦'+g.saved.toLocaleString()+' of ₦'+g.target.toLocaleString()+' · '+pct+'%</div><div class="bar" style="height:8px"><i style="width:'+pct+'%;background:var(--gold)"></i></div><div class="addrow" style="margin-top:10px"><input type="number" id="gAdd" placeholder="Add saved ₦" min="1"><button class="btn small" id="gAddBtn">Log</button></div>';
+ }
+ $('goalCard').innerHTML=h;
+ if(!g){$('gSet').onclick=function(){var n=$('gName').value.trim(),a=+$('gAmt').value;if(!n||!a)return;S.goal={name:n,target:a,saved:0};save();renderBank();toast('Goal set. Now chase it. 🏃')}}
+ else{$('gAddBtn').onclick=function(){var a=+$('gAdd').value;if(!a)return;S.goal.saved+=a;save();renderBank();toast('Logged ₦'+a.toLocaleString()+' toward "'+S.goal.name+'"');if(S.goal.saved>=S.goal.target)toast('🎉 GOAL REACHED: '+S.goal.name+'!')}}
+}
+function project(){
+ var P=+$('invP').value,R=+$('invR').value,Y=+$('invY').value;
+ if(!P||!R||!Y){$('invOut').innerHTML='<div class="note">Enter all three numbers.</div>';return}
+ var A=P*Math.pow(1+R/100/12,12*Y);
+ var simple=P*Math.pow(1+R/100,Y);
+ var n=A;var fmt=function(x){return '₦'+Math.round(x).toLocaleString()};
+ $('invOut').innerHTML='<div class="stat"><span>Principal</span><b>'+fmt(P)+'</b></div><div class="stat"><span>After '+Y+' yrs (monthly compounding)</span><b>'+fmt(A)+'</b></div><div class="stat"><span>Growth</span><b style="color:var(--good)">+'+fmt(A-P)+'</b></div><div class="stat"><span>If compounded yearly only</span><b>'+fmt(simple)+'</b></div><div class="note" style="margin-top:8px">Lesson: ₦'+Math.round(A-simple).toLocaleString()+' extra just from MONTHLY compounding. Frequency matters — the 4th pillar (protection) keeps it safe.</div>';
+}
+// ---------- me ----------
+function renderMe(){
+ var m=S.meters;
+ $('meCard').innerHTML=
+  '<div class="stat"><span>Name</span><b>'+esc(S.name)+' '+S.av+'</b></div>'+
+  '<div class="stat"><span>Origin</span><b>'+(S.origin==='grace'?'🕊️ Grace — started with ₦S 5,000':'🔨 Grind — +20% XP forever')+'</b></div>'+
+  '<div class="stat"><span>Level</span><b>Lv '+level()+' · '+(S.xp||0)+' XP</b></div>'+
+  '<div class="stat"><span>Streak</span><b>🔥 '+S.streak+' days</b></div>'+
+  '<div class="stat"><span>Net worth</span><b>'+fmoney((S.balance||0)+(S.vault||0))+'</b></div>'+
+  '<div class="stat"><span>Days closed</span><b>'+S.closedDays+'</b></div>'+
+  '<div class="stat"><span>Reading / study logs</span><b>📖 '+S.reads+' · 🎓 '+S.studies+'</b></div>'+
+  '<div class="stat"><span>Big Things finished</span><b>⭐ '+S.big5+'</b></div>';
+ var all=[['firststep','First Step','👟'],['bigfinish','Big Finisher ×5','⭐'],['fireweek','Week of Fire','🔥'],['firemonth','Month of Blaze','🏆'],['earner','High Earner','💰'],['reader','Reader ×3','📖'],['scholar','Scholar ×5','🎓'],['vaultmaster','Vault Master','🏦']];
+ var h='';all.forEach(function(b){var on=S.badges.indexOf(b[0])>=0;h+='<span class="badge'+(on?'':' locked')+'">'+b[2]+' '+b[1]+'</span>'});
+ $('badges').innerHTML=h;
+}
+function show(v){
+ document.querySelectorAll('.view').forEach(function(x){x.classList.remove('on')});
+ $('v-'+v).classList.add('on');
+ document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});
+ window.scrollTo(0,0);
+}
+function closeDay(){
+ var t=today();var tl=S.tasks[t]||[];
+ var done=tl.filter(function(x){x.done}).length;
+ var big=tl.filter(function(x){x.big&&x.done}).length;
+ S.closedDays++;
+ save();renderAll();
+ var msg=done===0?'A day unclosed is still a day lived — but tomorrow, plan first. 🌙'
+  :'Day closed: '+done+'/'+tl.length+' done'+(big?' including your Big Thing ⭐':'')+'. Streak: '+S.streak+'. Rest well, champion.';
+ alert(msg);
+}
+// ---------- wire ----------
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+$('addBtn').onclick=function(){var v=$('taskIn').value.trim();if(!v)return;addTask(v,$('catIn').value,false);$('taskIn').value=''};
+$('taskIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('addBtn').onclick()});
+[['yearIn','year'],['monthIn','month'],['weekIn','week']].forEach(function(p){
+ $(p[0]).addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;var v=this.value.trim();if(!v)return;
+  S.plans[p[1]].push({text:v,done:false});save();this.value='';renderPlans();
+ });
+});
+$('tomIn').addEventListener('keydown',function(e){
+ if(e.key!=='Enter')return;var v=this.value.trim();if(!v)return;
+ S.tomorrow=v;save();this.value='';renderPlans();toast('Planted. It becomes tomorrow\'s Big Thing. 🌱');
+});
+$('saveBtn').onclick=function(){var a=+$('amtIn').value;if(!a||a>S.balance){toast(a>S.balance?'Insufficient balance.':'Enter an amount.');return}S.balance-=a;S.vault+=a;save();renderBank();toast('Saved '+fmoney(a)+' — it compounds daily. 🌱')};
+$('wdBtn').onclick=function(){var a=+$('amtIn').value;if(!a||a>S.vault){toast(a>S.vault?'Vault too small.':'Enter an amount.');return}S.vault-=a;S.balance+=a;save();renderBank();toast('Withdrew '+fmoney(a))};
+$('invBtn').onclick=project;
+$('expBtn').onclick=function(){
+ var blob='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(S));
+ var a=document.createElement('a');a.href=blob;a.download='skylife-backup-'+today()+'.json';a.click();
+ toast('Backup downloaded — keep it safe.');
+};
+$('rstBtn').onclick=function(){
+ if(confirm('Reset SkyLife? Your character, money and history will be erased from this phone.')){localStorage.removeItem(K);location.reload()}
+};
+$('closeDay').onclick=closeDay;
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('skylife-sw.js')}catch(e){}}
+// stars background
+(function(){var h='';for(var i=0;i<70;i++){h+='<div style="position:absolute;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:2px;height:2px;border-radius:50%;background:#'+(Math.random()>.5?'F5B84A':'A5B4FC')+';opacity:'+(0.2+Math.random()*0.7)+'"></div>'}$('stars').innerHTML=h})();
+load();
+</script>
+</body>
+</html>
