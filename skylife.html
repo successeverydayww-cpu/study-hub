@@ -100,6 +100,24 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:#1B2250;border:1px solid var(--gold);color:var(--ink);border-radius:12px;padding:10px 16px;font-size:.8rem;z-index:30;animation:fadein .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .link{color:#8FB4FF;text-decoration:underline;font-size:.82rem;display:block;padding:8px 0;border-bottom:1px solid var(--line)}
 .verse{font-size:.82rem;color:#FDE68A;line-height:1.6;font-style:italic}
+.gate .big{width:100%;padding:14px;background:var(--gold);color:#1B2250;border:none;border-radius:12px;font-weight:700;font-size:.95rem;margin:8px 0;cursor:pointer}
+.gate .ghost{width:100%;padding:12px;background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:12px;font-size:.85rem;margin:6px 0;cursor:pointer}
+.veh{position:absolute;font-size:15px;opacity:.85;z-index:1;animation:drive linear infinite}
+.veh.rv{animation:driveback linear infinite}
+@keyframes drive{from{left:-36px}to{left:calc(100% + 36px)}}
+@keyframes driveback{from{left:calc(100% + 36px);transform:scaleX(-1)}to{left:-36px;transform:scaleX(-1)}}
+.calrow{display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:7px 2px;font-size:.75rem}
+.calrow .tm{color:var(--gold);font-weight:700;min-width:44px}
+.calrow .lb{flex:1}
+.calrow .btn.mini{padding:5px 10px;font-size:.65rem;border-radius:8px}
+.calrow.now{background:rgba(245,184,74,.07);border-radius:8px}
+.calnow{color:var(--gold);font-size:.6rem;font-weight:700}
+.pinrow{display:flex;gap:6px;justify-content:center;margin:10px 0}
+.pinrow input{width:46px;text-align:center;background:var(--card2);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-size:1.2rem;padding:8px 2px}
+.bookrow{display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:9px 2px}
+.bookrow .bc{flex:1}
+.bookrow .bn{font-size:.8rem;font-weight:600}
+.bookrow .ba{font-size:.65rem;color:var(--dim)}
 .pstock{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .pchip{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:.65rem}
 .mktrow{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:8px 2px}
@@ -139,6 +157,8 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
  <div class="view" id="v-today">
   <div class="stage" id="stage"></div>
  <div class="routine" id="routine"></div>
+ <div class="note" style="margin:2px 0 4px">📅 Your day</div>
+ <div id="calBox"></div>
  <div class="streak"><span class="fl">🔥</span><div><div class="st">CONSISTENCY STREAK</div><div class="sn" id="stStreak">0 days</div></div></div>
   <div class="big"><div class="tag">⭐ ONE BIG THING</div><div class="bt" id="bigThing">Tap ✓ on your Big Thing task below — or set one in Plans.</div></div>
   <h2>Life meters</h2>
@@ -201,6 +221,21 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
  <button data-v="bank"><span class="ic">🏦</span>Bank</button>
  <button data-v="me"><span class="ic">🦁</span>Me</button>
 </nav>
+<div class="overlay gate" id="gate" style="display:none"><div class="ob">
+ <h1>SkyLife</h1>
+ <p>Your plans. Your city. Your life — one world, and it only moves when you do.</p>
+ <div id="gateLogin"></div>
+ <div style="margin-top:12px"><button class="ghost" onclick="googleLogin()">🔵 Continue with Google</button></div>
+ <p class="note" style="margin-top:10px">Google sign-in activates with cloud sync (Phase 2). Your account and PIN keep your life saved safely on this device today.</p>
+</div></div>
+<div class="overlay" id="ob4" style="display:none"><div class="ob">
+ <h1>Build your day</h1>
+ <p>Set your daily calendar — SkyLife runs on it, in your country\'s time.</p>
+ <div id="calEdit"></div>
+ <p class="note">Pick a 4-digit PIN — it protects your account on this device.</p>
+ <div class="pinrow"><input type="tel" maxlength="4" id="pinA" placeholder="••••"></div>
+ <div class="choice"><button onclick="finishSetup()"><b>🌅 Enter my world</b><span>Start living from home</span></button></div>
+</div></div>
 <div class="overlay" id="onb" style="display:none"><div class="ob">
  <h1>SkyLife</h1>
  <p>Live out your <b>real</b> plans in a world built for them. Plan your day, complete real tasks, watch your character rise. Consistency — not your starting point — wins here.</p>
@@ -217,7 +252,7 @@ input[type=text],input[type=number]{background:var(--card2);border:1px solid var
  <h1>Your institution</h1>
  <p>Choose any institution in the world. You\'ll register and pay your fees there, in the world.</p>
  <input type="text" id="instIn" placeholder="e.g. University of Ghana" maxlength="60">
- <div class="choice"><button onclick="finishSetup()"><b>🎓 Continue</b><span>Register &amp; pay fees at the School building</span></button></div>
+ <div class="choice"><button onclick="showCal()"><b>🎓 Continue</b><span>Next: build your daily calendar</span></button></div>
 </div></div>
 <div class="fade" id="fade"></div>
 <script>
@@ -235,7 +270,7 @@ function toast(t){var d=document.createElement('div');d.className='toast';d.text
 // ---------- state ----------
 function fresh(name,origin){
  return {name:name,origin:origin,av:avatars[Math.floor(Math.random()*avatars.length)],
-  xp:0,balance:origin==='grace'?5000:0,vault:0,invest:null,pos:{x:14,y:66},city:'Lagos',cityLm:'🌉',inst:null,instReg:false,phase:'morning',homeActs:{},hunger:70,pantry:{rice:1,garri:2,indomie:1,egg:2,bread:1,maggi:3,oil:2,sugar:2},event:null,
+  xp:0,balance:origin==='grace'?5000:0,vault:0,invest:null,pos:{x:14,y:66},city:'Lagos',cityLm:'🌉',inst:null,instReg:false,phase:'morning',homeActs:{},hunger:70,cal:null,pin:0,shelf:[],pantry:{rice:1,garri:2,indomie:1,egg:2,bread:1,maggi:3,oil:2,sugar:2},event:null,
   meters:{focus:55,energy:60,faith:65,study:50,health:60},
   streak:0,lastDone:null,lastDay:today(),
   tasks:{},plans:{year:[],month:[],week:[]},tomorrow:null,
@@ -271,16 +306,66 @@ function gainXP(n){
 }
 function load(){
  try{S=JSON.parse(localStorage.getItem(K))}catch(e){S=null}
- if(!S){$('onb').style.display='flex';return}
+ if(!S){gateNew();return}
+ finishLoad();
+ gateBack();
+}
+function finishLoad(){
  rollover();
  if(!S.city){S.city='Lagos';S.cityLm='🌉'}
  if(!S.homeActs)S.homeActs={};
  if(!S.phase)S.phase='morning';
  if(typeof S.hunger!=='number')S.hunger=70;
  if(!S.pantry)S.pantry={rice:0,garri:0,indomie:0,egg:0,bread:0,maggi:0,oil:0,sugar:0};
+ if(!S.shelf)S.shelf=[];
+ if(!S.cal)S.cal=CAL_TPL.slice();
  rollEvent();
+}
+function tickClock(){try{renderHead()}catch(e){}}
+setInterval(tickClock,20000);
+function gateNew(){
+ $('gate').style.display='flex';
+ $('gateLogin').innerHTML='<button class="big" onclick="goRegister()">📝 Register — create your account</button>';
+}
+function gateBack(){
+ $('gate').style.display='flex';
+ var p=S.pin? '<div class="pinrow"><input type="tel" maxlength="4" id="pinB" placeholder="PIN"></div>':'';
+ $('gateLogin').innerHTML='<button class="big" onclick="gateEnter()">🎮 Continue as '+esc(S.name)+'</button>'+p
+  +'<button class="ghost" onclick="goRegister()">➕ Register a new account</button>';
+}
+function gateEnter(){
+ if(S.pin){
+  var v=($('pinB')&&$('pinB').value)||'';
+  if(pinHash(v)!==S.pin){toast('Wrong PIN.');return}
+ }
+ $('gate').style.display='none';
  save();renderAll();
 }
+function goRegister(){
+ $('gate').style.display='none';
+ ['onb','ob2','ob3','ob4'].forEach(function(o){$(o).style.display='none'});
+ $('onb').style.display='flex';
+}
+function googleLogin(){
+ toast('Google sign-in activates with cloud sync (Phase 2) — your PIN account is live on this device today.');
+}
+var TZ={Lagos:'Africa/Lagos',Accra:'Africa/Accra',Abuja:'Africa/Lagos',London:'Europe/London','New York':'America/New_York',Nairobi:'Africa/Nairobi',Dubai:'Asia/Dubai',Tokyo:'Asia/Tokyo'};
+var CAL_TPL=[
+ {h:5,label:'Wake + devotion',e:'🙏',act:'devotion'},
+ {h:'530',label:'Worship & plan the day',e:'🎶',act:'devotion'},
+ {h:6,label:'Study block (Organic Chem)',e:'📖',act:'study'},
+ {h:'730',label:'Breakfast',e:'🥣',act:'breakfast'},
+ {h:8,label:'Lectures',e:'🎓',act:'lecture'},
+ {h:14,label:'Lunch & rest',e:'🍛',act:'rest'},
+ {h:15,label:'Practice questions',e:'✏️',act:'study'},
+ {h:17,label:'Free time',e:'🎯',act:'rest'},
+ {h:18,label:'Fellowship / church',e:'⛪',act:'prayer'},
+ {h:19,label:'Dinner',e:'🍽️',act:'rest'},
+ {h:20,label:'Review & wind down',e:'📝',act:'study'},
+ {h:'2230',label:'Sleep',e:'🌙',act:'sleep'}];
+function hm(v){if(typeof v==='number')return [v,0];return [parseInt(v/100),parseInt(v%100)]}
+function pinHash(p){var h=5381;for(var i=0;i<p.length;i++)h=((h<<5)+h+p.charCodeAt(i))>>>0;return h}
+var BOOKS=[{id:'torrey',n:'The Person & Work of the Holy Spirit',a:'R. A. Torrey · public domain',p:300,e:'📖',href:'holy_spirit_book.html'}];
 var CITIES=[['Lagos','🌉','Third Mainland Bridge'],['Accra','🚩','Independence Arch'],['Abuja','⛰️','Aso Rock'],['London','🕰️','Big Ben'],['New York','🗽','Statue of Liberty'],['Nairobi','🦒','Nairobi National Park'],['Dubai','🏗️','Burj Khalifa'],['Tokyo','🗻','Mount Fuji']];
 var INST_SUG={Lagos:'University of Lagos',Accra:'University of Ghana',Abuja:'University of Abuja',London:'Imperial College London','New York':'Columbia University',Nairobi:'University of Nairobi',Dubai:'United Arab Emirates University',Tokyo:'University of Tokyo'};
 function start(origin){
@@ -297,15 +382,26 @@ function pickCity(i){
  $('ob2').style.display='none';$('ob3').style.display='flex';
  save();
 }
+function showCal(){showCalendarEdit();$('ob3').style.display='none';$('ob4').style.display='flex'}
+function showCalendarEdit(){
+ var rows='';CAL_TPL.forEach(function(r){
+  rows+='<div class="calrow"><span class="tm">'+fmtH(r.h)+'</span><span>'+r.e+'</span><span class="lb">'+r.label+'</span><span class="calnow" style="color:var(--dim)">'+r.act+'</span></div>';
+ });
+ $('calEdit').innerHTML=rows;
+}
+function fmtH(v){var h=hm(v);return (h[0]<10?'0':'')+h[0]+':'+(h[1]<10?'0':'')+h[1]}
 function finishSetup(){
  S.inst=$('instIn').value.trim()||INST_SUG[S.city];
- $('ob3').style.display='none';
+ $('ob3').style.display='none';$('ob4').style.display='none';
  S.tasks[today()]=[
   {id:1,text:'Prepare, breakfast, then step outside',cat:'Personal',big:false,done:false},
   {id:2,text:'Register at '+S.inst+' & pay fees',cat:'Study',big:false,done:false},
   {id:3,text:'Do a Maths CBT section',cat:'Study',big:false,done:false}
  ];
  S.plans.year.push({text:'Rise every morning on time, in '+S.city,done:false});
+ S.cal=CAL_TPL.slice();
+ var pv=($('pinA')&&$('pinA').value)||'';
+ if(pv.length===4)S.pin=pinHash(pv);else S.pin=0;
  rollEvent();
  save();renderAll();
  toast('Welcome home, '+S.name+'. A new life in '+S.city+' begins. 🌅');
@@ -354,6 +450,56 @@ function logAct(kind){
 }
 // ---------- render ----------
 function renderAll(){renderHead();renderToday();renderWorld();renderPlans();renderBank();renderMe()}
+function cityNow(){
+ var tz=TZ[S.city]||'Africa/Lagos';
+ var p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+ var hh=0,mm=0;p.forEach(function(x){if(x.type==='hour')hh=+x.value;if(x.type==='minute')mm=+x.value});
+ return hh*60+mm;
+}
+function rowMin(r){var x=hm(r.h);return x[0]*60+x[1]}
+function renderCal(){
+ var cal=S.cal||CAL_TPL;
+ var now=cityNow();
+ var idx=-1;
+ cal.forEach(function(r,i){var m=rowMin(r);if(now>=m)idx=i});
+ var h='';
+ cal.forEach(function(r,i){
+  var cur=(i===idx),past=(i<idx);
+  h+='<div class="calrow'+(cur?' now':'')+'"'+(past?' style="opacity:.45"':'')+'>'
+   +'<span class="tm">'+fmtH(r.h)+'</span><span>'+r.e+'</span><span class="lb">'+r.label+'</span>'
+   +(cur?'<span class="calnow">NOW</span> <button class="btn mini" onclick="doCal(\''+r.act+'\')">Do it</button>':'')
+   +'</div>';
+ });
+ $('calBox').innerHTML=h;
+}
+function doCal(a){
+ if(a==='devotion')logAct('devotion');
+ else if(a==='study')logAct('study');
+ else if(a==='breakfast')homeAct('breakfast');
+ else if(a==='rest')logAct('rest');
+ else if(a==='lecture')attendLecture();
+ else if(a==='prayer')joinPrayer();
+ else if(a==='sleep')sleepDay();
+ else toast('Just live it.');
+}
+function attendLecture(){
+ if(!S.instReg){toast('Register at your institution first.');return}
+ var inBlock=false;var cal=S.cal||[];
+ var now=cityNow();
+ cal.forEach(function(r,i){if(r.act!=='lecture')return;
+  var st=rowMin(r);var en=(i+1<cal.length)?rowMin(cal[i+1]):1440;
+  if(now>=st&&now<en)inBlock=true});
+ var ax=gainXP(inBlock?60:40);
+ S.meters.study=Math.min(100,(S.meters.study||0)+8);
+ save();renderAll();floatUp('+'+ax+' XP');
+ toast(inBlock?'Right on schedule — lecture attended. +'+ax+' XP':'Lecture attended. +'+ax+' XP');
+}
+function joinPrayer(){
+ S.meters.faith=Math.min(100,(S.meters.faith||0)+12);
+ var ax=gainXP(25);
+ save();renderAll();floatUp('+'+ax+' XP · Faith +12');
+ toast('You kneel and join the prayer. Faith +12.');
+}
 function renderStage(){
  var t=today();var HA=S.homeActs[t]=S.homeActs[t]||{};
  var phase=S.phase==='morning'?'🌅 Morning':'🌇 Day in '+S.city;
@@ -406,7 +552,9 @@ function sleepDay(){
 function renderHead(){
  $('hAv').textContent=S.av;$('hName').textContent=S.name;
  var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
- $('hSub').textContent=days[d.getDay()]+', '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+S.city+(S.origin==='grace'?' · 🕊️':' · 🔨');
+ var tz=TZ[S.city]||'Africa/Lagos';
+ var now=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+ $('hSub').textContent=now+' · '+days[d.getDay()]+', '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+S.city+(S.origin==='grace'?' · 🕊️':' · 🔨');
  $('hLvl').textContent='Lv '+level();
  var p=Math.round(((S.xp||0)-prevXp())/Math.max(1,nextXp()-prevXp())*100);
  $('hXp').textContent=(S.xp||0)+' XP · '+p+'% to Lv '+(level()+1);
@@ -426,6 +574,7 @@ function renderToday(){
   rh+='<button onclick="homeAct(\''+r[0]+'\')"'+(done?' disabled':'')+'><b>'+(done?'✅':r[1])+'</b>'+r[2]+'</button>';
  });
  $('routine').innerHTML=rh;
+ renderCal();
  $('stStreak').textContent=S.streak+' day'+(S.streak===1?'':'s');
  var bt=null;(S.tasks[today()]||[]).forEach(function(x){if(x.big)bt=x});
  $('bigThing').innerHTML=bt?esc(bt.text)+(bt.done?' <span style="color:var(--good)">✔ done</span>':' <span class="pill" style="margin-left:6px">tap ✓ below</span>'):'No Big Thing set — add a task and star it in Plans.';
@@ -456,6 +605,10 @@ function renderWorld(){
  var h='<div class="citychip">'+S.cityLm+' '+S.city+'</div><div class="moon">🌙</div>';
  h+='<div class="tree" style="left:8%;top:12%;font-size:22px">'+S.cityLm+'</div>';
  h+='<div class="road" style="top:46%"></div><div class="road" style="top:82%"></div><div class="road v"></div>';
+ h+='<div class="veh" style="top:43%;animation-duration:11s">🚌</div>';
+ h+='<div class="veh rv" style="top:44%;animation-duration:14s;animation-delay:-5s">🛺</div>';
+ h+='<div class="veh" style="top:79%;animation-duration:9s;animation-delay:-3s">🏍️</div>';
+ h+='<div class="veh rv" style="top:80%;animation-duration:13s;animation-delay:-8s">🚗</div>';
  h+='<div class="tree" style="left:4%;top:60%">🌳</div><div class="tree" style="left:94%;top:70%">🌴</div><div class="tree" style="left:46%;top:34%">🌳</div>';
  var p=S.pos||{x:14,y:66};
  for(var k in PLACES){var P=PLACES[k];
@@ -504,8 +657,16 @@ function openLoc(id,quiet){
    for(var nk in R.need){req.push(R.need[nk]+'×'+FOOD[nk].n);if((S.pantry[nk]||0)<R.need[nk])can=false}
    h+='<button class="btn small" style="background:var(--card2)" '+(can?'onclick="cookMeal(\''+rk+'\')"':'disabled')+'>'+R.e+' '+R.n+' <span style="color:var(--dim)">('+req.join(', ')+')</span></button>'}
   h+='</div><div class="note" style="margin-top:6px">Hunger below 30 halves all XP earned today — eat before you hustle.</div>'}
- else if(id==='library'){h='<h2 style="margin-top:0">🏛️ Library</h2><div class="note">Your real shelf — reading here feeds your character.</div>'
-  +'<a class="link" href="holy_spirit_book.html">The Person & Work of the Holy Spirit (R. A. Torrey)</a>'
+ else if(id==='library'){h='<h2 style="margin-top:0">🏛️ Library</h2><div class="note">The bookshop — buy books with what you\'ve earned, read them right here.</div>';
+  BOOKS.forEach(function(b){
+   var owned=(S.shelf||[]).indexOf(b.id)>=0;
+   h+='<div class="bookrow"><span style="font-size:22px">'+b.e+'</span><div class="bc"><div class="bn">'+b.n+'</div><div class="ba">'+b.a+(owned?' · owned ✓':'')+'</div></div>'
+    +(owned
+      ?'<a class="btn mini" style="text-decoration:none;padding:5px 10px;border-radius:8px" href="'+b.href+'">📖 Read</a>'
+      :'<button class="btn mini" onclick="buyBook(\''+b.id+'\')">₦S '+b.p+'</button>')
+    +'</div>';
+  });
+  h+='<div class="note" style="margin-top:8px">New titles arrive as the library grows.</div>'
   +'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn small" onclick="logAct(\'read\')">✅ Log reading session</button></div>'
   +'<div class="note" style="margin-top:8px">Read a chapter, then log it. Faith +8, Study +4.</div>'}
  else if(id==='school'){
@@ -524,6 +685,7 @@ function openLoc(id,quiet){
  else if(id==='fellowship'){h='<h2 style="margin-top:0">⛪ Fellowship</h2>'
   +'<div class="stat"><span>Soul-winning / service (Faith +10)</span><b>'+(did('fellow')?'done today':'available')+'</b></div>'
   +'<div style="margin-top:12px"><button class="btn small" onclick="logAct(\'fellow\')">✅ Log ministry action</button></div>'
+  +'<div style="display:flex;gap:8px;margin-top:8px"><button class="btn small" onclick="joinPrayer()">🙏 Join the prayer</button></div>'
   +'<div class="verse" style="margin-top:12px" id="vv"></div>'}
  else if(id==='gym'){h='<h2 style="margin-top:0">💪 Gym</h2>'
   +'<div class="stat"><span>Workout (Health +10, Energy +5)</span><b>'+(did('gym')?'done today':'available')+'</b></div>'
@@ -577,6 +739,15 @@ function cookMeal(rk){
  var ax=gainXP(R.xp);
  save();renderAll();openLoc('home',true);floatUp('+'+ax+' XP · +'+R.hunger+' hunger');
  toast('You cook '+R.n+'. Your character eats — hunger restored.');
+}
+function buyBook(id){
+ var b=null;BOOKS.forEach(function(x){if(x.id===id)b=x});
+ if(!b)return;
+ if((S.shelf||[]).indexOf(id)>=0){toast('Already yours.');return}
+ if(S.balance<b.p){toast('Not enough balance — complete real tasks to earn.');return}
+ S.balance-=b.p;S.shelf=(S.shelf||[]).concat([id]);gainXP(30);
+ save();renderAll();openLoc('library',true);
+ toast('Book purchased! Open it and read — +30 XP for investing in your mind.');
 }
 function registerInst(){
  if(S.instReg){toast('Already enrolled.');return}
