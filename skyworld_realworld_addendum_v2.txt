@@ -1,0 +1,53 @@
+═══════════════════════════════════════════════════════
+SKY WORLD — REAL WORLD LAYER v2 (replaces earlier addendum)
+Paste into Gemini AFTER the master prompt.
+Informed by a code study of the real game "Akwa Ibom Life".
+═══════════════════════════════════════════════════════
+
+REFERENCE GAME: "Akwa Ibom Life" is a 3D life simulation. Players walk
+around real places (Ibom Plaza, a stadium, a market, universities) in
+third person, on a REAL clock, with real-geography travel and live
+players. Sky World is that, for EVERY place on Earth.
+
+HOW TO GET "REAL, EVERYWHERE" WITHOUT HAND-MODELLING THE WORLD:
+
+1. REAL MAP: MapLibre GL JS (or Leaflet) with free OpenStreetMap tiles.
+   Any city, town or village on Earth is selectable via the free
+   Nominatim geocoder. Player spawns where they search.
+
+2. REAL VENUES: query the OpenStreetMap Overpass API around the player
+   for amenity=school/university/library/marketplace/bank/place_of_worship/
+   restaurant/bar/nightclub/hospital/gym/stadium/park. Show each with its
+   REAL NAME and real distance. Cap ~40 nearest, lazy-load while moving.
+
+3. PROCEDURAL 3D (the key): from OSM building footprints in view, extrude
+   simple 3D buildings with Three.js (height from OSM tags or a default).
+   Roads as ribbons. Landmark venues get a small signature model from a
+   template library by type (school, church, mosque, market, stadium,
+   hospital, bank). Third-person character walks the real street layout.
+   Mobile-first: low-poly, aim 30fps on a mid Android phone.
+
+4. DATA-DRIVEN CONTENT: all gameplay reads tables ("new content is new
+   rows"): SKILLS, TRAITS, DREAMS, BIRTH LOTTERY, NEEDS (hunger, energy,
+   fun, social, hygiene, bladder), SHOP, FURNITURE+ACTIONS (pose, minutes,
+   effects), JOBS, SCHOOLS. Locale packs add currency, language flavor,
+   foods, slang and festivals per country; a fallback pack covers any town.
+
+5. REAL CLOCK: the game runs on the player's real local time for the
+   chosen place (use the timezone of that location). Activities are quick
+   real countdowns, not hidden instant stat bumps.
+
+6. BIRTH LOTTERY: weighted starts (wealthy, middle-class, struggling,
+   village-born) with different money, starting skills and perks, fitted
+   to the local economy of the chosen country.
+
+7. LIVING WORLD, LATER PHASE: nearby players, chat, visiting houses,
+   card games. Phase 1 is single-player/offline; multiplayer needs a
+   backend and comes after the single-player world feels alive.
+
+BUILD ORDER: (a) place search + real map + walking character;
+(b) real named venues from Overpass; (c) extruded 3D buildings;
+(d) full needs/skills/jobs/school engine from data tables;
+(e) birth lottery + locale packs; (f) polish; (g) multiplayer.
+Start with (a) and (b). Confirm you understand the difference between
+a drawn world and a REAL map-driven world before you begin.
