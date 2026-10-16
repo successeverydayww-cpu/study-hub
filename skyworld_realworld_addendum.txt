@@ -1,0 +1,60 @@
+═══════════════════════════════════════════════════════
+SKY WORLD — REAL WORLD LAYER (ADDENDUM PROMPT)
+(Paste this into Gemini together with, or right after,
+the Sky World master prompt. It upgrades the world from
+"stylized" to REAL.)
+═══════════════════════════════════════════════════════
+
+UPGRADE THE VISION: Sky World is not a cartoon map with made-up
+buildings. The player lives on REAL geography. Real cities, real
+streets, real named places. If the player picks Uyo, the barbershop
+near the real market street is there. If they pick Berlin, the real
+library by the Spree is there.
+
+IMPLEMENT WITH FREE, OPEN DATA — DO THIS SPECIFICALLY:
+
+1. THE MAP IS REAL: use Leaflet (or MapLibre GL) with free OpenStreetMap
+   tiles. The character is an avatar marker/figure that MOVES along the
+   real road network — tap anywhere, the character walks/drives there
+   along real streets with a smooth animated path.
+
+2. ANYWHERE ON EARTH: place picker = a searchable world map
+   (Nominatim geocoding, free, no key). Search "Ikot Ekpene", "Dortmund",
+   "Osaka" — the player spawns there. Never a city list limit.
+
+3. VENUES ARE REAL PLACES: pull real Points of Interest from the
+   OpenStreetMap Overpass API around the player's location, by type:
+   - amenity=school, college, university  → school venue
+   - amenity=library                      → library venue
+   - amenity=marketplace, shops           → market venue
+   - amenity=bank                         → bank venue
+   - amenity=place_of_worship             → fellowship venue
+   - amenity=restaurant, fast_food        → eatery venue
+   - amenity=bar, nightclub, cinema       → fun venues
+   - amenity=gym/fitness_centre, hospital, pharmacy, park, stadium
+   Each real place renders with its REAL NAME ("Uyo Township Library"),
+   distance from player, and opens the standard venue action scene.
+   If an area has few POIs, fall back to generated venues that follow
+   real street names, so no place on Earth feels empty.
+
+4. REAL FEEL, GAME BODY: keep every mechanic from the master prompt
+   (scenes, bubbles, in-game clock, moodlets, story feed, NPCs, careers,
+   economy). The realism layer is WHERE things are; the Lagos-Life feel
+   is HOW it plays. Both, always.
+
+5. PERFORMANCE & OFFLINE: cache the chosen city's map tiles + POIs in
+   localStorage/IndexedDB after first visit so the game runs offline
+   for that city afterwards. First load of a city may use internet;
+   everything else (game logic, saves) stays offline and local. No
+   accounts, no backend, no payments.
+
+6. SCALE BAR: must run on a mid-range Android phone browser at 30fps+;
+   cap visible POIs to ~40 nearest; lazy-load as the player moves.
+
+ORDER OF BUILD: (a) Leaflet map + geocoder place picker + character
+that walks real streets; (b) Overpass POI venues with real names;
+(c) connect the full life engine (meters, clock, moodlets, story);
+(d) polish movement feel (walk animation, camera follow).
+
+Confirm you understand the difference between a drawn map and a real
+map before you start, then build (a) and (b) first.
