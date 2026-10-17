@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sky World — Live Anywhere</title>
+<meta name="theme-color" content="#0B1330">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#0B1330;--card:#151B3B;--line:#262F5E;--ink:#EDE9FF;--dim:#9AA3C7;--gold:#F5B84A;--grn:#34D399;--red:#F87171}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:14px}
+.wrap{max-width:640px;margin:0 auto;padding:12px 12px 90px}
+h1{font-size:1.25rem;text-align:center;margin:6px 0 2px}
+h2{font-size:.85rem;color:var(--gold);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.06em}
+.sub{text-align:center;color:var(--dim);font-size:.72rem;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+input[type=text]{width:100%;background:#0d1330;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px 12px;font-size:1rem}
+button{background:var(--gold);color:#0d1330;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.9rem;cursor:pointer;width:100%}
+button.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+button:disabled{opacity:.5;cursor:default}
+.avgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.avgrid button{width:52px;height:52px;font-size:26px;background:#0d1330;border:1px solid var(--line);border-radius:12px;padding:0}
+.avgrid button.on{border-color:var(--gold);background:#241c07}
+.lbl{font-size:.68rem;color:var(--dim);margin:10px 0 4px}
+.mrow{display:flex;justify-content:space-between;font-size:.78rem;margin:5px 0}
+.bar{height:8px;background:#0d1330;border-radius:5px;overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%;border-radius:5px}
+.big{font-size:1rem;font-weight:700;color:var(--gold)}
+#map{height:46vh;border-radius:14px;border:1px solid var(--line);margin-bottom:10px;background:#0d1330}
+.vrow{display:flex;gap:8px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.vrow .ve{font-size:22px}
+.vrow .vn{font-size:.8rem;font-weight:600}
+.vrow .vd{font-size:.62rem;color:var(--dim)}
+.chip{display:inline-block;font-size:.6rem;padding:2px 8px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid var(--line);margin:2px 3px 2px 0}
+.chip.good{border-color:var(--grn);color:#6EE7B7}.chip.bad{border-color:var(--red);color:#FCA5A5}
+.story{padding:7px 2px;border-bottom:1px solid var(--line);font-size:.72rem}
+.story .st{color:var(--dim);font-size:.58rem;margin-top:2px}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--gold);border-radius:18px 18px 0 0;padding:14px;max-width:640px;margin:0 auto;z-index:999;max-height:70vh;overflow:auto}
+.sheet h3{font-size:.95rem;margin-bottom:2px}
+.acts{margin-top:10px}
+.acts button{margin-bottom:8px;text-align:left;padding:12px 14px;background:#0d1330;color:var(--ink);border:1px solid var(--line);font-weight:400;font-size:.82rem}
+.acts button b{color:var(--gold)}
+#banner{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:8px 14px;font-size:.8rem;z-index:1000;display:none;max-width:92%}
+#banner .pb{height:5px;background:#0d1330;border-radius:3px;margin-top:5px;overflow:hidden}
+#banner .pb i{display:block;height:100%;background:var(--gold);width:0%}
+.hud{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hud .card{margin:0}
+.pname{font-size:1rem;font-weight:800}
+.ptag{font-size:.62rem;color:var(--gold)}
+.pmark{font-size:26px;text-align:center;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
+.pmark span{display:block;font-size:.55rem;font-weight:700;background:rgba(11,19,48,.85);border:1px solid var(--gold);border-radius:6px;padding:1px 5px;margin-top:2px;color:var(--gold);white-space:nowrap}
+.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0d1330;font-weight:700;font-size:.75rem;border-radius:10px;padding:8px 14px;z-index:1001;display:none;max-width:92%;text-align:center}
+.note{color:var(--dim);font-size:.66rem;text-align:center;margin:6px 0}
+.gone{display:none!important}
+.leaflet-container{font:inherit}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{background:#0d1330;color:var(--dim);border:1px solid var(--line);font-size:.72rem;padding:7px 10px}
+.tabs button.on{color:var(--gold);border-color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="banner"><span id="bnTxt"></span><div class="pb"><i id="bnBar"></i></div></div>
+<div id="toast" class="toast"></div>
+<div class="wrap">
+
+ <div id="intro">
+  <h1>🌍 Sky World</h1>
+  <div class="sub">Live anywhere on Earth. Real places. Real clock. Your life, anywhere.</div>
+  <div class="card">
+   <div class="lbl">Your name</div>
+   <input type="text" id="inName" maxlength="18" placeholder="e.g. Samuel">
+   <div class="lbl">Your character</div>
+   <div class="avgrid" id="avGrid"></div>
+   <div class="lbl">Where do you want to live? (any town on Earth)</div>
+   <input type="text" id="inPlace" placeholder="e.g. Uyo, Uruk Otong, Berlin, Osaka">
+   <div class="note" id="geoNote">Works offline once your town's places are saved.</div>
+   <div style="margin-top:8px"><button id="btnGeo" class="ghost">📍 Use my current location</button></div>
+   <h2>Birth lottery</h2>
+   <div id="birthBox" class="note">Roll when you start — nobody picks their start.</div>
+   <h2>Choose your trait</h2>
+   <div id="traitList"></div>
+   <div style="margin-top:12px"><button id="btnStart">Begin your life →</button></div>
+  </div>
+ </div>
+
+ <div id="world" class="gone">
+  <div id="top" class="card" style="display:flex;justify-content:space-between;align-items:center">
+   <div><div class="pname" id="pName"></div><div class="ptag" id="pTag"></div></div>
+   <div style="text-align:right"><div class="big" id="pMoney"></div><div style="font-size:.6rem;color:var(--dim)" id="pClock"></div></div>
+  </div>
+  <div id="moodChips" style="min-height:22px;margin:6px 0"></div>
+  <div id="map"></div>
+  <div class="tabs">
+   <button id="tabV" class="on">Places</button>
+   <button id="tabS">My story</button>
+  </div>
+  <div id="vList"></div>
+  <div id="sList" class="gone"></div>
+ </div>
+
+ <div id="sheetHost"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+'use strict';
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+/* ══ DATA TABLES (new content = new rows) ══ */
+var AVS=['🦁','🐯','🦅','🐙','🦊','🐺','🐼','🦄','🐬','🦋','🐢','🐘'];
+var CUR={NG:['₦','Naira'],GH:['₵','Cedi'],KE:['KSh','Shilling'],US:['$','Dollar'],GB:['£','Pound'],DE:['€','Euro'],FR:['€','Euro'],ES:['€','Euro'],IT:['€','Euro'],NL:['€','Euro'],PT:['€','Euro'],IE:['€','Euro'],CA:['$','Dollar'],AU:['$','Dollar'],IN:['₹','Rupee'],JP:['¥','Yen'],CN:['¥','Yuan'],BR:['R$','Real'],MX:['$','Peso'],ZA:['R','Rand'],AE:['AED','Dirham'],SA:['SAR','Riyal'],EG:['E£','Pound'],GH_:['₵','Cedi'],PK:['₨','Rupee'],BD:['৳','Taka'],ID:['Rp','Rupiah'],PH:['₱','Peso'],TR:['₺','Lira'],RU:['₽','Ruble'],AR:['$','Peso'],NG_:['₦','Naira']};
+function curOf(cc){return CUR[(cc||'').toUpperCase()]||['¤','Credits']}
+var TRAITS=[
+ {id:'hustler',e:'💼',n:'Hustler',t:'Market and street work pays 25% more.'},
+ {id:'scholar',e:'🎓',n:'Scholar',t:'Study actions train skills 25% faster.'},
+ {id:'ekombi',e:'💃',n:'Dancer',t:'Fun actions restore more mood.'},
+ {id:'sweet',e:'🗣️',n:'Sweet Mouth',t:'Social drains slower and restores faster.'},
+ {id:'faithful',e:'⛪',n:'Faithful',t:'Worship restores extra social and fun.'},
+ {id:'clean',e:'🧼',n:'Clean Pikin',t:'Hygiene drains slower.'},
+ {id:'night',e:'🌙',n:'Night Crawler',t:'Energy drains slower after 9pm.'},
+ {id:'river',e:'🎣',n:'River Child',t:'Outdoor actions restore more.'}];
+var BIRTHS=[
+ {id:'rich',e:'🛢️',t:'Oil-money baby!',s:'Your family made it big.',m:200000,w:1},
+ {id:'civil',e:'🏛️',t:'Civil servant\'s child',s:'Steady salary, steady rules.',m:60000,w:3},
+ {id:'trader',e:'🧺',t:'Trader\'s child',s:'Raised between the stalls.',m:28000,w:3},
+ {id:'mid',e:'🏙️',t:'City middle class',s:'Comfortable, but you still hustle.',m:15000,w:3},
+ {id:'tight',e:'💪',t:'Money is tight',s:'Mama raised you on prayers.',m:4000,w:3},
+ {id:'village',e:'🌴',t:'Village-born',s:'You start from scratch and build.',m:1500,w:4},
+ {id:'self',e:'🔥',t:'Self-made',s:'Nothing given. Everything earned.',m:2500,w:2}];
+var NEEDS=[
+ ['hunger','🍲','Hunger'],['energy','⚡','Energy'],['fun','🎉','Fun'],
+ ['social','💬','Social'],['hygiene','🫧','Hygiene'],['mood','😊','Mood']];
+var MOODLETS={
+ sharp:{l:'Sharp',e:'✂️',v:10,h:6},fed:{l:'Well Fed',e:'🍛',v:8,h:4},jollof:{l:'Good Food',e:'🍛',v:10,h:5},
+ coffee:{l:'Coffee Buzz',e:'☕',v:8,h:3},fit:{l:'Pumped Up',e:'💪',v:11,h:5},runner:{l:'Runner High',e:'🏃',v:10,h:4},
+ clean:{l:'Fresh',e:'🚿',v:8,h:5},prayed:{l:'Anointed',e:'🕊️',v:14,h:8},read:{l:'Well Read',e:'📚',v:8,h:5},
+ brain:{l:'Brain Fire',e:'🧠',v:12,h:6},party:{l:'Party Mood',e:'🪩',v:12,h:5},marketWin:{l:'Market Win',e:'🛍️',v:8,h:4},
+ social:{l:'Good Gist',e:'💬',v:7,h:4},nature:{l:'Nature Calm',e:'🌳',v:9,h:5},healed:{l:'Treated',e:'💊',v:10,h:6},
+ broke:{l:'Broke',e:'💸',v:-9,h:6},grumble:{l:'Hungry',e:'😞',v:-12,h:3},dull:{l:'Bored',e:'😐',v:-8,h:5},
+ lonely:{l:'Lonely',e:'📱',v:-7,h:5},dirty:{l:'Need a Bath',e:'🧼',v:-8,h:5},tired:{l:'Worn Out',e:'😪',v:-10,h:4}};
+var ICONS={school:'🏫',university:'🎓',college:'🎓',library:'📚',marketplace:'🛒',bank:'🏦',place_of_worship:'⛪',restaurant:'🍲',fast_food:'🍔',cafe:'☕',bar:'🍺',nightclub:'🪩',pharmacy:'💊',hospital:'🏥',clinic:'🏥',cinema:'🎬',theatre:'🎭',fuel:'⛽',park:'🌳',stadium:'🏟️',supermarket:'🛒'};
+var VACTS={
+ library:[{n:'Read a book',e:'📖',s:20,fx:{fun:8,mood:4},md:'read'},{n:'Study quietly',e:'🧠',s:30,fx:{mood:6,energy:-4},md:'brain'}],
+ school:[{n:'Attend class',e:'✏️',s:30,fx:{mood:5,social:4,energy:-6},md:'brain'}],
+ university:[{n:'Attend lectures',e:'🎓',s:35,fx:{mood:6,social:5,energy:-7},md:'brain'},{n:'Campus hangout',e:'🧑🏾‍🎓',s:20,fx:{fun:9,social:8},md:'social'}],
+ college:[{n:'Attend class',e:'✏️',s:30,fx:{mood:5,social:4},md:'brain'}],
+ marketplace:[{n:'Buy street food',e:'🍢',c:3,s:12,fx:{hunger:18,fun:4},md:'fed'},{n:'Sell your wares',e:'🧺',earn:8,s:35,fx:{social:4,energy:-6},md:'marketWin'}],
+ supermarket:[{n:'Do food shopping',e:'🛒',c:6,s:20,fx:{hunger:12,energy:-3},md:'fed'}],
+ restaurant:[{n:'Eat a proper meal',e:'🍲',c:8,s:30,fx:{hunger:30,fun:6,social:3},md:'jollof'}],
+ fast_food:[{n:'Quick bite',e:'🍔',c:3,s:12,fx:{hunger:16,fun:3},md:'fed'}],
+ cafe:[{n:'Coffee & pastry',e:'☕',c:4,s:15,fx:{hunger:8,energy:8,mood:4},md:'coffee'}],
+ bank:[{n:'Check your balance',e:'🏦',s:8,fx:{mood:2}},{n:'Open a savings plan',e:'💳',s:15,fx:{mood:6},md:'marketWin'}],
+ place_of_worship:[{n:'Pray / worship',e:'🙏',s:25,fx:{mood:12,social:6,fun:4},md:'prayed'},{n:'Quiet reflection',e:'🕯️',s:12,fx:{mood:8,energy:4}}],
+ pharmacy:[{n:'Buy medicine',e:'💊',c:5,s:8,fx:{mood:5},md:'healed'}],
+ hospital:[{n:'Get treated',e:'🏥',c:10,s:20,fx:{mood:8,energy:6},md:'healed'}],
+ clinic:[{n:'See a doctor',e:'🩺',c:8,s:15,fx:{mood:6},md:'healed'}],
+ cinema:[{n:'Watch a movie',e:'🎬',c:6,s:45,fx:{fun:16,mood:8,energy:-4},md:'party'}],
+ theatre:[{n:'Catch a show',e:'🎭',c:7,s:40,fx:{fun:15,mood:8},md:'party'}],
+ bar:[{n:'Hang out with a drink',e:'🍺',c:5,s:30,fx:{fun:12,social:10,mood:6},md:'party'}],
+ nightclub:[{n:'Dance the night away',e:'🪩',c:8,s:45,fx:{fun:18,social:12,mood:10,energy:-10},md:'party'}],
+ fuel:[{n:'Refuel your ride',e:'⛽',c:4,s:8,fx:{mood:3}}],
+ park:[{n:'Walk in the park',e:'🌳',s:25,fx:{fun:8,mood:7,energy:5},md:'nature'},{n:'Jog the paths',e:'🏃',s:20,fx:{energy:-4,mood:8,hygiene:-5},md:'runner'}],
+ stadium:[{n:'Watch the match',e:'🏟️',s:45,fx:{fun:16,social:10,mood:8},md:'party'}],
+ gym:[{n:'Full workout',e:'💪',c:5,s:35,fx:{mood:10,energy:-8,hygiene:-10,fun:4},md:'fit'},{n:'Quick session',e:'🏋🏾',c:4,s:20,fx:{mood:7,hygiene:-6},md:'fit'}],
+ fitness_centre:[{n:'Work out',e:'💪',c:5,s:30,fx:{mood:9,hygiene:-8},md:'fit'}]};
+
+/* ══ STATE ══ */
+var KEY='skyworld.v1',S=null,MAP=null,PMARK=null,MARKS=[],CURS=[],busy=false,trSel=null,avSel=null,rolled=null,geoRes=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}}
+function nowMs(){return Date.now()}
+function addMood(id){var M=MOODLETS[id];if(!M)return;S.mood=S.mood||[];var t=nowMs();S.mood=S.mood.filter(function(m){return m.id!==id&&m.until>t});S.mood.push({id:id,until:t+M.h*36e5});if(S.mood.length>10)S.mood=S.mood.slice(-10)}
+function activeMood(){var t=nowMs();(S.mood=S.mood||[]);return S.mood.filter(function(m){return m.until>t})}
+function moodVal(){var v=50;activeMood().forEach(function(m){var M=MOODLETS[m.id];if(M)v+=M.v});return Math.max(0,Math.min(100,Math.round(v)))}
+function addStory(e,txt,tone){S.story=S.story||[];S.story.unshift({ts:nowMs(),e:e,txt:txt,tone:tone||'info'});if(S.story.length>150)S.story.length=150}
+function sym(){return curOf(S.cc)[0]}
+function money(n){return sym()+Math.round(n).toLocaleString('en')}
+
+/* ══ CHARACTER CREATION ══ */
+function buildIntro(){
+ $('avGrid').innerHTML=AVS.map(function(a,i){return '<button data-i="'+i+'" class="'+(i===0?'on':'')+'">'+a+'</button>'}).join('');
+ avSel=AVS[0];
+ $('avGrid').querySelectorAll('button').forEach(function(b){b.onclick=function(){
+  $('avGrid').querySelectorAll('button').forEach(function(x){x.classList.remove('on')});
+  b.classList.add('on');avSel=AVS[+b.dataset.i]}});
+ trSel=TRAITS[0];
+ $('traitList').innerHTML=TRAITS.map(function(t,i){return '<div class="vrow" data-i="'+i+'" style="'+(i===0?'':'')+'"><span class="ve">'+t.e+'</span><span><span class="vn">'+t.n+'</span><div class="vd">'+t.t+'</div></span></div>'}).join('');
+ $('traitList').querySelectorAll('.vrow').forEach(function(r){
+  r.style.outline='none';
+  r.onclick=function(){trSel=TRAITS[+r.dataset.i];
+   $('traitList').querySelectorAll('.vrow').forEach(function(x){x.style.borderColor='var(--line)'});
+   r.style.borderColor='var(--gold)'}});
+ $('traitList').querySelector('.vrow').style.borderColor='var(--gold)';
+ $('btnStart').onclick=startLife;
+ $('btnGeo').onclick=function(){
+  if(!navigator.geolocation){toast('Location not available — type a place instead.');return}
+  $('geoNote').textContent='Locating…';
+  navigator.geolocation.getCurrentPosition(function(p){
+   geoRes={lat:p.coords.latitude,lon:p.coords.longitude,label:'My area',cc:''};
+   $('inPlace').value='📍 My current location';$('geoNote').textContent='Got it. Roll your birth and start.';
+  },function(){toast('Could not read location — type a place instead.');$('geoNote').textContent='Works offline once your town\'s places are saved.'});
+ };
+}
+function rollBirth(){
+ var tot=0;BIRTHS.forEach(function(b){tot+=b.w});var r=Math.random()*tot;
+ for(var i=0;i<BIRTHS.length;i++){r-=BIRTHS[i].w;if(r<=0)return BIRTHS[i]}
+ return BIRTHS[0];
+}
+function startLife(){
+ var nm=($('inName').value||'').trim();if(!nm){toast('Give your character a name.');return}
+ var place=($('inPlace').value||'').trim();
+ if(!place&&!geoRes){toast('Type a town or tap Use my current location.');return}
+ $('btnStart').disabled=true;$('btnStart').textContent='Finding your world…';
+ var go=function(lat,lon,label,cc){
+  rolled=rollBirth();
+  S={name:nm,av:avSel,tr:trSel.id,cc:cc||'',place:{lat:lat,lon:lon,label:label},
+     money:rolled.m,meters:{hunger:75,energy:80,fun:70,social:65,hygiene:80},
+     mood:[],story:[],venues:[],created:nowMs()};
+  addStory('🌍',nm+' begins life in '+label+'. '+rolled.e+' '+rolled.t+' — '+money(rolled.m)+' in hand.','info');
+  addStory('🎲','Birth lottery: '+rolled.t+'. '+rolled.s,'info');
+  save();
+  $('intro').classList.add('gone');$('world').classList.remove('gone');
+  initWorld();
+ };
+ if(geoRes){go(geoRes.lat,geoRes.lon,geoRes.label,'');return}
+ fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(place)+'&format=json&limit=1&addressdetails=1')
+  .then(function(r){return r.json()}).then(function(j){
+   if(!j||!j.length){toast('Could not find that place — try a bigger town nearby.');$('btnStart').disabled=false;$('btnStart').textContent='Begin your life →';return}
+   var cc='';try{cc=(j[0].address&&(j[0].address.country_code||''))||''}catch(e){}
+   go(parseFloat(j[0].lat),parseFloat(j[0].lon),j[0].display_name.split(',').slice(0,2).join(','),cc);
+  }).catch(function(){toast('No connection for place search — tap Use my current location.');$('btnStart').disabled=false;$('btnStart').textContent='Begin your life →'});
+}
+
+/* ══ WORLD ══ */
+function initWorld(){
+ if(typeof L==='undefined'){toast('Map engine not loaded — check connection and reload.');return}
+ MAP=L.map('map',{zoomControl:true,attributionControl:true}).setView([S.place.lat,S.place.lon],15);
+ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(MAP);
+ PMARK=L.marker([S.place.lat,S.place.lon],{icon:L.divIcon({className:'',html:'<div class="pmark">'+S.av+'<span>'+esc(S.name)+'</span></div>',iconSize:[60,50],iconAnchor:[30,25]})}).addTo(MAP);
+ renderTop();loadVenues();
+ setInterval(tickClock,1000);setInterval(decay,60000);
+}
+function tickClock(){var d=new Date();$('pClock').textContent='⏰ '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · real time'}
+function decay(){
+ var m=S.meters,h=1;
+ if(S.tr==='clean')h=.6;
+ m.hunger=Math.max(0,m.hunger-.6);m.energy=Math.max(0,m.energy-.5);m.fun=Math.max(0,m.fun-.4);m.social=Math.max(0,m.social-.3*h);m.hygiene=Math.max(0,m.hygiene-.35*(S.tr==='clean'?.6:1));
+ if(m.hunger<25)addMood('grumble');if(m.hygiene<25)addMood('dirty');if(m.fun<25)addMood('dull');if(m.social<20)addMood('lonely');if(m.energy<15)addMood('tired');
+ S.meters.mood=moodVal();save();renderTop();
+}
+function renderTop(){
+ $('pName').textContent=S.av+' '+S.name;
+ $('pTag').textContent=TRAIT_BY(S.tr).e+' '+TRAIT_BY(S.tr).n+' · '+S.place.label;
+ $('pMoney').textContent=money(S.money);
+ tickClock();
+ var mv=moodVal();var chips=activeMood().slice(0,5).map(function(m){var M=MOODLETS[m.id];return '<span class="chip '+(M.v>=0?'good':'bad')+'">'+M.e+' '+M.l+'</span>'}).join('');
+ $('moodChips').innerHTML=chips+'<span class="chip">😊 Mood '+mv+'</span>';
+}
+function TRAIT_BY(id){for(var i=0;i<TRAITS.length;i++)if(TRAITS[i].id===id)return TRAITS[i];return TRAITS[0]}
+var VKEYS=Object.keys(VACTS).join('|');
+function loadVenues(){
+ if(S.venues&&S.venues.length){renderVenues();toast('Loaded '+S.venues.length+' saved places.');return}
+ $('vList').innerHTML='<div class="note">Finding real places near you…</div>';
+ var q='[out:json][timeout:25];(node["amenity"~"^('+VKEYS+')"](around:1500,'+S.place.lat+','+S.place.lon+');way["amenity"~"^('+VKEYS+')"](around:1500,'+S.place.lat+','+S.place.lon+'););out center 80;';
+ fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'}})
+  .then(function(r){return r.json()}).then(function(j){
+   S.venues=parseOverpass(j);save();renderVenues();
+   addStory('🗺️','Discovered '+S.venues.length+' real places around '+S.place.label+'.','good');
+   if(!S.venues.length)toast('Few mapped places here — you can still live and act.');
+  }).catch(function(){toast('No connection for place data — reconnect once to load your town.');$('vList').innerHTML='<div class="note">Offline. Reconnect once to load real places around '+esc(S.place.label)+'.</div>'});
+}
+function parseOverpass(j){
+ var out=[],seen={};
+ (j&&j.elements||[]).forEach(function(el){
+  var lat=el.lat||(el.center&&el.center.lat),lon=el.lon||(el.center&&el.center.lon),a=el.tags&&el.tags.amenity;
+  if(!lat||!lon||!VACTS[a]||seen[el.id])return;seen[el.id]=1;
+  var name=(el.tags&&(el.tags.name||el.tags['name:en']))||a.replace(/_/g,' ');
+  out.push({id:el.id,lat:lat,lon:lon,type:a,name:name,d:dist(S.place.lat,S.place.lon,lat,lon)});
+ });
+ out.sort(function(a,b){return a.d-b.d});
+ if(out.length>60)out.length=60;
+ return out;
+}
+function dist(la1,lo1,la2,lo2){var R=6371000,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;
+ var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);
+ return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)))}
+function renderVenues(){
+ MARKS.forEach(function(m){MAP.removeLayer(m)});MARKS=[];CURS=[];
+ var h='';
+ S.venues.forEach(function(v,i){
+  MARKS.push(L.marker([v.lat,v.lon],{icon:L.divIcon({className:'',html:'<div class="pmark" style="font-size:20px">'+(ICONS[v.type]||'📍')+'</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(MAP).on('click',function(){openVenue(i)}));
+  h+='<div class="vrow" data-i="'+i+'"><span class="ve">'+(ICONS[v.type]||'📍')+'</span><span style="flex:1"><span class="vn">'+esc(v.name)+'</span><div class="vd">'+v.type.replace(/_/g,' ')+' · '+(v.d<1000?v.d+' m':(v.d/1000).toFixed(1)+' km')+' away</div></span><span style="color:var(--gold)">→</span></div>';
+ });
+ $('vList').innerHTML=h||'<div class="note">No mapped places found nearby.</div>';
+ $('vList').querySelectorAll('.vrow').forEach(function(r){r.onclick=function(){openVenue(+r.dataset.i)}});
+}
+function openVenue(i){
+ var v=S.venues[i];if(!v)return;
+ if(busy){toast('Finish what you are doing first.');return}
+ var acts=VACTS[v.type]||[];
+ var h='<h3>'+(ICONS[v.type]||'📍')+' '+esc(v.name)+'</h3><div class="vd" style="color:var(--dim);font-size:.66rem">'+v.type.replace(/_/g,' ')+' · '+(v.d<1000?v.d+' m':(v.d/1000).toFixed(1)+' km')+'</div><div class="acts">';
+ acts.forEach(function(a,k){h+='<button data-k="'+k+'">'+a.e+' '+esc(a.n)+' · <b>'+a.s+'s</b>'+(a.c?' · costs '+money(a.c):'')+(a.earn?' · earns ~'+money(a.earn):'')+'</button>'});
+ h+='<button data-k="-1" style="border-color:var(--gold);color:var(--gold)">✖ Close</button></div>';
+ $('sheetHost').innerHTML='<div class="sheet">'+h+'</div>';
+ $('sheetHost').querySelectorAll('.acts button').forEach(function(b){b.onclick=function(){
+  var k=+b.dataset.k;if(k<0){$('sheetHost').innerHTML='';return}
+  $('sheetHost').innerHTML='';
+  walkTo(v,function(){runAct(v,acts[k])});
+ }});
+}
+function walkTo(v,cb){
+ if(busy)return;busy=true;
+ var st={la:S.place.lat,lo:S.place.lon},t0=nowMs(),dur=Math.min(4000,Math.max(900,v.d/3));
+ var step=function(){
+  var p=Math.min(1,(nowMs()-t0)/dur);
+  var la=st.la+(v.lat-st.la)*p,lo=st.lo+(v.lon-st.lo)*p;
+  S.place.lat=la;S.place.lon=lo;PMARK.setLatLng([la,lo]);
+  if(p<1){requestAnimationFrame(step)}else{S.place.lat=v.lat;S.place.lon=v.lon;MAP.panTo([v.lat,v.lon]);busy=false;cb()}
+ };
+ banner('🚶 Walking to '+v.name+'…',dur);
+ requestAnimationFrame(step);
+}
+function banner(txt,dur){
+ $('banner').style.display='block';$('bnTxt').textContent=txt;
+ $('bnBar').style.transition='none';$('bnBar').style.width='0%';
+ setTimeout(function(){$('bnBar').style.transition='width '+dur+'ms linear';$('bnBar').style.width='100%'},30);
+}
+function runAct(v,a){
+ if(!a){return}
+ if(a.c&&S.money<a.c){toast('Not enough money — hustle at the market.');return}
+ busy=true;
+ banner(a.e+' '+a.n+'…',a.s*1000);
+ setTimeout(function(){
+  busy=false;
+  if(a.c)S.money-=a.c;
+  var earn=0;
+  if(a.earn){earn=a.earn*(S.tr==='hustler'&&v.type==='marketplace'?1.25:1)*(.8+Math.random()*.5);S.money+=earn}
+  var f=1;
+  if(S.tr==='scholar'&&(v.type==='library'||v.type==='school'||v.type==='university'))f=1.25;
+  if(S.tr==='sweet'&&a.fx&&a.fx.social)f=1.3;
+  if(S.tr==='faithful'&&v.type==='place_of_worship')f=1.3;
+  if(S.tr==='river'&&(v.type==='park'||v.type==='stadium'))f=1.25;
+  for(var k in a.fx)S.meters[k]=Math.max(0,Math.min(100,(S.meters[k]||0)+a.fx[k]*(k==='social'&&S.tr==='sweet'?f:a.fx[k]>0?f:1)));
+  if(a.md)addMood(a.md);
+  if(S.money<100)addMood('broke');
+  S.meters.mood=moodVal();
+  var bits=[a.e+' '+a.n+' at '+v.name+'.'];
+  if(earn)bits.push('Earned '+money(earn)+'.');
+  addStory(a.e,bits.join(' ')+' Mood '+S.meters.mood+'.',earn||a.md?'good':'info');
+  save();renderTop();renderStory();
+  toast(bits.join(' ')+' 😊 '+S.meters.mood);
+  $('banner').style.display='none';
+ },a.s*1000);
+}
+function renderStory(){
+ var h='';
+ (S.story||[]).slice(0,30).forEach(function(r){
+  var t=new Date(r.ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  h+='<div class="story"><span>'+r.e+'</span> '+esc(r.txt)+'<div class="st">'+t+'</div></div>';
+ });
+ $('sList').innerHTML=h||'<div class="note">Nothing yet — go live.</div>';
+}
+var toastTimer=0;
+function toast(t){var el=$('toast');el.textContent=t;el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.style.display='none'},3400)}
+$('tabV').onclick=function(){$('tabV').classList.add('on');$('tabS').classList.remove('on');$('vList').classList.remove('gone');$('sList').classList.add('gone')};
+$('tabS').onclick=function(){$('tabS').classList.add('on');$('tabV').classList.remove('on');$('sList').classList.remove('gone');$('vList').classList.add('gone');renderStory()};
+
+/* boot */
+(function(){
+ S=load();
+ if(S&&S.name&&S.place){$('intro').classList.add('gone');$('world').classList.remove('gone');initWorld();return}
+ buildIntro();
+ if('serviceWorker' in navigator){try{navigator.serviceWorker.register('skyworld-sw.js').catch(function(){})}catch(e){}}
+})();
+</script>
+</body>
+</html>
