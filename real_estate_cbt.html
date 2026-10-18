@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Real Estate Foundations — CBT</title>
+<meta name="theme-color" content="#0B1330">
+<style>
+:root{--bg:#0B1330;--card:#151B3B;--line:#262F5E;--ink:#EDE9FF;--dim:#9AA3C7;--gold:#F5B84A;--grn:#34D399;--red:#F87171}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:40px}
+.wrap{max-width:680px;margin:0 auto;padding:16px 12px}
+.hd{text-align:center;margin:10px 0 4px}
+.hd .sub{color:var(--gold);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.hd h1{font-size:1.25rem;margin:4px 0}
+.hd .tag{color:var(--dim);font-size:.7rem}
+.toolbar{display:flex;justify-content:center;gap:8px;margin:10px 0}
+.toolbar button{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:9px;padding:6px 12px;font-size:.7rem;cursor:pointer}
+.toolbar button.on{border-color:var(--gold);color:var(--gold)}
+h2.sec{font-size:.8rem;color:var(--gold);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.07em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:9px}
+.srow{display:flex;align-items:center;gap:10px}
+.snum{font-size:1.15rem;min-width:30px;text-align:center}
+.snm{flex:1;font-size:.82rem;font-weight:600}
+.meta{color:var(--dim);font-size:.62rem;font-weight:400;display:block}
+button.go{background:var(--gold);color:#0d1330;border:0;border-radius:9px;padding:8px 13px;font-weight:700;font-size:.75rem;cursor:pointer}
+button.all{width:100%;padding:13px;font-size:.85rem}
+.qmeta{display:flex;justify-content:space-between;color:var(--dim);font-size:.68rem;margin-bottom:8px}
+.qtext{font-size:.92rem;line-height:1.55;margin-bottom:13px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);color:var(--ink);border-radius:11px;padding:12px;margin-bottom:8px;font-size:.85rem;cursor:pointer;line-height:1.45}
+.opt:active{transform:scale(.995)}
+.opt.ok{border-color:var(--grn);background:rgba(52,211,153,.12)}
+.opt.no{border-color:var(--red);background:rgba(248,113,113,.12)}
+.exp{display:none;border-left:3px solid var(--gold);background:rgba(245,184,74,.07);border-radius:0 10px 10px 0;padding:11px 12px;margin:10px 0;font-size:.8rem;line-height:1.6;color:#E8E4F5}
+.exp b{color:var(--gold)}
+.next{display:none;width:100%;background:var(--gold);color:#0d1330;border:0;border-radius:11px;padding:13px;font-weight:700;font-size:.85rem;cursor:pointer}
+.res{text-align:center;padding:20px 10px}
+.res .big{font-size:2.4rem;font-weight:800;color:var(--gold)}
+.res .msg{color:var(--dim);font-size:.8rem;margin:8px 0 16px;line-height:1.5}
+.frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;font-size:.78em;margin:0 3px}
+.frac .n{padding:0 4px;border-bottom:1.6px solid var(--gold)}
+.frac .d{padding:0 4px}
+.done{font-size:.6rem;color:var(--grn);display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="hd">
+  <div class="sub">Premium Study Suite</div>
+  <h1>🏘️ Real Estate Foundations</h1>
+  <div class="tag">Land law · Transactions · Investment math · Nigeria-focused</div>
+ </div>
+ <div class="toolbar"><button id="voice">🔇 Voice off</button></div>
+
+ <div id="menuView"></div>
+
+ <div id="quizView" style="display:none">
+  <div class="qmeta"><span id="qCount"></span><span id="qScore"></span></div>
+  <div class="card"><div class="qtext" id="qText"></div><div id="opts"></div></div>
+  <div class="exp" id="exp"></div>
+  <button class="next" id="nextB">Next →</button>
+ </div>
+
+ <div id="resView" style="display:none">
+  <div class="card res">
+   <div class="big" id="resPct"></div>
+   <div id="resRaw" style="color:var(--ink);font-weight:700"></div>
+   <div class="msg" id="resMsg"></div>
+   <button class="go" style="width:100%;padding:13px" onclick="showMenu()">Back to modules</button>
+  </div>
+ </div>
+</div>
+<script>
+'use strict';
+var SECS=["What Real Estate Is","Nigerian Land Law","The Players","Categories","Transaction Flow","Financing","Investment Math","Traps & Due Diligence"];
+var Q=[
+{sec:0,q:"Real estate is best defined as:",o:["A. Any building a person owns","B. Land plus everything permanently attached to it, such as buildings","C. Only land that has a Certificate of Occupancy","D. Any property bought for investment purposes"],c:1,e:"Real estate = land + improvements permanently affixed to it (houses, fences, wells, trees). Ownership documents like the C of O are the <b>proof</b> of ownership, not the property itself."},
+{sec:0,q:"What is the difference between real estate and real property?",o:["A. None, they mean exactly the same thing","B. Real property adds the legal rights attached to the land","C. Real estate is land; real property is only buildings","D. Real property is land used for business"],c:1,e:"Real estate is the physical thing. Real property is the physical thing <b>plus the bundle of legal rights</b> to use, rent, sell, mortgage and inherit it. The rights are what you actually buy."},
+{sec:0,q:"The \"bundle of rights\" of a property owner does NOT include:",o:["A. Right to rent it out","B. Right to sell or mortgage it","C. Right to pass it to his children","D. Right to use it in violation of government regulations"],c:3,e:"Ownership is a bundle of rights: use, lease, sell, mortgage, bequeath. But no owner holds the right to <b>break the law</b> — zoning rules, approved-use restrictions and government regulations always sit above private ownership."},
+{sec:0,q:"A built-in wardrobe in a house is sold with the house because it is:",o:["A. A gift from the seller","B. A fixture — permanently attached to the property","C. Personal property the buyer pays extra for","D. Required by Nigerian law in every sale"],c:1,e:"Anything <b>permanently affixed</b> (wardrobe, kitchen units, ceiling fans, borehole) is a fixture and transfers with the property. Movable items (fridge, sofa) are personal property unless the contract says otherwise."},
+{sec:0,q:"Land value in a growing city rises mostly because of:",o:["A. The quality of grass on the land","B. Rising demand as the city expands toward the land","C. The seller being kind","D. Government law that forces prices up every year"],c:1,e:"Land appreciates because of <b>demand</b>: as jobs, roads and people spread toward an area, more buyers want the same fixed supply of land. This is why raw land in a city's growth path is the classic Nigerian wealth builder."},
+{sec:0,q:"Which statement is TRUE?",o:["A. Renting a property gives you ownership rights","B. A tenant holds only the right to occupy for the agreed period","C. A landlord can collect rent from 3 different tenants for the same flat","D. Possession of keys equals legal title"],c:1,e:"A tenant buys <b>occupancy for a period</b>, not ownership. And holding keys is possession, not title — only a registered transfer gives ownership. Two principles every investor must separate: possession ≠ title, tenancy ≠ ownership."},
+{sec:1,q:"The Land Use Act that governs land ownership in Nigeria was enacted in:",o:["A. 1960","B. 1978","C. 1999","D. 2010"],c:1,e:"The <b>Land Use Act of 1978</b> vests all land in each state in the Governor, held in trust for the people. It is the foundation of every land question in Nigeria — know this date cold."},
+{sec:1,q:"Under the Land Use Act, land in each state is held in trust by:",o:["A. The President of Nigeria","B. The State Governor","C. Traditional rulers","D. Local government chairmen"],c:1,e:"Section 1: all land in the territory of a state is <b>vested in the Governor of that state</b>, held in trust and administered for the use and common benefit of all Nigerians. This is why state consent matters at every transfer."},
+{sec:1,q:"The primary government-issued document evidencing a person's right of occupancy is the:",o:["A. Receipt of purchase","B. Certificate of Occupancy (C of O)","C. Survey plan","D. Letter from the community head"],c:1,e:"The <b>C of O</b>, signed by the Governor, is the strongest state-issued evidence that a right of occupancy exists. A purchase receipt proves payment, a survey plan shows location — neither proves title."},
+{sec:1,q:"After buying a plot that already has a C of O, the new buyer must obtain:",o:["A. A new C of O from scratch","B. Governor's Consent to the assignment","C. Nothing — the old C of O automatically becomes his","D. A court judgment"],c:1,e:"Every assignment (sale) of a right of occupancy requires the <b>Governor's Consent</b> (Section 22). The buyer does not need a fresh C of O — the registered Deed of Assignment plus Consent perfects his title."},
+{sec:1,q:"What an individual actually holds under Nigerian land law is properly called a:",o:["A. Freehold title","B. Right of occupancy","C. Absolute ownership","D. Land grant"],c:1,e:"Strictly, Nigerians hold a <b>statutory or customary right of occupancy</b> — the right to use and occupy the land — rather than the absolute allodial title common before 1978. The rights in the bundle are strong, but the technical holder of radical title is the state."},
+{sec:1,q:"The legal document that transfers a seller's interest in land to the buyer is the:",o:["A. Deed of Assignment","B. Purchase receipt","C. Power of attorney","D. Letter of allocation"],c:0,e:"The <b>Deed of Assignment</b> assigns the seller's whole interest to the buyer and must be executed, stamped and registered. The receipt only evidences payment; registration gives the deed priority against later claims."},
+{sec:1,q:"Governor's Consent is required for assignment of a right of occupancy under which section of the Land Use Act?",o:["A. Section 1","B. Section 22","C. Section 36","D. Section 50"],c:1,e:"<b>Section 22</b>: it shall not be lawful for the holder of a statutory right of occupancy to assign without the prior consent of the Governor first had and obtained. Section 1 vests land in the Governor; Section 22 governs transfers."},
+{sec:1,q:"Stamping and registering the Deed of Assignment is important mainly because:",o:["A. It makes the handwriting clearer","B. It gives the deed legal priority against later claims and disputes","C. The government collects the fees for its own sake","D. It is required before the seller can move out"],c:1,e:"An <b>unregistered deed cannot be used as evidence of title</b> against a later registered instrument. Registration puts the world on notice and gives you priority. Without it, someone else can register first and defeat your claim."},
+{sec:2,q:"Which professional verifies the beacons (boundary stones) and coordinates of a plot?",o:["A. Licensed surveyor","B. Estate agent","C. Lawyer","D. Architect"],c:0,e:"The <b>licensed surveyor</b> produces the survey plan with coordinates and beacons. Verification at the Surveyor-General's office confirms the plot is not inside government acquisition and matches what the seller claims."},
+{sec:2,q:"A typical estate agent's commission for securing a tenant in Nigeria is:",o:["A. A flat ₦5,000","B. About 5–10% of the annual rent","C. Half of the rent","D. Agents work for free"],c:1,e:"Agency fees in Nigeria typically run <b>5–10% of rent</b> (plus agency/legal fees tenants see quoted). It is negotiable — agree it in writing before the agent shows the property, not after."},
+{sec:2,q:"Who determines what a property is truly worth in the market?",o:["A. The seller","B. An estate surveyor and valuer","C. The buyer's pastor","D. The estate agent"],c:1,e:"An <b>estate surveyor and valuer</b> is the trained professional who values property. Sellers and agents price; valuers value. Big money decisions deserve a valuation, not a guess."},
+{sec:2,q:"A title search at the lands registry is normally conducted by the:",o:["A. Lawyer","B. Agent","C. Buyer's friend","D. Bank"],c:0,e:"Your <b>lawyer</b> obtains and examines the title documents, confirms the seller is the true owner, checks for mortgages, court disputes or government acquisition. Never buy land in Nigeria without a lawyer running this search."},
+{sec:2,q:"Which professional must never be skipped in a Nigerian land purchase?",o:["A. The agent","B. The bricklayer","C. The lawyer","D. The interior decorator"],c:2,e:"The <b>lawyer</b> is the one professional you cannot skip: he searches the title, drafts the deed, guides payment through a documented channel and perfects the transfer. Every land-disaster story starts with \"we skipped the lawyer to save money.\""},
+{sec:2,q:"The lands registry's main function is to:",o:["A. Sell land to buyers","B. Keep records of registered land instruments for public search","C. Approve house designs","D. Collect rent for landlords"],c:1,e:"The registry is the <b>public record</b>: registered deeds, consents, mortgages and charges. Searching there tells you who really holds title and what encumbrances exist. If it is not registered, treat it as unverified."},
+{sec:3,q:"An office block rented to companies is classified as:",o:["A. Residential","B. Commercial","C. Industrial","D. Agricultural"],c:1,e:"Offices, shops and malls are <b>commercial</b> property. Commercial rents are usually higher and tied to business performance; they also need longer leases and more professional management."},
+{sec:3,q:"The key difference between freehold and leasehold is:",o:["A. Freehold property is always cheaper","B. Leasehold expires after an agreed term and can revert to the grantor","C. Freehold cannot be sold","D. Leasehold only exists in villages"],c:1,e:"<b>Leasehold</b> (e.g. federal land in Lagos, often 99 years) expires at the end of the term and reverts to the grantor unless renewed. <b>Freehold</b> is effectively perpetual. Always check which one you are buying and how many years remain."},
+{sec:3,q:"Raw land on a city's growth path is characterised by:",o:["A. Fast income, slow appreciation","B. Fastest appreciation, slowest or no income","C. Guaranteed monthly rent","D. No appreciation ever"],c:1,e:"Raw land earns <b>little or no rent</b> but appreciates fastest as the city expands toward it. It suits patient capital: buy in the growth path, hold, then sell or develop. Its enemy is holding cost and fake title."},
+{sec:3,q:"A warehouse used for storage and distribution is:",o:["A. Residential","B. Commercial","C. Industrial","D. Mixed-use"],c:2,e:"Factories and warehouses are <b>industrial</b> property — valued by floor area, access roads, power supply and truck movement. Industrial usually means fewer tenants but longer, more stable leases."},
+{sec:3,q:"Which of these is NOT residential property?",o:["A. A block of flats","B. A duplex","C. A shopping complex","D. A bungalow"],c:2,e:"A shopping complex is <b>commercial</b>. Flats, duplexes and bungalows are residential. Classifying correctly matters because tenancy law, rent patterns and buyer profiles differ by category."},
+{sec:3,q:"A 99-year lease has 25 years left. The buyer should mainly understand that:",o:["A. Nothing changes for him","B. At expiry the land can revert to the grantor unless renewed","C. He automatically owns it forever after paying","D. Leaseholds cannot be transferred at all"],c:1,e:"You can buy, sell and develop leasehold, but the <b>clock keeps running</b>. With 25 years left, banks lend less, and toward expiry the grantor regains rights. Price it accordingly and negotiate renewal terms early."},
+{sec:4,q:"After inspecting a property and collecting the seller's documents, the NEXT step is:",o:["A. Pay the full price immediately","B. Conduct a title search at the lands registry","C. Sign the deed","D. Apply for building approval"],c:1,e:"<b>Search before money.</b> The lawyer's title search confirms the seller actually owns it and nothing is hidden. Until that is verified, no deposit should move. Step 2 of the transaction flow: search the title."},
+{sec:4,q:"A title search mainly checks for:",o:["A. The seller's age","B. True ownership, mortgages, court disputes and government acquisition","C. The colour of the house","D. The agent's commission"],c:1,e:"The search answers four life-or-death questions: <b>who truly owns it, is it mortgaged, is it in court, is it inside government acquisition?</b> A clean search is the buyer's strongest shield."},
+{sec:4,q:"Verifying the survey plan at the Surveyor-General's office tells you whether the land:",o:["A. Has good soil","B. Falls inside government acquisition or committed land","C. Is near a school","D. Has borehole water"],c:1,e:"The charting/computer search reveals if the coordinates fall inside <b>acquired or committed</b> land. Buying such land without a government excision is the classic Nigerian trap — cheap land, permanent sorrow."},
+{sec:4,q:"In the transaction flow, which step comes LAST?",o:["A. Title search","B. Signing the Deed of Assignment","C. Governor's Consent","D. Registration of the deed"],c:3,e:"Flow: inspect → search → survey verification → negotiate and pay deposit → execute deed → stamp → obtain Governor's Consent → <b>register the deed</b>. Registration is the final step that perfects your title."},
+{sec:4,q:"The purchase deposit should normally be paid:",o:["A. In cash to the seller directly","B. Through the lawyer into a documented channel","C. To the agent to keep","D. In bits to the seller's relatives"],c:1,e:"Pay through a <b>documented channel</b> (bank transfer via the lawyer, with receipts and a written agreement referencing the deposit). Proof of payment is half your defence if anything goes wrong."},
+{sec:4,q:"A land sale where the deed is signed and money paid, but Governor's Consent was never obtained, is:",o:["A. Fully perfected ownership","B. An unperfected transfer — legally incomplete and at risk","C. Automatically valid after 7 years","D. Void only if the seller dies"],c:1,e:"Without consent, the assignment is <b>unperfected</b>: the holder can be treated as having breached the Land Use Act, and the interest can be defeated. Consent fees feel expensive; they are the price of real ownership."},
+{sec:4,q:"A buyer takes possession of the keys before consent and registration. He holds:",o:["A. Perfected legal title","B. Possession only — not perfected title","C. Nothing at all","D. Automatic C of O"],c:1,e:"Possession is physical control; <b>title is perfected by consent + registration</b>. Possession is useful evidence but is not ownership. Complete the paperwork before calling the land yours."},
+{sec:5,q:"The most common way Nigerians actually fund property purchases is:",o:["A. Bank mortgages","B. Personal savings and cash","C. Pension funds","D. Foreign investors"],c:1,e:"Despite mortgages existing, most Nigerian transactions are <b>cash-driven</b> — savings, family pooling, cooperative contributions. This is why disciplined saving beats waiting for a perfect loan."},
+{sec:5,q:"The National Housing Fund (NHF) loan is available to:",o:["A. Anybody walking into a bank","B. Registered NHF contributors through the Federal Mortgage Bank","C. Only civil servants","D. Only developers"],c:1,e:"NHF loans come through the <b>Federal Mortgage Bank</b> for registered contributors (2.5% of basic salary monthly), at cheaper rates than commercial mortgages. Register early — eligibility builds with contribution history."},
+{sec:5,q:"Typical Nigerian commercial mortgages demand a down payment of about:",o:["A. 5%","B. 10%","C. 20–30%","D. 0%"],c:2,e:"Nigerian banks usually want <b>20–30% equity</b>, proof of steady income, and often a guarantor — with short tenors and high rates. Model the true monthly cost before committing, not just the sticker price."},
+{sec:5,q:"In a joint venture, a landowner who contributes only the land typically:",o:["A. Gets nothing","B. Shares the completed project or profits with the developer who funded construction","C. Pays all building costs","D. Becomes the developer's employee"],c:1,e:"Classic JV: <b>landowner brings land, developer brings capital and expertise, they split the estate/flats or profits</b> by agreement. A lawyer must draft the JV deed: sharing ratio, timelines, exit terms."},
+{sec:5,q:"Installment payment plans (pay over 6–24 months) are most typical for:",o:["A. Completed estates with tenants already inside","B. Off-plan and developer estate purchases","C. C of O applications","D. Court fees"],c:1,e:"Developers selling <b>off-plan</b> (before or during construction) commonly spread payments over months. Verify the developer's track record and land title first — installment plans from a faceless developer are how many lose money."},
+{sec:6,q:"Gross rental yield is calculated as:",o:["A. Annual rent ÷ purchase price × 100%","B. Purchase price ÷ annual rent","C. Monthly rent × 12 months only","D. Property age ÷ rent"],c:0,e:"Gross yield = <span class=\"frac\"><span class=\"n\">annual rent</span><span class=\"d\">purchase price</span></span> × 100%. It tells you what the property earns per year relative to what you paid — the investor's first sanity check."},
+{sec:6,q:"A flat rents for ₦1,200,000 per year and was bought for ₦20,000,000. The gross yield is:",o:["A. 3%","B. 6%","C. 8%","D. 12%"],c:1,e:"Gross yield = <span class=\"frac\"><span class=\"n\">₦1,200,000</span><span class=\"d\">₦20,000,000</span></span> × 100% = 0.06 × 100% = <b>6%</b>. The property returns 6% of its price per year in rent, before costs."},
+{sec:6,q:"Net yield differs from gross yield because it subtracts:",o:["A. Only government tax","B. Vacancy months, repairs, agency fees, management and taxes","C. The seller's profit","D. The cost of the land only"],c:1,e:"Net yield = (rent − <b>all operating costs</b>: vacancy, repairs, agency, management, taxes, insurance) ÷ price. Gross yield flatters; net yield tells the truth about what reaches your pocket."},
+{sec:6,q:"Rent ₦1,500,000/yr; yearly costs ₦300,000; purchase price ₦25,000,000. Net yield is:",o:["A. 6%","B. 4.8%","C. 5.5%","D. 3.2%"],c:1,e:"Net income = ₦1,500,000 − ₦300,000 = ₦1,200,000. Net yield = <span class=\"frac\"><span class=\"n\">₦1,200,000</span><span class=\"d\">₦25,000,000</span></span> × 100% = <b>4.8%</b>. Always run the numbers this way before you buy, not after."},
+{sec:6,q:"Property earns money for its owner through which TWO channels?",o:["A. Rent (cash flow) and value appreciation","B. Rent and government grants","C. Appreciation and sympathy","D. Cash flow and bank pity"],c:0,e:"<b>Cash flow</b> (rent net of costs) and <b>appreciation</b> (the land/value rising). In Nigerian cities appreciation is usually the bigger prize; rent pays the bills while you wait."},
+{sec:6,q:"The professional's rule says you make your profit when you:",o:["A. Sell at any price","B. Buy at the right price","C. Renovate everything","D. Pray about it"],c:1,e:"<b>\"You make your profit when you buy.\"</b> Overpay at purchase and no amount of patience saves you. Under-buy at a verified price and even a mediocre exit makes money. Price discipline is the skill."},
+{sec:7,q:"\"Omo-onile\" in Nigerian land parlance refers to:",o:["A. Licensed surveyors","B. Land-grabbing families who resell land they do not own","C. Estate valuers","D. Court registrars"],c:1,e:"<b>Omo-onile</b> (\"children of the land\") resell family land — often the same plot to many buyers — and sometimes extort at foundation-laying. Defense: verified title, registered deed, documented possession, and never dealing with an unverified \"family\" seller."},
+{sec:7,q:"Cheap land inside government acquisition without an excision is:",o:["A. A rare opportunity","B. A trap — it cannot get consent or a clean title","C. Free from all disputes","D. Automatically legal after purchase"],c:1,e:"Acquired/committed land belongs to the government; buying it without a verified <b>excision</b> means no consent, no C of O, demolition risk. The abnormally cheap price IS the warning sign."},
+{sec:7,q:"The strongest defense against forged documents is:",o:["A. A colour photocopy for comparison","B. An independent title search at the lands registry","C. Asking the seller to swear an oath","D. Praying over the papers"],c:1,e:"Forged deeds are defeated by <b>independent verification</b>: your lawyer's search at the registry and survey charting confirm authenticity against official records. Never verify with the seller's own documents alone."},
+{sec:7,q:"A seller pressures you to pay TODAY because \"three other buyers are coming tonight.\" This is:",o:["A. Standard Lagos urgency","B. A classic pressure red flag — verify before paying","C. Proof the land is valuable","D. A legal sales technique"],c:1,e:"Manufactured urgency is the con artist's favourite tool. Genuine deals survive 48 hours of verification; scams die under it. Rule: <b>the more pressure to pay fast, the slower you should move.</b>"},
+{sec:7,q:"Payments for land should be made through:",o:["A. Cash to anyone who asks","B. A documented channel, receipted, ideally via the lawyer","C. Mobile transfer to the agent's son","D. Gold bars"],c:1,e:"Documented, traceable payment (bank transfer, receipt referencing the property and agreement) is your evidence in any dispute. Cash to strangers is a donation, not a purchase."},
+{sec:7,q:"\"Government excision\" of land means:",o:["A. The government has seized the land permanently","B. A portion of acquired land is officially released back to a community","C. The land has been taxed twice","D. The survey plan has expired"],c:1,e:"Excision formally <b>releases</b> a defined portion of acquired land back to the community, making it legally marketable — but VERIFY the excision document at the Surveyor-General's office, because forged excisions circulate."}
+];
+var LSKEY='restate_cbt_v1';
+var prog={};try{prog=JSON.parse(localStorage.getItem(LSKEY))||{}}catch(e){prog={}}
+var voiceOn=false,cur=null,order=[],idx=0,score=0,answered=false;
+function $(id){return document.getElementById(id)}
+function el(tag,cls,html){var d=document.createElement(tag);if(cls)d.className=cls;if(html!=null)d.innerHTML=html;return d}
+function chime(ok){try{var a=new (window.AudioContext||window.webkitAudioContext)();var t=a.currentTime;var f=ok?[523,784]:[220,160];f.forEach(function(fr,i){var o=a.createOscillator(),g=a.createGain();o.frequency.value=fr;o.type=ok?'sine':'sawtooth';g.gain.setValueAtTime(.12,t+i*.13);g.gain.exponentialRampToValueAtTime(.001,t+i*.13+.18);o.connect(g);g.connect(a.destination);o.start(t+i*.13);o.stop(t+i*.13+.2)});setTimeout(function(){a.close()},900)}catch(e){}}
+function speak(txt){if(!voiceOn||!window.speechSynthesis)return;try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(txt))}catch(e){}}
+function showMenu(){
+ cur=null;answered=false;
+ $('quizView').style.display='none';$('resView').style.display='none';
+ var m=$('menuView');m.style.display='block';m.innerHTML='';
+ var h=el('h2','sec','Modules');m.appendChild(h);
+ SECS.forEach(function(name,si){
+  var secQ=Q.filter(function(q){return q.sec===si});
+  var p=prog['s'+si],best=p&&p.best!=null?p.best:null,tries=p?p.tries:0;
+  var c=el('div','card');
+  var row=el('div','srow');
+  row.appendChild(el('div','snum',''+(si+1)));
+  var nm=el('div','snm',name+'<span class="meta">'+secQ.length+' questions'+(tries?(' · best '+best+'/'+secQ.length):'')+'</span>');
+  row.appendChild(nm);
+  var b=el('button','go','Start →');b.onclick=function(){start(si)};
+  row.appendChild(b);c.appendChild(row);m.appendChild(c);
+ });
+ var all=el('div','card');
+ var ab=el('button','go all','🎲 Shuffle all 50 questions');ab.onclick=function(){start(-1)};
+ all.appendChild(ab);m.appendChild(all);
+}
+function start(si){
+ cur=si;score=0;idx=0;answered=false;
+ var pool=Q.map(function(q,i){return i});
+ if(si>=0){pool=Q.map(function(q,i){return i}).filter(function(i){return Q[i].sec===si})}
+ for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t}
+ order=pool;
+ $('menuView').style.display='none';$('resView').style.display='none';$('quizView').style.display='block';
+ renderQ();
+}
+function renderQ(){
+ answered=false;
+ var q=Q[order[idx]];
+ $('qCount').textContent=(cur>=0?SECS[cur]:'All 50')+' · Q'+(idx+1)+'/'+order.length;
+ $('qScore').textContent='Score: '+score;
+ var qt=$('qText');qt.innerHTML=(cur>=0?'':'['+SECS[q.sec]+'] ')+q.q;
+ $('exp').style.display='none';$('nextB').style.display='none';
+ var o=$('opts');o.innerHTML='';
+ q.o.forEach(function(t,i){var b=el('button','opt',t);b.onclick=function(){pick(i,b)};o.appendChild(b)});
+ speak(q.q.replace(/<[^>]+>/g,' '));
+ window.scrollTo(0,0);
+}
+function pick(i,btn){
+ if(answered)return;answered=true;
+ var q=Q[order[idx]];var ok=i===q.c;
+ if(ok){score++;chime(true)}else{chime(false)}
+ var opts=$('opts').children;
+ for(var k=0;k<opts.length;k++){
+  opts[k].onclick=null;
+  if(k===q.c){opts[k].classList.add('ok')}
+ }
+ if(!ok){btn.classList.add('no')}
+ var e=$('exp');e.innerHTML=(ok?'✅ <b>Correct!</b> ':'❌ <b>Not quite.</b> The correct answer is '+q.o[q.c].slice(0,2)+'. ')+'<br>'+q.e;
+ e.style.display='block';
+ var nb=$('nextB');nb.textContent=(idx+1<order.length)?'Next →':'See result →';nb.style.display='block';
+ $('qScore').textContent='Score: '+score;
+ speak((ok?'Correct.':'Not quite. ')+q.e.replace(/<[^>]+>/g,' '));
+}
+$('nextB').onclick=function(){
+ if(idx+1<order.length){idx++;renderQ()}else{finish()}
+};
+function finish(){
+ var tot=order.length,pct=Math.round(score*100/tot);
+ var key=cur>=0?'s'+cur:'all';
+ prog[key]=prog[key]||{tries:0,best:0};
+ prog[key].tries++;prog[key].best=Math.max(prog[key].best,score);
+ try{localStorage.setItem(LSKEY,JSON.stringify(prog))}catch(e){}
+ $('quizView').style.display='none';
+ $('resView').style.display='block';
+ $('resPct').textContent=pct+'%';
+ $('resRaw').textContent=score+' / '+tot;
+ var msg;
+ if(pct>=90)msg='🏆 Outstanding. You own this material — you could advise a buyer tomorrow.';
+ else if(pct>=70)msg='🌟 Strong. Review the explanations you missed and run the module again — mastery is close.';
+ else if(pct>=50)msg='📘 Good foundation. Re-read the module notes, then retake. Every review compounds.';
+ else msg='🌱 Beginning. Take it slowly — repeat the module, read every explanation. This is how foundations are laid.';
+ $('resMsg').textContent=msg;
+}
+$('voice').onclick=function(){
+ voiceOn=!voiceOn;
+ this.textContent=voiceOn?'🔊 Voice on':'🔇 Voice off';
+ this.classList.toggle('on',voiceOn);
+ if(!voiceOn&&window.speechSynthesis){try{speechSynthesis.cancel()}catch(e){}}
+};
+showMenu();
+</script>
+</body>
+</html>
