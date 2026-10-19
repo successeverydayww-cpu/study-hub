@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKSU Charging Station — Ledger</title>
+<style>
+  :root{--navy:#0a1030;--navy2:#101740;--gold:#f5b84a;--ink:#eef0fa;--soft:#b9bede;--line:#26305e;--green:#34d399;--red:#f87171}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--navy);color:var(--ink);padding:16px;line-height:1.45}
+  .wrap{max-width:720px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:4px}
+  h1{font-size:20px}.h1g{color:var(--gold)}
+  .sub{color:var(--soft);font-size:12.5px}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+  .c{background:var(--navy2);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .c b{display:block;font-size:22px}
+  .c span{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
+  .g{color:var(--gold)}.gr{color:var(--green)}
+  section{background:var(--navy2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+  h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--soft);display:block;margin-top:8px}
+  input,select{width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);background:#070b22;color:#fff;font-size:15px;margin-top:3px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  button{background:var(--gold);color:#14163a;border:0;border-radius:9px;padding:11px 16px;font-weight:bold;font-size:14px;margin-top:12px;cursor:pointer;width:100%}
+  button.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold);width:auto;padding:8px 14px;font-size:12.5px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--soft);padding:5px 6px;border-bottom:1px solid var(--line)}
+  td{padding:7px 6px;border-bottom:1px solid var(--line)}
+  .num{text-align:right;white-space:nowrap}
+  .pos{color:var(--green)}.neg{color:var(--red)}
+  .bar{height:14px;background:#070b22;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin:8px 0 4px}
+  .bar>div{height:100%;background:linear-gradient(90deg,#c98f2e,var(--gold));width:0%;transition:width .4s}
+  .sharebar{height:8px;border-radius:5px;overflow:hidden;background:#070b22;margin-top:4px}
+  .sharebar>div{float:left;height:100%}
+  .note{font-size:12px;color:var(--soft);font-style:italic}
+  .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input#imp{display:none}
+  .tag{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:6px;background:#070b22;border:1px solid var(--line);color:var(--soft)}
+  .legend{font-size:11px;color:var(--soft);margin-top:6px}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gold);color:#14163a;padding:9px 18px;border-radius:20px;font-weight:bold;font-size:13px;display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>AKSU Charging Station <span class="h1g">— Ledger</span></h1><div class="sub">Shared record of contributions, expenses and payouts</div></div>
+    <button class="ghost" onclick="openImport()">Import</button>
+  </header>
+
+  <div class="cards">
+    <div class="c"><span>Contributions</span><b class="gr" id="tContrib">₦0</b></div>
+    <div class="c"><span>First-close target</span><b>₦500,000</b></div>
+    <div class="c"><span>Still needed</span><b class="g" id="tGap">₦500,000</b></div>
+    <div class="c"><span>Expenses / Payouts</span><b id="tOut">₦0</b></div>
+  </div>
+  <div class="bar"><div id="progress"></div></div>
+  <div class="note" id="pct">0% of first close raised</div>
+
+  <section>
+    <h2>Add entry</h2>
+    <label>Name</label><input id="eName" placeholder="Who is this entry for?">
+    <div class="row">
+      <div><label>Amount (₦)</label><input id="eAmt" type="number" inputmode="numeric" placeholder="50000"></div>
+      <div><label>Date</label><input id="eDate" type="date"></div>
+    </div>
+    <label>Type</label>
+    <select id="eType">
+      <option value="contrib">Contribution (money in)</option>
+      <option value="expense">Expense (money out — caravan, land fee, fuel)</option>
+      <option value="payout">Payout (profit distributed to a supporter)</option>
+    </select>
+    <label>Note (optional)</label><input id="eNote" placeholder="e.g. Founder commitment / Caravan deposit">
+    <button onclick="add()">Add to ledger</button>
+  </section>
+
+  <section>
+    <h2>Stakeholders &amp; shares</h2>
+    <table id="people"><thead><tr><th>Person</th><th class="num">Contributed</th><th class="num">Share</th><th class="num">Est. monthly*</th></tr></thead><tbody></tbody></table>
+    <div class="legend">* Expected-scenario net ≈ ₦109,000/month, shared proportionally. Payouts received are subtracted from what a double-return supporter still has coming.</div>
+  </section>
+
+  <section>
+    <h2>Full ledger</h2>
+    <table id="ledger"><thead><tr><th>Date</th><th>Person</th><th>Type</th><th class="num">Amount</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="flex" style="margin-top:10px">
+      <button class="ghost" onclick="copyState()">Copy ledger link</button>
+      <span class="note">Share this link with partners — it carries the whole ledger inside it.</span>
+    </div>
+  </section>
+
+  <p class="note">Ledger is stored on this device. Use “Copy ledger link” to back it up or sync it between phones and partners.</p>
+</div>
+<div class="toast" id="toast"></div>
+<input id="imp">
+<script>
+const KEY='aksu_ledger_v1';
+const NET=109000, TARGET=500000;
+let entries=[];
+try{ entries=JSON.parse(localStorage.getItem(KEY))||seed(); }catch(e){ entries=seed(); }
+function seed(){ return [
+  {name:'Partner — 50k', amt:50000, type:'contrib', date:'2026-10-18', note:'Founder team commitment'},
+  {name:'Partner — 30k', amt:30000, type:'contrib', date:'2026-10-18', note:'Founder team commitment'}
+];}
+function save(){ localStorage.setItem(KEY, JSON.stringify(entries)); }
+function n(x){return '₦'+Math.round(x).toLocaleString();}
+function fmtD(d){ if(!d) return '—'; const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function add(){
+  const name=eName.value.trim(), amt=Math.round(+eAmt.value), date=eDate.value||today(), type=eType.value, note=eNote.value.trim();
+  if(!name||!amt||amt<=0){ toast('Enter a name and amount'); return; }
+  entries.push({name,amt,type,date,note}); save(); render();
+  eName.value=eAmt.value=eNote.value=''; toast('Added: '+name+' '+n(amt));
+}
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function del(i){ entries.splice(i,1); save(); render(); }
+
+function render(){
+  const contrib=entries.filter(e=>e.type==='contrib').reduce((s,e)=>s+e.amt,0);
+  const out=entries.filter(e=>e.type!=='contrib').reduce((s,e)=>s+e.amt,0);
+  tContrib.textContent=n(contrib);
+  tGap.textContent=n(Math.max(0,TARGET-contrib));
+  tOut.textContent=n(out);
+  const pct=Math.min(100,contrib/TARGET*100);
+  progress.style.width=pct+'%';
+  document.getElementById('pct').textContent=pct.toFixed(1)+'% of first close raised ('+n(contrib)+' of ₦500,000)';
+
+  const people={};
+  entries.forEach(e=>{ if(e.type==='contrib'){ people[e.name]=(people[e.name]||0)+e.amt; } });
+  const total=Object.values(people).reduce((s,v)=>s+v,0)||1;
+  const colors=['#f5b84a','#60a5fa','#34d399','#f472b6','#a78bfa','#f87171'];
+  const pb=peopleTable(total,people); let html='';
+  Object.entries(people).sort((a,b)=>b[1]-a[1]).forEach(([name,amt],i)=>{
+    const share=amt/total;
+    html+=`<tr><td>${esc(name)}</td><td class="num pos">${n(amt)}</td><td class="num">${(share*100).toFixed(1)}%</td><td class="num">${n(share*NET)}</td></tr>`;
+  });
+  document.querySelector('#people tbody').innerHTML=html||'<tr><td colspan="4" class="note">No contributions yet</td></tr>';
+
+  let lh='';
+  entries.forEach((e,i)=>{
+    const sign=e.type==='contrib'?'pos':'neg';
+    const t=e.type==='contrib'?'Contribution':(e.type==='expense'?'Expense':'Payout');
+    lh+=`<tr><td>${fmtD(e.date)}</td><td>${esc(e.name)}</td><td><span class="tag">${t}</span>${e.note?'<br><span class="note">'+esc(e.note)+'</span>':''}</td><td class="num ${sign}">${e.type==='contrib'?'':'-'}${n(e.amt)}</td><td class="num"><a href="#" style="color:#f87171;text-decoration:none" onclick="del(${i});return false">✕</a></td></tr>`;
+  });
+  document.querySelector('#ledger tbody').innerHTML=lh||'<tr><td colspan="5" class="note">Empty</td></tr>';
+  save();
+}
+function peopleTable(){}
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none',2200); }
+function stateStr(){ return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(entries))))); }
+function copyState(){
+  const url=location.origin+location.pathname+'#d='+stateStr();
+  const done=()=>toast('Ledger link copied — paste it to your partners');
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,fallback); } else fallback();
+  function fallback(){ prompt('Copy this link:',url); done(); }
+}
+function openImport(){
+  const v=prompt('Paste the ledger link you received:');
+  if(!v) return;
+  const m=v.match(/#d=([^&]+)/);
+  if(!m){ toast('That link has no ledger data'); return; }
+  try{
+    entries=JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    save(); render(); toast('Ledger imported — '+entries.length+' entries');
+  }catch(err){ toast('Could not read that link'); }
+}
+if(location.hash.startsWith('#d=')){ try{ entries=JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(location.hash.slice(3)))))); }catch(e){} }
+eDate.value=today();
+render();
+</script>
+</body>
+</html>
