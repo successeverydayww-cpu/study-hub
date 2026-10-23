@@ -54,8 +54,8 @@ input.f:focus{outline:none;border-color:var(--g2)}
 .timer.warn{background:#a22}
 .qmeta{display:flex;justify-content:space-between;font-size:.7rem;color:#666;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
 .qmeta b{color:var(--g1)}
-.qtext{font-size:1.04rem;line-height:1.5;margin-bottom:12px}
-.opt{display:block;width:100%;text-align:left;background:#f6f8f4;border:2px solid #d4dccf;border-radius:10px;padding:11px 13px;margin-bottom:8px;font-size:.98rem;font-family:inherit;cursor:pointer;color:#1a1a1a}
+.qtext{word-break:break-word;overflow-wrap:anywhere;font-size:1.04rem;line-height:1.5;margin-bottom:12px}
+.opt{word-break:break-word;overflow-wrap:anywhere;display:block;width:100%;text-align:left;background:#f6f8f4;border:2px solid #d4dccf;border-radius:10px;padding:11px 13px;margin-bottom:8px;font-size:.98rem;font-family:inherit;cursor:pointer;color:#1a1a1a}
 .opt.sel{border-color:var(--g2);background:#e4f3e8}
 .opt.right{border-color:#2e8b2e;background:#d9f2dc}
 .opt.wrong{border-color:#c33;background:#fde6e6}
@@ -313,7 +313,7 @@ body{padding-bottom:64px}
 <div class="exam off"><b>NECO</b><small>Coming soon</small></div>
 <div class="exam off"><b>POST-UTME</b><small>Coming soon</small></div>
 </div>
-<p class="sub" style="margin-top:12px">JAMB and WAEC practice are live: questions across 12 subjects, timed tests, full explanations, and the Sunshine Agent to help you. Works offline once loaded. <span style="opacity:.65">v10.3</span></p>
+<p class="sub" style="margin-top:12px">JAMB and WAEC practice are live: questions across 12 subjects, timed tests, full explanations, and the Sunshine Agent to help you. Works offline once loaded. <span style="opacity:.65">v10.4</span></p>
 <div style="text-align:center;margin-top:14px"><button class="btn gold" onclick="openTutors('math')">&#127891; Video Tutors — watch full lessons</button></div>
 <div style="text-align:center;margin-top:10px"><button class="btn ghost" onclick="openProgress()">&#128200; My Progress</button></div>
 <div style="text-align:center;margin-top:10px"><button class="btn ghost" onclick="inviteFriends()">&#128172; Invite friends</button></div>
@@ -359,7 +359,7 @@ body{padding-bottom:64px}
 </div>
 
 <div id="s-quiz" class="hidden">
-<div class="timer" id="timer">00:00</div>
+<div class="timer" id="timer">00:00</div><div id="qdbg" style="position:fixed;bottom:6px;left:0;right:0;text-align:center;color:#ffd45a;background:rgba(120,0,0,.88);font-size:11px;z-index:90;display:none;padding:4px">DBG</div>
 <div style="height:46px"></div>
 <div class="card">
 <div class="qmeta"><span id="qSubj"></span><span><b id="qNum"></b> / <span id="qTot"></span></span></div>
@@ -623,15 +623,30 @@ if(MODE==='mock'){t.textContent='\u23f1 '+fmt(Math.max(picks.left,0))+' left in 
  if(picks.left<=0){clearInterval(picks.timerId);finish();return}
  picks.left--;return}
 t.textContent='\u23f1 '+fmt(Math.max(picks.left,0))+' for this question';t.classList.toggle('warn',picks.left<=10);
-if(picks.left<=0){if(picks.idx===picks.order.length-1){clearInterval(picks.timerId);finish()}else{picks.idx++;picks.left=30;renderQ()}return}picks.left--}
-function renderQ(){var q=picks.order[picks.idx];picks.locked=false;
+if(picks.left<=0){if(picks.idx===picks.order.length-1){clearInterval(picks.timerId);finish()}else{picks.idx++;picks.left=30;renderQ()}return}picks.left--;qWatch();}
+
+function renderQ(){try{var q=picks.order[picks.idx];picks.locked=false;
 document.getElementById('qSubj').textContent=q.s;document.getElementById('qNum').textContent=picks.idx+1;document.getElementById('qTot').textContent=picks.order.length;
 document.getElementById('qText').textContent=q.q;document.getElementById('qImg').innerHTML=q.img||'';
 document.getElementById('exp').classList.remove('show');
 document.getElementById('nextBtn').textContent=(picks.idx===picks.order.length-1)?'Submit \u2192':'Next \u2192';
 if(MODE==='cbt'){picks.left=30}
 var o='';q.o.forEach(function(t,k){o+='<button class="opt" id="o'+k+'" onclick="pick('+k+')">'+String.fromCharCode(65+k)+'. '+t+'</button>'});
-document.getElementById('opts').innerHTML=o}
+document.getElementById('opts').innerHTML=o}catch(e){try{document.getElementById('qText').textContent='This question failed to load ('+e.message+'). Tap Next to continue.';document.getElementById('opts').innerHTML=''}catch(x){}finally{setTimeout(qWatch,300)}}
+setTimeout(qWatch,300)}
+function qWatch(){try{var c=document.querySelector('#s-quiz .card');if(!c)return;
+var hid=document.getElementById('s-quiz').classList.contains('hidden');
+var r=c.getBoundingClientRect();
+var t=(document.getElementById('qText').textContent||'').trim();
+var vis=!hid&&r.width>120&&r.left>-30&&r.right<innerWidth+30&&r.top<innerHeight&&r.bottom>40;
+if(!vis||!t){
+ try{window.scrollTo(0,0)}catch(e){}
+ try{c.scrollIntoView({block:'start'})}catch(e){}
+ c.style.position='relative';c.style.zIndex='5';
+ var el=document.elementFromPoint(Math.min(innerWidth-1,Math.max(1,r.left+r.width/2)),Math.min(innerHeight-1,Math.max(40,r.top+60)));
+ dbg('Q'+(picks.idx+1)+' top:'+Math.round(r.top)+' w:'+Math.round(r.width)+' L:'+Math.round(r.left)+(t?'':' NOTEXT')+' tap:'+(el?String(el.id||el.className||el.tagName).slice(0,16):'-')+' sc:'+Math.round(scrollX)+','+Math.round(scrollY));
+}else{dbg('')}}catch(e){}}
+function dbg(s){var d=document.getElementById('qdbg');if(!d)return;d.textContent=s||'';d.style.display=s?'block':'none'}
 function pick(k){if(picks.locked)return;picks.locked=true;picks.chosen[picks.idx]=k;var q=picks.order[picks.idx];
 if(MODE==='cbt'||MODE==='mock'){document.getElementById('o'+k).classList.add('sel');setTimeout(function(){
 if(picks.idx===picks.order.length-1){clearInterval(picks.timerId);finish()}else{picks.idx++;if(MODE==='cbt')picks.left=30;renderQ()}},450);return}
