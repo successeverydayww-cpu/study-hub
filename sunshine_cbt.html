@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Sunshine CBT — Sunshine International School, Eket</title>
+<link rel="manifest" href="sunshine-manifest.json">
+<link rel="icon" href="sunshine-192.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:Georgia,'Times New Roman',serif;background:#f5f0e6;min-height:100vh;color:#1a1a1a}
+.top{background:linear-gradient(135deg,#1a4a8a,#2e6fc9);color:#fff;padding:20px 16px 14px;text-align:center}
+.crest{width:54px;height:54px;border:3px solid #f5b70a;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:26px;background:#fff;color:#f5b70a;font-weight:bold}
+.top h1{font-size:1.15rem;letter-spacing:.5px}
+.top p{font-size:.7rem;opacity:.85;margin-top:2px;letter-spacing:1.5px;text-transform:uppercase}
+.bar{background:#f5b70a;color:#1a4a8a;font-size:.72rem;text-align:center;padding:5px;font-weight:bold;letter-spacing:1px}
+.card{background:#fff;border-radius:12px;margin:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.qmeta{display:flex;justify-content:space-between;font-size:.72rem;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.qmeta b{color:#1a4a8a}
+.qtext{font-size:1.05rem;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:left;background:#f8f6f0;border:2px solid #d8d2c4;border-radius:10px;padding:12px 14px;margin-bottom:9px;font-size:1rem;font-family:inherit;cursor:pointer}
+.opt:active{transform:scale(.98)}
+.opt.correct{background:#e3f6e3;border-color:#2e8b2e}
+.opt.wrong{background:#fde8e8;border-color:#cc3333}
+.exp{display:none;background:#fff8e0;border-left:4px solid #f5b70a;border-radius:8px;padding:12px;font-size:.9rem;line-height:1.5;margin-top:4px}
+.exp.show{display:block}
+.exp b{color:#1a4a8a}
+.next{display:none;width:100%;background:#1a4a8a;color:#fff;border:none;border-radius:10px;padding:14px;font-size:1rem;font-family:inherit;cursor:pointer;margin-top:12px}
+.next:active{transform:scale(.98)}
+.score{text-align:center}
+.score .big{font-size:3rem;color:#1a4a8a;font-weight:bold}
+.score .msg{font-size:1.05rem;margin-top:8px;line-height:1.5}
+.home{background:#f5b70a;color:#1a4a8a;border:none;border-radius:10px;padding:12px 18px;font-size:.95rem;font-family:inherit;font-weight:bold;cursor:pointer;margin-top:18px}
+.hidden{display:none}
+.foot{text-align:center;font-size:.68rem;color:#888;padding:10px 16px 26px;line-height:1.6}
+.start{text-align:center}
+.start h2{color:#1a4a8a;font-size:1.4rem;margin-bottom:10px}
+.start p{line-height:1.6;color:#444;margin-bottom:6px}
+.begin{background:#2e8b2e;color:#fff;border:none;border-radius:10px;padding:14px 26px;font-size:1rem;font-family:inherit;cursor:pointer;margin-top:14px}
+</style></head><body>
+<div class="top"><div class="crest">&#9788;</div><h1>SUNSHINE INTERNATIONAL SCHOOL, EKET</h1><p>SS3 CBT Examination Practice</p></div>
+<div class="bar">SAMPLE DEMO FOR REVIEW BY THE SCHOOL</div>
+<div id="screen-home" class="card start">
+<h2>SS3 CBT Practice Test</h2>
+<p>15 sample questions in the exact computer-based format students will face in WAEC, NECO and JAMB.</p>
+<p style="font-size:.85rem;color:#666">Each question appears on screen, is answered with a tap, is marked instantly, and shows a full explanation.</p>
+<button class="begin" onclick="start()">Begin Test</button>
+</div>
+<div id="screen-quiz" class="hidden">
+<div class="card">
+<div class="qmeta"><span id="subj"></span><span><b id="qnum"></b> / 15</span></div>
+<div class="qtext" id="qtext"></div>
+<div id="opts"></div>
+<div class="exp" id="exp"></div>
+<button class="next" id="nextBtn" onclick="nextQ()">Next &#8594;</button>
+</div>
+</div>
+<div id="screen-done" class="card score hidden">
+<div class="big" id="finalScore"></div>
+<div class="msg" id="finalMsg"></div>
+<button class="home" onclick="location.reload()">Back to Start</button>
+</div>
+<div class="foot">Built by Samuel Amos for Sunshine International School, Eket.<br>This is a sample: the school's full app will carry WAEC, NECO and JAMB question banks,<br>student profiles and progress tracking.</div>
+<script>
+var QS=[{"s": "English", "q": "Choose the option nearest in meaning to the word in capital letters: The suspect was INDIGNANT about the accusation.", "o": ["angry", "silent", "afraid", "confused"], "a": 0, "e": "Indignant means feeling anger at something perceived as unfair. The suspect was angry about being accused."}, {"s": "English", "q": "Choose the option opposite in meaning: The chairman is RELUCTANT to approve the proposal.", "o": ["unwilling", "hesitant", "eager", "doubtful"], "a": 2, "e": "Reluctant means unwilling. Its opposite is eager, which means willing and enthusiastic."}, {"s": "English", "q": "Neither the principal nor the teachers ___ present at the meeting.", "o": ["was", "were", "is", "are"], "a": 1, "e": "In neither...nor constructions, the verb agrees with the subject nearer to it (teachers, plural), so the plural form 'were' is correct."}, {"s": "Mathematics", "q": "Simplify: (2x²y³)² ÷ 4xy²", "o": ["xy⁴", "x³y⁴", "4xy⁴", "x³y²"], "a": 1, "e": "(2x²y³)² = 4x⁴y⁶. Dividing by 4xy²: 4÷4 = 1; x⁴÷x = x³; y⁶÷y² = y⁴. The answer is x³y⁴."}, {"s": "Mathematics", "q": "If 3(x - 2) = 2x + 5, find x.", "o": ["11", "7", "1", "-11"], "a": 0, "e": "3x - 6 = 2x + 5, so 3x - 2x = 5 + 6, giving x = 11."}, {"s": "Mathematics", "q": "Find the value of sin 30° × cos 60°.", "o": ["0.25", "0.5", "0.75", "1"], "a": 0, "e": "sin 30° = 1/2 and cos 60° = 1/2. Their product is 1/2 × 1/2 = 1/4 = 0.25."}, {"s": "Biology", "q": "The basic unit of heredity is the", "o": ["gene", "cell", "protein", "chromosome thread"], "a": 0, "e": "The gene is the basic unit of heredity, made of DNA and passed from parents to offspring."}, {"s": "Biology", "q": "In which part of the cell does photosynthesis occur?", "o": ["mitochondria", "chloroplast", "nucleus", "ribosome"], "a": 1, "e": "Photosynthesis takes place in the chloroplast, which contains chlorophyll, the pigment that traps light energy."}, {"s": "Chemistry", "q": "The chemical formula of quicklime is", "o": ["CaCO₃", "CaO", "Ca(OH)₂", "CaSO₄"], "a": 1, "e": "Quicklime is calcium oxide, CaO, formed when limestone (CaCO₃) is heated strongly."}, {"s": "Chemistry", "q": "How many moles are present in 8 g of oxygen gas, O₂? (O = 16)", "o": ["0.25", "0.5", "1", "2"], "a": 0, "e": "Molar mass of O₂ = 32 g/mol. Moles = 8/32 = 0.25 mol."}, {"s": "Physics", "q": "A body moves 20 m in 4 s at constant velocity. Its speed is", "o": ["5 m/s", "16 m/s", "80 m/s", "0.2 m/s"], "a": 0, "e": "Speed = distance ÷ time = 20 ÷ 4 = 5 m/s."}, {"s": "Physics", "q": "The SI unit of force is the", "o": ["newton", "joule", "watt", "pascal"], "a": 0, "e": "Force is measured in newtons (N), defined as kg·m/s²."}, {"s": "Government", "q": "The 1999 Constitution of Nigeria vests federal legislative powers in the", "o": ["National Assembly", "Council of State", "Judiciary", "Executive Council"], "a": 0, "e": "Section 4 of the 1999 Constitution vests federal legislative powers in the National Assembly, made up of the Senate and the House of Representatives."}, {"s": "Economics", "q": "Scarcity in economics means that", "o": ["resources are limited relative to wants", "goods are expensive", "money is scarce", "people are greedy"], "a": 0, "e": "Scarcity is the fundamental economic problem: human wants are unlimited but the resources available to satisfy them are limited."}, {"s": "Literature", "q": "A poem of fourteen lines is called a", "o": ["sonnet", "ode", "elegy", "ballad"], "a": 0, "e": "A sonnet is a fourteen-line poem, traditionally written in iambic pentameter."}];var i=0,score=0,locked=false;
+function start(){document.getElementById('screen-home').classList.add('hidden');document.getElementById('screen-quiz').classList.remove('hidden');show()}
+function show(){locked=false;var q=QS[i];
+document.getElementById('subj').textContent=q.s;
+document.getElementById('qnum').textContent=i+1;
+document.getElementById('qtext').textContent=q.q;
+document.getElementById('exp').classList.remove('show');
+document.getElementById('nextBtn').style.display='none';
+document.getElementById('nextBtn').textContent=(i===QS.length-1)?'See Result →':'Next →';
+var o='';q.o.forEach(function(t,k){o+='<button class="opt" id="o'+k+'" onclick="pick('+k+')">'+String.fromCharCode(65+k)+'. '+t+'</button>'});
+document.getElementById('opts').innerHTML=o;}
+function pick(k){if(locked)return;locked=true;var q=QS[i];
+document.getElementById('o'+q.a).classList.add('correct');
+if(k===q.a){score++}else{document.getElementById('o'+k).classList.add('wrong')}
+var e=document.getElementById('exp');e.innerHTML='<b>&#127891; Explanation:</b><br>'+q.e;e.classList.add('show');
+document.getElementById('nextBtn').style.display='block'}
+function nextQ(){i++;if(i<QS.length){show()}else{
+document.getElementById('screen-quiz').classList.add('hidden');
+document.getElementById('screen-done').classList.remove('hidden');
+var pct=Math.round(score/QS.length*100);
+document.getElementById('finalScore').textContent=score+' / '+QS.length;
+var m;if(pct>=80){m='Excellent! This is exam-day readiness.'}else if(pct>=60){m='Good work. Keep practising daily.'}else if(pct>=40){m='Fair. Review the explanations and try again.'}else{m='Keep practising. Every attempt builds familiarity.'}
+document.getElementById('finalMsg').textContent=m+' ('+pct+'%)'}}
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sunshine-sw.js')}catch(e){}}
+</script></body></html>
