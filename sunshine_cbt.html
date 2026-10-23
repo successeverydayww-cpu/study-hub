@@ -99,10 +99,10 @@ input.f:focus{outline:none;border-color:var(--g2)}
 <h2>Student Login</h2>
 <p class="sub">Enter your details. We send a 6-digit verification code to confirm it is you.</p>
 <input class="f" id="lName" placeholder="Full name">
-<input class="f" id="lContact" placeholder="Phone number or email" inputmode="email">
+<input class="f" id="lContact" placeholder="Email address (same one you use for JAMB)" inputmode="email" type="email">
 <select class="f" id="lClass"><option value="">Select class</option><option>SS1</option><option>SS2</option><option>SS3</option></select>
 <div class="err" id="lErr"></div>
-<button class="btn" onclick="sendCode()">Send Verification Code</button>
+<button class="btn" id="btnSend" onclick="sendCode()">Send Verification Code</button>
 </div>
 </div>
 
@@ -190,23 +190,42 @@ var BANK={"subjects": [{"id": "eng", "name": "Use of English", "icon": "📖", "
 var U=null,pend=null,picks={subj:null,count:15,order:[],idx:0,chosen:[],timerId:null,left:0,t0:0,locked:false};
 function show(s){['login','verify','home','subj','count','quiz','done'].forEach(function(k){document.getElementById('s-'+k).classList.toggle('hidden',k!==s)});
 document.getElementById('fab').classList.toggle('hidden',!U);try{window.scrollTo(0,0)}catch(e){}}
-/* ---- LOGIN with verification code ---- */
-function sendCode(){var n=document.getElementById('lName').value.trim(),c=document.getElementById('lContact').value.trim(),k=document.getElementById('lClass').value;
+/* ---- LOGIN: linked to the AirConnect platform backend (sunshineAuth) ---- */
+var API='https://superagent-ccb075d2.base44.app/functions/sunshineAuth';
+function sendCode(){var n=document.getElementById('lName').value.trim(),c=document.getElementById('lContact').value.trim().toLowerCase(),k=document.getElementById('lClass').value;
 var e=document.getElementById('lErr');
 if(n.length<3){e.textContent='Enter your full name.';return}
-if(!/^[0-9+ ]{10,15}$/.test(c)&&!/^\S+@\S+\.\S+$/.test(c)){e.textContent='Enter a valid phone number or email.';return}
+if(!/^\S+@\S+\.\S+$/.test(c)){e.textContent='Enter your email address (the one you use for JAMB).';return}
 if(!k){e.textContent='Select your class.';return}
-e.textContent='';var code=String(Math.floor(100000+Math.random()*900000));
-pend={name:n,contact:c,cls:k,code:code,exp:Date.now()+10*60000};
-document.getElementById('vSub').textContent='A 6-digit code was sent to '+c+'. It expires in 10 minutes.';
-document.getElementById('demoCode').innerHTML='SAMPLE MODE: in the live school app this code arrives by SMS or email. Your sample code is:<b>'+code+'</b>';
-document.getElementById('vCode').value='';document.getElementById('vErr').textContent='';show('verify')}
+e.textContent='';document.getElementById('btnSend').textContent='Sending code...';
+fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({act:'otp',email:c,name:n,cls:k})})
+.then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
+.then(function(x){
+ document.getElementById('btnSend').textContent='Send Verification Code';
+ if(!x.ok){e.textContent=x.j.err||'Could not send the code. Check and try again.';return}
+ pend={name:n,contact:c,cls:k,mode:'live'};
+ document.getElementById('vSub').textContent='A 6-digit code was sent to your email inbox. It expires in 10 minutes. Check spam if you don\u2019t see it.';
+ document.getElementById('demoCode').innerHTML='<b style="font-size:.9em">Sent to your email \u2709</b>';
+ document.getElementById('vCode').value='';document.getElementById('vErr').textContent='';show('verify')})
+.catch(function(err){
+ document.getElementById('btnSend').textContent='Send Verification Code';
+ var code=String(Math.floor(100000+Math.random()*900000));
+ pend={name:n,contact:c,cls:k,code:code,exp:Date.now()+10*60000,mode:'sample'};
+ document.getElementById('vSub').textContent='You are offline. Sample mode: use the code below.';
+ document.getElementById('demoCode').innerHTML='OFFLINE SAMPLE MODE: in the live app this code arrives in your email inbox. Your sample code is:<b>'+code+'</b>';
+ document.getElementById('vCode').value='';document.getElementById('vErr').textContent='';show('verify')})}
 function verify(){var v=document.getElementById('vCode').value.trim(),e=document.getElementById('vErr');
 if(!pend){show('login');return}
-if(Date.now()>pend.exp){e.textContent='Code expired. Request a new one.';return}
-if(v!==pend.code){e.textContent='Wrong code. Check and try again.';return}
-U={name:pend.name,contact:pend.contact,cls:pend.cls};try{localStorage.setItem('sunshine_user',JSON.stringify(U))}catch(x){}
-pend=null;enter()}
+if(pend.mode==='sample'){
+ if(Date.now()>pend.exp){e.textContent='Code expired. Request a new one.';return}
+ if(v!==pend.code){e.textContent='Wrong code. Try again.';return}
+ U={name:pend.name,contact:pend.contact,cls:pend.cls};try{localStorage.setItem('sunshine_user',JSON.stringify(U))}catch(x){}pend=null;enter();return}
+fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({act:'verify',email:pend.contact,code:v})})
+.then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
+.then(function(x){
+ if(!x.ok){e.textContent=x.j.err||'Wrong code. Try again.';return}
+ U={name:pend.name,contact:pend.contact,cls:pend.cls};try{localStorage.setItem('sunshine_user',JSON.stringify(U))}catch(z){}pend=null;enter()})
+.catch(function(){e.textContent='Network problem. Check your connection and try again.'})}
 function enter(){document.getElementById('whoTxt').textContent=U.name+' \u00b7 '+U.cls;show('home')}
 function logout(){U=null;try{localStorage.removeItem('sunshine_user')}catch(x){}show('login')}
 /* ---- subjects / count ---- */
