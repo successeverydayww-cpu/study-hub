@@ -276,7 +276,7 @@ function saveSess(){try{localStorage.setItem('sunshine_sess',JSON.stringify({t:T
 function setUser(p){P=p;U={name:p.name,contact:p.email,cls:p.cls};saveSess()}
 function paintAvatar(el,p){if(p&&p.photo){el.style.backgroundImage='url('+p.photo+')';el.textContent=''}else{el.style.backgroundImage='none';el.textContent=p&&p.name?p.name.trim().charAt(0).toUpperCase():'\u{1F464}'}}
 /* sign in with password */
-function doLogin(){var e=$('iErr'),em=$('iEmail').value.trim().toLowerCase(),pw=$('iPass').value;
+function doLogin(){var e=$('iErr'),em=$('iEmail').value.trim().toLowerCase(),pw=$('iPass').value;try{localStorage.setItem('sunshine_last_email',em)}catch(x){}
 if(!/^\S+@\S+\.\S+$/.test(em)){e.textContent='Enter your email address.';return}
 if(!pw){e.textContent='Enter your password.';return}
 e.textContent='';$('btnIn').textContent='Signing in...';
@@ -289,7 +289,7 @@ if(!/^\S+@\S+\.\S+$/.test(em)){e.textContent='Type your email above first, then 
 e.textContent='';resetMode=true;
 api({act:'resetcode',email:em}).then(function(x){
  if(!x.ok){e.textContent=x.j.err||'Could not send a code.';return}
- pend={contact:em,mode:'live'};$('vSub').textContent='A 6-digit code was sent to '+em+'. Enter it to set a new password.';
+ pend={contact:em,mode:'live',exp:Date.now()+600000};try{localStorage.setItem('sunshine_pend',JSON.stringify(pend))}catch(x){}$('vSub').textContent='A 6-digit code was sent to '+em+'. Enter it to set a new password.';
  $('demoCode').innerHTML='<b style="font-size:.9em">Sent to your email \u2709</b>';$('vCode').value='';$('vErr').textContent='';show('verify')})
 .catch(function(){e.textContent='Network problem. Try again.'})}
 /* first-time signup: email code */
@@ -298,17 +298,18 @@ if(n.length<3){e.textContent='Enter your full name.';return}
 if(!/^\S+@\S+\.\S+$/.test(c)){e.textContent='Enter your email address (the one you use for JAMB).';return}
 if(!k){e.textContent='Select your class.';return}
 if(!ar){e.textContent='Select your class arm.';return}
+try{localStorage.setItem('sunshine_last_email',c)}catch(x){}
 e.textContent='';resetMode=false;$('btnSend').textContent='Sending code...';
 api({act:'otp',email:c,name:n,cls:k,arm:ar}).then(function(x){
  $('btnSend').textContent='Send Verification Code';
  if(!x.ok){e.textContent=x.j.err||'Could not send the code. Check and try again.';return}
- pend={name:n,contact:c,cls:k,arm:ar,mode:'live'};
+ pend={name:n,contact:c,cls:k,arm:ar,mode:'live',exp:Date.now()+600000};try{localStorage.setItem('sunshine_pend',JSON.stringify(pend))}catch(x){}
  $('vSub').textContent='A 6-digit code was sent to your email inbox. It expires in 10 minutes. Check spam if you don\u2019t see it.';
  $('demoCode').innerHTML='<b style="font-size:.9em">Sent to your email \u2709</b>';
  $('vCode').value='';$('vErr').textContent='';show('verify')})
 .catch(function(){$('btnSend').textContent='Send Verification Code';
  var code=String(Math.floor(100000+Math.random()*900000));
- pend={name:n,contact:c,cls:k,arm:ar,code:code,exp:Date.now()+10*60000,mode:'sample'};
+ pend={name:n,contact:c,cls:k,arm:ar,code:code,exp:Date.now()+10*60000,mode:'sample'};try{localStorage.setItem('sunshine_pend',JSON.stringify(pend))}catch(x){}
  $('vSub').textContent='You are offline. Sample mode: use the code below.';
  $('demoCode').innerHTML='OFFLINE SAMPLE MODE: in the live app this code arrives in your email inbox. Your sample code is:<b>'+code+'</b>';
  $('vCode').value='';$('vErr').textContent='';show('verify')})}
@@ -317,10 +318,10 @@ if(!pend){show('login');return}
 if(pend.mode==='sample'){
  if(Date.now()>pend.exp){e.textContent='Code expired. Request a new one.';return}
  if(v!==pend.code){e.textContent='Wrong code. Try again.';return}
- TOKEN='';setUser({name:pend.name,email:pend.contact,cls:pend.cls,arm:pend.arm,photo:'',age_range:'',gender:'',phone:'',guardian_phone:'',target_exam:'JAMB',subjects:'',bio:'',has_password:true});pend=null;enter();return}
+ TOKEN='';try{localStorage.removeItem('sunshine_pend')}catch(x){}{}setUser({name:pend.name,email:pend.contact,cls:pend.cls,arm:pend.arm,photo:'',age_range:'',gender:'',phone:'',guardian_phone:'',target_exam:'JAMB',subjects:'',bio:'',has_password:true});pend=null;enter();return}
 api({act:'verify',email:pend.contact,code:v}).then(function(x){
  if(!x.ok){e.textContent=x.j.err||'Wrong code. Try again.';return}
- TOKEN=x.j.token;setUser(x.j.profile);pend=null;
+ TOKEN=x.j.token;setUser(x.j.profile);pend=null;try{localStorage.removeItem('sunshine_pend')}catch(x){}
  if(x.j.needs_password||resetMode){$('pw1').value='';$('pw2').value='';$('pwErr').textContent='';show('setpw')}else{enter()}})
 .catch(function(){e.textContent='Network problem. Check your connection and try again.'})}
 function savePwFirst(){var a=$('pw1').value,b=$('pw2').value,e=$('pwErr');
@@ -372,7 +373,7 @@ api({act:'setpw',token:TOKEN,oldPassword:oldp,newPassword:np}).then(function(x){
  if(!x.ok){e.textContent=x.j.err||'Could not change password.';return}
  $('cpOld').value='';$('cpNew').value='';o.textContent='Password changed \u2713'})
 .catch(function(){e.textContent='Network problem. Try again.'})}
-function logout(){U=null;P=null;TOKEN='';try{localStorage.removeItem('sunshine_sess');localStorage.removeItem('sunshine_user')}catch(x){}loginMode('in');show('login')}
+function logout(){U=null;P=null;TOKEN='';pend=null;try{localStorage.removeItem('sunshine_sess');localStorage.removeItem('sunshine_user');localStorage.removeItem('sunshine_pend')}catch(x){}loginMode('in');show('login')}
 /* ---- subjects / count ---- */
 function renderSubj(){var g='';BANK.subjects.forEach(function(s){g+='<div class="subj" onclick="pickSubj(\''+s.id+'\')"><div class="ic">'+s.icon+'</div><b>'+s.name+'</b><small>'+s.group+' &middot; '+s.qs.length+' questions</small></div>'});document.getElementById('subjGrid').innerHTML=g}
 function pickSubj(id){picks.subj=id;var s=BANK.subjects.find(function(x){return x.id===id});
@@ -434,6 +435,13 @@ renderSubj();
 try{var sv=JSON.parse(localStorage.getItem('sunshine_sess')||'null');
 if(sv&&sv.p&&sv.p.name){TOKEN=sv.t||'';P=sv.p;U={name:P.name,contact:P.email,cls:P.cls};enter();
  if(TOKEN){api({act:'me',token:TOKEN}).then(function(x){if(x.ok){setUser(x.j.profile);paintAvatar($('miniAv'),P);$('whoTxt').textContent=P.name+' \u00b7 '+P.cls+(P.arm?' '+P.arm:'')}else if(x.j&&x.j.err==='session expired'){logout()}}).catch(function(){})}}
-else{show('login')}}catch(e){show('login')}
+else{var pd=null;try{pd=JSON.parse(localStorage.getItem('sunshine_pend')||'null')}catch(e2){}
+ if(pd&&pd.contact&&pd.exp&&Date.now()<pd.exp){pend=pd;
+  $('vSub').textContent='Your code is still waiting. Enter the 6-digit code we sent to '+pd.contact+'.';
+  $('demoCode').innerHTML='<b style="font-size:.9em">Sent to your email \u2709</b>';
+  $('vCode').value='';$('vErr').textContent='';show('verify')}
+ else{try{localStorage.removeItem('sunshine_pend')}catch(e3){}
+  var le='';try{le=localStorage.getItem('sunshine_last_email')||''}catch(e4){}
+  $('iEmail').value=le;show('login')}}}catch(e){show('login')}
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sunshine-sw.js')}catch(e){}}
 </script></body></html>
