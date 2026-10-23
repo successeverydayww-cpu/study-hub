@@ -278,7 +278,7 @@ body{padding-bottom:64px}
 <p class="sub">English is compulsory (15 questions). Pick exactly 3 more subjects &mdash; 15 questions each. One timer: 30 minutes for all 60 questions. No answers shown until the end, and when time runs out the exam submits itself.</p>
 <div class="mockgrid" id="mockGrid"></div>
 <p class="sub" id="mockCount">Picked: 0 of 3</p>
-<button class="btn gold" id="mockStart" disabled onclick="startMock()" style="opacity:.4">Choose 3 subjects to start</button>
+<button class="btn gold" id="mockStart" onclick="tryStartMock()">Choose 3 subjects</button>
 </div>
 </div>
 <div id="s-tutors" class="hidden">
@@ -313,7 +313,7 @@ body{padding-bottom:64px}
 <div class="exam off"><b>NECO</b><small>Coming soon</small></div>
 <div class="exam off"><b>POST-UTME</b><small>Coming soon</small></div>
 </div>
-<p class="sub" style="margin-top:12px">JAMB and WAEC practice are live: questions across 12 subjects, timed tests, full explanations, and the Sunshine Agent to help you. Works offline once loaded.</p>
+<p class="sub" style="margin-top:12px">JAMB and WAEC practice are live: questions across 12 subjects, timed tests, full explanations, and the Sunshine Agent to help you. Works offline once loaded. <span style="opacity:.65">v10.2</span></p>
 <div style="text-align:center;margin-top:14px"><button class="btn gold" onclick="openTutors('math')">&#127891; Video Tutors — watch full lessons</button></div>
 <div style="text-align:center;margin-top:10px"><button class="btn ghost" onclick="openProgress()">&#128200; My Progress</button></div>
 <div style="text-align:center;margin-top:10px"><button class="btn ghost" onclick="inviteFriends()">&#128172; Invite friends</button></div>
@@ -711,9 +711,11 @@ function mockPick(id){var i=MOCKSUBS.indexOf(id);
  mockCount()}
 function mockCount(){var n=MOCKSUBS.length;
  document.getElementById('mockCount').textContent='Picked: '+n+' of 3';
- var b=document.getElementById('mockStart');
- if(n===3){b.disabled=false;b.style.opacity=1;b.textContent='Start Mini Mock (60 questions)'}else{b.disabled=true;b.style.opacity=.4;b.textContent='Choose '+(3-n)+' more subject'+(3-n>1?'s':'')+' to start'}}
+ document.getElementById('mockStart').textContent=(n===3)?'Start Mini Mock (60 questions)':'Choose '+(3-n)+' more subject'+((3-n)>1?'s':'')+' to start'}
 function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function tryStartMock(){
+ if(MOCKSUBS.length<3){alert('Pick '+(3-MOCKSUBS.length)+' more subject'+((3-MOCKSUBS.length)>1?'s':'')+' first, then start. English is already included.');return}
+ startMock()}
 function startMock(){
  var eng=BANK.subjects.filter(function(s){return s.id==='eng'})[0];
  var pool=shuf(eng.qs.slice()).slice(0,15);
